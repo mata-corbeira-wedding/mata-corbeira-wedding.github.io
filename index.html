@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maria & Raynulfo · Wedding</title>
+    <meta
+      name="description"
+      content="Wedding website for Maria Alejandra and Raynulfo Jesus at the Ancient Spanish Monastery in North Miami Beach, Florida."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <a href="#home" class="brand">
+          <span class="brand-names" data-i18n="brand_names">Maria &amp; Raynulfo</span>
+          <span class="brand-date" data-i18n="brand_date">December 29ᵗʰ 2026 · North Miami Beach</span>
+        </a>
+        <nav class="main-nav" aria-label="Primary">
+          <button
+            class="nav-toggle"
+            aria-label="Toggle navigation"
+            aria-expanded="false"
+            aria-controls="nav-links"
+          >
+            <span></span><span></span>
+          </button>
+          <div class="nav-links-wrapper" id="nav-links">
+            <a href="#home" class="nav-link" data-i18n="nav_home">Home</a>
+            <a href="#wedding-day" class="nav-link" data-i18n="nav_wedding_day">Wedding Day</a>
+            <a href="#registry" class="nav-link" data-i18n="nav_registry">Registry</a>
+            <a href="#hotel" class="nav-link" data-i18n="nav_hotel">Hotel</a>
+            <a href="#things-to-do" class="nav-link" data-i18n="nav_things_to_do">Things To Do</a>
+            <div class="lang-toggle" aria-label="Language selection">
+              <button class="lang-btn is-active" data-lang="en" aria-pressed="true">
+                EN
+              </button>
+              <span class="lang-divider">|</span>
+              <button class="lang-btn" data-lang="es" aria-pressed="false">
+                ES
+              </button>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- Home / Hero -->
+      <section id="home" class="section hero">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+          <h1 class="hero-names hero-names-multiline">
+            <span data-i18n="home_names_line1">Maria Alejandra</span>
+            <span data-i18n="home_names_line2">Corbeira Raventos</span>
+            <span data-i18n="home_names_amp">&</span>
+            <span data-i18n="home_names_line3">Raynulfo Jesus</span>
+            <span data-i18n="home_names_line4">Mata Negrette</span>
+          </h1>
+          <p class="hero-subtitle" data-i18n="home_date_location">
+            December 29ᵗʰ 2026 · Ancient Spanish Monastery · North Miami Beach, Florida
+          </p>
+          <div class="hero-divider"></div>
+
+          <button class="button hero-rsvp-button" type="button" data-i18n="home_rsvp_button">
+            RSVP
+          </button>
+
+          <div class="schedule-grid">
+            <article class="schedule-card">
+              <h2 class="schedule-title" data-i18n="home_ceremony_title">Ceremony</h2>
+              <p class="schedule-time" data-i18n="home_ceremony_time">
+                4:00 PM · Chapel of St. Bernard de Clairvaux
+              </p>
+            </article>
+            <article class="schedule-card">
+              <h2 class="schedule-title" data-i18n="home_cocktail_title">Cocktail Hour</h2>
+              <p class="schedule-time" data-i18n="home_cocktail_time">
+                5:00 PM · Cloister Garden
+              </p>
+            </article>
+            <article class="schedule-card">
+              <h2 class="schedule-title" data-i18n="home_reception_title">Celebration</h2>
+              <p class="schedule-time" data-i18n="home_reception_time">
+                6:30 PM · Refectory &amp; Courtyard
+              </p>
+            </article>
+          </div>
+
+          <aside class="callout" aria-label="Transportation notice">
+            <p data-i18n="home_transport">
+              Parking at the monastery is limited. We kindly recommend using Uber, Lyft, or shared rides when
+              possible.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Wedding Day Information -->
+      <section id="wedding-day" class="section">
+        <div class="container section-inner">
+          <header class="section-header">
+            <p class="section-kicker" data-i18n="wedding_kicker">Wedding Day</p>
+            <h2 class="section-title" data-i18n="wedding_title">Wedding Day Information</h2>
+            <p class="section-subtitle" data-i18n="wedding_subtitle">
+              Everything you need to know for our celebration at the Ancient Spanish Monastery.
+            </p>
+          </header>
+
+          <div class="two-column">
+            <div class="column">
+              <h3 class="subsection-title" data-i18n="wedding_timeline_title">
+                Schedule &amp; Flow
+              </h3>
+              <ol class="timeline">
+                <li class="timeline-item">
+                  <span class="timeline-time" data-i18n="wedding_timeline_ceremony_time">
+                    4:00 PM
+                  </span>
+                  <div class="timeline-body">
+                    <h4 data-i18n="wedding_timeline_ceremony_title">Catholic Ceremony</h4>
+                    <p data-i18n="wedding_timeline_ceremony_desc">
+                      Please arrive 20–30 minutes early to find your seat in the historic chapel.
+                    </p>
+                  </div>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-time" data-i18n="wedding_timeline_cocktail_time">
+                    5:00 PM
+                  </span>
+                  <div class="timeline-body">
+                    <h4 data-i18n="wedding_timeline_cocktail_title">Cocktail Hour</h4>
+                    <p data-i18n="wedding_timeline_cocktail_desc">
+                      Join us in the cloister gardens for cocktails, music, and a first look at the monastery at
+                      sunset.
+                    </p>
+                  </div>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-time" data-i18n="wedding_timeline_reception_time">
+                    6:30 PM
+                  </span>
+                  <div class="timeline-body">
+                    <h4 data-i18n="wedding_timeline_reception_title">Dinner &amp; Celebration</h4>
+                    <p data-i18n="wedding_timeline_reception_desc">
+                      Dinner, speeches, and dancing in the refectory and courtyard beneath the arches and oak trees.
+                    </p>
+                  </div>
+                </li>
+              </ol>
+
+              <div class="card">
+                <h3 class="subsection-title" data-i18n="wedding_dress_code_title">Dress Code</h3>
+                <p data-i18n="wedding_dress_code_body">
+                  Formal evening attire. The monastery features stone floors and garden paths, so we recommend
+                  comfortable shoes or block heels. December evenings can be breezy, so a light wrap or jacket is a
+                  good idea.
+                </p>
+              </div>
+
+              <aside class="callout callout-soft">
+                <h3 class="subsection-title" data-i18n="wedding_transport_title">
+                  Parking &amp; Transportation
+                </h3>
+                <p data-i18n="wedding_transport_body">
+                  Parking at the monastery is limited. If you are able, please consider taking Uber, Lyft, or
+                  carpooling. If you do drive, allow extra time to park and walk through the gardens to the chapel.
+                </p>
+              </aside>
+            </div>
+
+            <div class="column">
+              <div class="card">
+                <h3 class="subsection-title" data-i18n="wedding_venue_title">
+                  Venue &amp; Directions
+                </h3>
+                <p data-i18n="wedding_venue_body">
+                  The Ancient Spanish Monastery is a historic cloister with several distinct spaces. The chapel,
+                  gardens, and reception hall are a short walk from one another within the same grounds.
+                </p>
+                <ul class="bullet-list">
+                  <li data-i18n="wedding_venue_item_chapel">
+                    Chapel entrance: main church doors facing the front courtyard.
+                  </li>
+                  <li data-i18n="wedding_venue_item_cocktail">
+                    Cocktail: cloister garden just beyond the chapel.
+                  </li>
+                  <li data-i18n="wedding_venue_item_reception">
+                    Reception: refectory hall and adjoining courtyard.
+                  </li>
+                </ul>
+                <figure class="venue-map-figure">
+                  <img src="assets/monastery-map.png" alt="Map of the Ancient Spanish Monastery showing chapel, cocktail area, and reception locations" class="venue-map-img" />
+                  <figcaption class="muted small" data-i18n="wedding_venue_map_caption">
+                    Monastery map: chapel, cocktail area, and reception.
+                  </figcaption>
+                </figure>
+                <a href="https://www.spanishmonastery.com/" class="button button-monastery" target="_blank" rel="noopener noreferrer" data-i18n="wedding_monastery_button">
+                  Visit Monastery Website
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Registry -->
+      <section id="registry" class="section section-alt">
+        <div class="container section-inner">
+          <header class="section-header">
+            <p class="section-kicker" data-i18n="registry_kicker">Registry</p>
+            <h2 class="section-title" data-i18n="registry_title">Gifts &amp; Registry</h2>
+            <p class="section-subtitle" data-i18n="registry_subtitle">
+              Your presence is the greatest gift. If you would also like to honor us with a present, we have gathered
+              a few ideas below.
+            </p>
+          </header>
+
+          <div class="card-grid">
+            <article class="card">
+              <h3 class="subsection-title" data-i18n="registry_amazon_title">
+                Amazon Registry
+              </h3>
+              <p data-i18n="registry_amazon_body">
+                We have selected a small collection of items for our home. You can view the full list on Amazon.
+              </p>
+              <a
+                href="https://www.amazon.com/wedding/share/MarialeyRaynulfo1229"
+                class="button"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-i18n="registry_amazon_button"
+              >
+                View Amazon Registry
+              </a>
+            </article>
+
+            <article class="card">
+              <h3 class="subsection-title" data-i18n="registry_fund_title">
+                Honeymoon &amp; Future Home Fund
+              </h3>
+              <p data-i18n="registry_fund_body">
+                For those who prefer, you may contribute to our honeymoon and future home fund. We are deeply grateful
+                for any gesture.
+              </p>
+              <p class="zelle-info">
+                <strong data-i18n="registry_zelle_label">Zelle:</strong>
+                <a href="tel:+19549188129" class="text-link">954-918-8129</a>
+              </p>
+              <p class="muted small" data-i18n="registry_zelle_note">
+                Send to this number via your bank&apos;s Zelle app.
+              </p>
+            </article>
+
+            <article class="card">
+              <h3 class="subsection-title" data-i18n="registry_other_title">
+                Other Ideas
+              </h3>
+              <p data-i18n="registry_other_body">
+                If you prefer to share a gift in another way, please feel welcome to reach out to our families or to us
+                directly. We are simply honored to celebrate with you.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hotel -->
+      <section id="hotel" class="section">
+        <div class="container section-inner">
+          <header class="section-header">
+            <p class="section-kicker" data-i18n="hotel_kicker">Stay</p>
+            <h2 class="section-title" data-i18n="hotel_title">Hotel Suggestions</h2>
+            <p class="section-subtitle" data-i18n="hotel_subtitle">
+              For our guests traveling from near and far, here are a few areas and hotels to consider during your stay
+              in Miami.
+            </p>
+          </header>
+
+          <p data-i18n="hotel_intro">
+            We recommend staying either near the venue in North Miami Beach or near our home in Doral.
+          </p>
+
+          <article class="card hotel-airbnb-card">
+            <h3 class="subsection-title" data-i18n="hotel_airbnb_title">Airbnb &amp; Vacation Rentals</h3>
+            <p data-i18n="hotel_airbnb_body">
+              Airbnb and other vacation rentals are also available in North Miami Beach, Doral, and Miami Beach. If you
+              prefer a home or apartment, search for stays near those areas.
+            </p>
+            <p data-i18n="hotel_airbnb_pairing">
+              Would you like to share an Airbnb with other guests to split costs? Please reach out to the bride or groom
+              and we will try to help connect you with others looking to share.
+            </p>
+          </article>
+
+          <div class="hotel-groups">
+            <section class="hotel-group">
+              <h3 class="subsection-title" data-i18n="hotel_group_venue_title">
+                Near the Venue · North Miami Beach
+              </h3>
+              <div class="card-grid hotel-card-grid">
+                <article class="card hotel-card">
+                  <h4>Palm Tree Club Miami Hotel</h4>
+                  <p class="hotel-address">17201 Biscayne Blvd, North Miami Beach, FL 33160</p>
+                  <p class="badge">3-star · 3.9/5</p>
+                  <p class="small">~$108 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.google.com/search?q=Palm+Tree+Club+Miami+Hotel+17201+Biscayne+Blvd" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=17201+Biscayne+Blvd+North+Miami+Beach+FL+33160" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+                <article class="card hotel-card">
+                  <h4>North Miami Beach Gardens Inn &amp; Suites</h4>
+                  <p class="hotel-address">14800 NW 2nd Ave, Miami, FL 33168</p>
+                  <p class="badge">3-star · 2.6/5</p>
+                  <p class="small">~$63 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.google.com/search?q=North+Miami+Beach+Gardens+Inn+Suites+14800+NW+2nd+Ave" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=14800+NW+2nd+Ave+Miami+FL+33168" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+                <article class="card hotel-card">
+                  <h4>Miami Gardens Inn &amp; Suites</h4>
+                  <p class="hotel-address">16805 NW 12th Ave, Miami, FL 33169</p>
+                  <p class="badge">2-star · 2.7/5</p>
+                  <p class="small">~$58 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.google.com/search?q=Miami+Gardens+Inn+Suites+16805+NW+12th+Ave" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=16805+NW+12th+Ave+Miami+FL+33169" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+                <article class="card hotel-card">
+                  <h4>Oceanside Hotel + Suites</h4>
+                  <p class="hotel-address">6084 Collins Ave, Miami Beach, FL 33140</p>
+                  <p class="badge">3-star · 3.7/5</p>
+                  <p class="small">~$105 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.google.com/search?q=Oceanside+Hotel+Suites+6084+Collins+Ave+Miami+Beach" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=6084+Collins+Ave+Miami+Beach+FL+33140" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+                <article class="card hotel-card">
+                  <h4>Bposhtels Hollywood Florida</h4>
+                  <p class="hotel-address">3110 Hollywood Blvd, Hollywood, FL 33021</p>
+                  <p class="badge">2-star · 3.5/5</p>
+                  <p class="small">~$57 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.google.com/search?q=Bposhtels+Hollywood+Florida+3110+Hollywood+Blvd" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=3110+Hollywood+Blvd+Hollywood+FL+33021" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+                <article class="card hotel-card">
+                  <h4>AC Hotel by Marriott Miami Aventura</h4>
+                  <p class="hotel-address">20805 Biscayne Blvd, Aventura, FL 33180</p>
+                  <p class="badge">4-star · 4.4/5</p>
+                  <p class="small">~$250–$300 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.marriott.com/en-us/hotels/miahv-ac-hotel-miami-aventura/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=20805+Biscayne+Blvd+Aventura+FL+33180" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="hotel-group">
+              <h3 class="subsection-title" data-i18n="hotel_group_doral_title">
+                Doral · Close to Our Home
+              </h3>
+              <div class="card-grid hotel-card-grid">
+                <article class="card hotel-card">
+                  <h4>Provident Doral at The Blue Miami</h4>
+                  <p class="hotel-address">5300 NW 87th Ave, Doral, FL 33178</p>
+                  <p class="badge">4-star · 3.9/5</p>
+                  <p class="small">~$198 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.google.com/search?q=Provident+Doral+Blue+Miami+5300+NW+87th+Ave" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=5300+NW+87th+Ave+Doral+FL+33178" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+                <article class="card hotel-card">
+                  <h4>Nuvo Suites Hotel</h4>
+                  <p class="hotel-address">1750 NW 107th Ave, Miami, FL 33172</p>
+                  <p class="badge">3-star · 4.4/5</p>
+                  <p class="small">~$144 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.google.com/search?q=Nuvo+Suites+Hotel+1750+NW+107th+Ave+Miami" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=1750+NW+107th+Ave+Miami+FL+33172" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+                <article class="card hotel-card">
+                  <h4>Wingate by Wyndham Miami Airport</h4>
+                  <p class="hotel-address">3755 NW 78th Ave, Doral, FL 33166</p>
+                  <p class="badge">3-star · 4.1/5</p>
+                  <p class="small">~$108 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.wyndham.com/hotels/florida/doral/wingate-by-wyndham-miami-international-airport/hotel-overview" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=3755+NW+78th+Ave+Doral+FL+33166" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+                <article class="card hotel-card">
+                  <h4>Doral Inn &amp; Suites Miami Airport West</h4>
+                  <p class="hotel-address">1212 NW 82nd Ave, Miami, FL 33126</p>
+                  <p class="badge">3-star · 3.8/5</p>
+                  <p class="small">~$114 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.google.com/search?q=Doral+Inn+Suites+Miami+Airport+West+1212+NW+82nd+Ave" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=1212+NW+82nd+Ave+Miami+FL+33126" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+                <article class="card hotel-card">
+                  <h4>Quality Inn Miami Airport - Doral</h4>
+                  <p class="hotel-address">3959 NW 79th Ave, Doral, FL 33166</p>
+                  <p class="badge">2-star · 3.0/5</p>
+                  <p class="small">~$97 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.choicehotels.com/florida/doral/quality-inn-hotels/flna6" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=3959+NW+79th+Ave+Doral+FL+33166" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+                <article class="card hotel-card">
+                  <h4>InterContinental at Doral Miami</h4>
+                  <p class="hotel-address">2505 NW 87th Ave, Doral, FL 33172</p>
+                  <p class="badge">4-star · 4.4/5</p>
+                  <p class="small">~$180–$220 per night</p>
+                  <div class="hotel-links">
+                    <a href="https://www.ihg.com/intercontinental/hotels/us/en/doral/miadf/hoteldetail" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
+                    <span>·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=2505+NW+87th+Ave+Doral+FL+33172" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- Things To Do -->
+      <section id="things-to-do" class="section section-alt">
+        <div class="container section-inner">
+          <header class="section-header">
+            <p class="section-kicker" data-i18n="things_kicker">Explore</p>
+            <h2 class="section-title" data-i18n="things_title">Things To Do</h2>
+            <p class="section-subtitle" data-i18n="things_subtitle">
+              Make a mini-vacation of your trip. Here are ideas to help you enjoy Miami before and after the wedding.
+            </p>
+          </header>
+
+          <div class="things-grid">
+            <section class="things-group">
+              <h3 class="subsection-title" data-i18n="things_near_venue_title">
+                Near the Venue
+              </h3>
+              <ul class="things-list">
+                <li>
+                  <h4 data-i18n="things_near_venue_item1_title">
+                    Beaches &amp; Parks (Sample)
+                  </h4>
+                  <p data-i18n="things_near_venue_item1_body">
+                    Enjoy nearby beaches and green spaces in North Miami Beach. We will add specific recommendations
+                    closer to the date.
+                  </p>
+                </li>
+              </ul>
+            </section>
+
+            <section class="things-group">
+              <h3 class="subsection-title" data-i18n="things_miami_beach_title">
+                Miami &amp; Miami Beach
+              </h3>
+              <ul class="things-list">
+                <li>
+                  <h4 data-i18n="things_miami_beach_item1_title">
+                    Art, Food &amp; Nightlife (Sample)
+                  </h4>
+                  <p data-i18n="things_miami_beach_item1_body">
+                    From Wynwood walls to restaurants and music, there is always something to do. We will share some of
+                    our favorite spots soon.
+                  </p>
+                </li>
+              </ul>
+            </section>
+
+            <section class="things-group">
+              <h3 class="subsection-title" data-i18n="things_doral_title">
+                Doral &amp; Local Favorites
+              </h3>
+              <ul class="things-list">
+                <li>
+                  <h4 data-i18n="things_doral_item1_title">
+                    Neighborhood Spots (Sample)
+                  </h4>
+                  <p data-i18n="things_doral_item1_body">
+                    We will add recommendations near our home in Doral—cafés, restaurants, and places we love.
+                  </p>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p class="small">
+          With love from
+          <a href="admin.html" class="admin-link">Maria &amp; Raynulfo</a>
+          · We cannot wait to celebrate with you at the Ancient Spanish Monastery.
+        </p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+    <!-- RSVP Modal -->
+    <div class="rsvp-modal" id="rsvp-modal" aria-hidden="true">
+      <div class="rsvp-backdrop" data-rsvp-close></div>
+      <div class="rsvp-dialog" role="dialog" aria-modal="true" aria-labelledby="rsvp-title">
+        <button class="rsvp-close" type="button" aria-label="Close RSVP" data-rsvp-close>
+          ×
+        </button>
+        <h2 id="rsvp-title" class="rsvp-title" data-i18n="rsvp_title">RSVP</h2>
+        <p class="rsvp-intro" data-i18n="rsvp_intro">
+          Please confirm your attendance by entering your phone number and letting us know if you will join us.
+        </p>
+
+        <form
+          id="rsvp-form"
+          class="rsvp-form"
+          action="YOUR_GOOGLE_FORM_URL_HERE"
+          method="POST"
+          target="_blank"
+        >
+          <div class="rsvp-field">
+            <label for="rsvp-country" data-i18n="rsvp_country_label">Country / Area Code</label>
+            <select id="rsvp-country" name="countryCode" required></select>
+          </div>
+
+          <div class="rsvp-field">
+            <label for="rsvp-phone" data-i18n="rsvp_phone_label">Phone Number</label>
+            <input
+              id="rsvp-phone"
+              name="phoneLocal"
+              type="tel"
+              required
+              autocomplete="tel"
+              placeholder="123 456 7890"
+              data-i18n-placeholder="rsvp_phone_placeholder"
+            />
+          </div>
+
+          <fieldset class="rsvp-field rsvp-attending">
+            <legend data-i18n="rsvp_attending_label">Will you attend?</legend>
+            <label>
+              <input type="radio" name="attending" value="yes" required />
+              <span data-i18n="rsvp_attending_yes">Yes, I will be there</span>
+            </label>
+            <label>
+              <input type="radio" name="attending" value="no" required />
+              <span data-i18n="rsvp_attending_no">No, I am unable to attend</span>
+            </label>
+          </fieldset>
+
+          <div class="rsvp-field">
+            <label for="rsvp-notes" data-i18n="rsvp_notes_label">Notes (dietary, plus-one, etc.)</label>
+            <textarea id="rsvp-notes" name="notes" rows="3"></textarea>
+          </div>
+
+          <button type="submit" class="button rsvp-submit" data-i18n="rsvp_submit_label">
+            Submit RSVP
+          </button>
+
+          <p class="rsvp-note small" data-i18n="rsvp_footer_note">
+            RSVP submissions are collected securely via Google Forms.
+          </p>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
+

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSVP Admin · Maria &amp; Raynulfo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container site-header-inner">
+        <div class="brand">
+          <span class="brand-names">RSVP Admin</span>
+          <span class="brand-date">Maria &amp; Raynulfo</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container section-inner">
+        <section id="admin-login-section">
+          <div class="card">
+            <h1 class="section-title" style="font-size: 1.6rem; text-align: center">
+              Admin Access
+            </h1>
+            <p style="text-align: center; margin-top: 0.5rem">
+              Enter the password to view RSVP details.
+            </p>
+            <form id="admin-login-form" class="rsvp-form" style="max-width: 360px; margin: 1rem auto 0">
+              <div class="rsvp-field">
+                <label for="admin-password">Password</label>
+                <input
+                  id="admin-password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                />
+              </div>
+              <button type="submit" class="button" style="width: 100%">Log in</button>
+              <p id="admin-login-error" class="small muted" style="margin-top: 0.5rem; text-align: center"></p>
+            </form>
+          </div>
+        </section>
+
+        <section id="admin-dashboard-section" style="display: none">
+          <div class="card">
+            <h2 class="subsection-title" style="margin-bottom: 0.25rem">RSVP Overview</h2>
+            <p class="small muted" style="margin-top: 0">
+              Data is loaded from your published Google Sheets CSV links. Update the URLs in
+              <code>admin.js</code> when your sheet changes.
+            </p>
+            <div
+              id="admin-summary"
+              style="
+                display: flex;
+                gap: 1.5rem;
+                flex-wrap: wrap;
+                margin-top: 0.9rem;
+                font-size: 0.95rem;
+              "
+            >
+              <div><strong>Total attending:</strong> <span id="summary-attending">–</span></div>
+              <div><strong>Total not attending:</strong> <span id="summary-not-attending">–</span></div>
+              <div><strong>No response:</strong> <span id="summary-no-response">–</span></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 1.5rem">
+            <h2 class="subsection-title" style="margin-bottom: 0.5rem">Find Group by Phone</h2>
+            <p class="small muted" style="margin-top: 0">
+              Paste the full phone number exactly as stored in your guest sheet. All guests with the same group
+              number will be shown.
+            </p>
+            <form
+              id="admin-search-form"
+              class="rsvp-form"
+              style="flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem; margin-top: 0.75rem"
+            >
+              <div class="rsvp-field" style="flex: 1 1 220px">
+                <label for="admin-search-phone">Phone</label>
+                <input id="admin-search-phone" type="text" autocomplete="off" />
+              </div>
+              <button type="submit" class="button" style="flex: 0 0 auto">Find Group</button>
+            </form>
+            <p id="admin-search-message" class="small muted" style="margin-top: 0.75rem"></p>
+
+            <div style="overflow-x: auto; margin-top: 1rem">
+              <table
+                id="admin-guests-table"
+                style="width: 100%; border-collapse: collapse; font-size: 0.9rem"
+              >
+                <thead>
+                  <tr>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Name</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Side</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Group</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Phone</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">RSVP</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Updated</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Food</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Notes</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
+
