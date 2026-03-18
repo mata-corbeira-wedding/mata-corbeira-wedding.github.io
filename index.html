@@ -538,27 +538,19 @@
           ×
         </button>
         <h2 id="rsvp-title" class="rsvp-title" data-i18n="rsvp_title">RSVP</h2>
-        <p class="rsvp-intro" data-i18n="rsvp_intro">
-          Please confirm your attendance by entering your phone number and letting us know if you will join us.
-        </p>
-
-        <form
-          id="rsvp-form"
-          class="rsvp-form"
-          action="YOUR_GOOGLE_FORM_URL_HERE"
-          method="POST"
-          target="_blank"
-        >
+        <!-- Step 1: Phone Lookup -->
+        <div id="rsvp-step-1" class="rsvp-form">
+          <p class="rsvp-intro" data-i18n="rsvp_intro">
+            Please confirm your attendance by entering your phone number and letting us know if you will join us.
+          </p>
           <div class="rsvp-field">
             <label for="rsvp-country" data-i18n="rsvp_country_label">Country / Area Code</label>
-            <select id="rsvp-country" name="countryCode" required></select>
+            <select id="rsvp-country" required></select>
           </div>
-
           <div class="rsvp-field">
             <label for="rsvp-phone" data-i18n="rsvp_phone_label">Phone Number</label>
             <input
               id="rsvp-phone"
-              name="phoneLocal"
               type="tel"
               required
               autocomplete="tel"
@@ -566,32 +558,33 @@
               data-i18n-placeholder="rsvp_phone_placeholder"
             />
           </div>
+          <p id="rsvp-lookup-message" class="rsvp-note small" aria-live="polite"></p>
+          <button id="rsvp-search-btn" type="button" class="button rsvp-submit" data-i18n="rsvp_search_button">
+            Find My Group
+          </button>
+        </div>
 
-          <fieldset class="rsvp-field rsvp-attending">
-            <legend data-i18n="rsvp_attending_label">Will you attend?</legend>
-            <label>
-              <input type="radio" name="attending" value="yes" required />
-              <span data-i18n="rsvp_attending_yes">Yes, I will be there</span>
-            </label>
-            <label>
-              <input type="radio" name="attending" value="no" required />
-              <span data-i18n="rsvp_attending_no">No, I am unable to attend</span>
-            </label>
-          </fieldset>
-
+        <!-- Step 2: Group RSVP (hidden until phone is found) -->
+        <div id="rsvp-step-2" class="rsvp-form" hidden>
+          <p class="rsvp-intro" data-i18n="rsvp_group_intro">Select who will be attending:</p>
+          <div id="rsvp-group-list" class="rsvp-group-list"></div>
           <div class="rsvp-field">
             <label for="rsvp-notes" data-i18n="rsvp_notes_label">Notes (dietary, plus-one, etc.)</label>
-            <textarea id="rsvp-notes" name="notes" rows="3"></textarea>
+            <textarea id="rsvp-notes" rows="3"></textarea>
           </div>
-
-          <button type="submit" class="button rsvp-submit" data-i18n="rsvp_submit_label">
-            Submit RSVP
-          </button>
-
+          <div class="rsvp-actions">
+            <button id="rsvp-back-btn" type="button" class="button button-outline" data-i18n="rsvp_back_button">
+              Back
+            </button>
+            <button id="rsvp-submit-btn" type="button" class="button" data-i18n="rsvp_submit_label">
+              Submit RSVP
+            </button>
+          </div>
+          <p id="rsvp-submit-message" class="rsvp-note small" aria-live="polite"></p>
           <p class="rsvp-note small" data-i18n="rsvp_footer_note">
             RSVP submissions are collected securely via Google Forms.
           </p>
-        </form>
+        </div>
       </div>
     </div>
   </body>

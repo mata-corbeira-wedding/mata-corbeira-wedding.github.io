@@ -672,6 +672,72 @@ a {
   color: var(--color-muted);
 }
 
+.rsvp-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.rsvp-guest-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: #fdf8ef;
+  flex-wrap: wrap;
+}
+
+.rsvp-guest-name {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.rsvp-guest-name input[type="checkbox"] {
+  accent-color: var(--color-accent);
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.rsvp-guest-attend {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.rsvp-guest-attend label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.rsvp-guest-attend input[type="radio"] {
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.rsvp-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.rsvp-actions .button {
+  flex: 1;
+}
+
 .things-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

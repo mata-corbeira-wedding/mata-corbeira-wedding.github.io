@@ -134,6 +134,15 @@ document.addEventListener("DOMContentLoaded", () => {
       rsvp_notes_label: "Notes (dietary, plus-one, etc.)",
       rsvp_submit_label: "Submit RSVP",
       rsvp_footer_note: "RSVP submissions are collected securely via Google Forms.",
+      rsvp_search_button: "Find My Group",
+      rsvp_not_found: "No guest found with that number. Please try again.",
+      rsvp_loading: "Searching\u2026",
+      rsvp_group_intro: "Select who will be attending:",
+      rsvp_back_button: "Back",
+      rsvp_submitting: "Submitting\u2026",
+      rsvp_success: "Your RSVP has been recorded. Thank you!",
+      rsvp_attend_yes: "Attending",
+      rsvp_attend_no: "Not attending",
       things_kicker: "Explore",
       things_title: "Things To Do",
       things_subtitle:
@@ -254,6 +263,15 @@ document.addEventListener("DOMContentLoaded", () => {
       rsvp_notes_label: "Notas (alimentación, acompañantes, etc.)",
       rsvp_submit_label: "Enviar confirmación",
       rsvp_footer_note: "Las confirmaciones se registran de forma segura a través de Google Forms.",
+      rsvp_search_button: "Buscar mi grupo",
+      rsvp_not_found: "No encontramos un invitado con ese número. Intenta de nuevo.",
+      rsvp_loading: "Buscando\u2026",
+      rsvp_group_intro: "Selecciona quién asistirá:",
+      rsvp_back_button: "Atrás",
+      rsvp_submitting: "Enviando\u2026",
+      rsvp_success: "¡Tu confirmación fue registrada. Gracias!",
+      rsvp_attend_yes: "Asistirá",
+      rsvp_attend_no: "No asistirá",
       things_kicker: "Para disfrutar",
       things_title: "Qué hacer en Miami",
       things_subtitle:
@@ -310,20 +328,87 @@ document.addEventListener("DOMContentLoaded", () => {
 
   applyTranslations(currentLang);
 
-  // RSVP modal and country codes
-  const rsvpModal = document.getElementById("rsvp-modal");
+  // ── Country codes (inlined to avoid fetch issues with file:// protocol) ──
+  const COUNTRY_CODES = [
+    { code: "+1",  country: "United States / Estados Unidos", flag: "🇺🇸" },
+    { code: "+34", country: "Spain / España",                 flag: "🇪🇸" },
+    { code: "+58", country: "Venezuela",                      flag: "🇻🇪" },
+    { code: "+57", country: "Colombia",                       flag: "🇨🇴" },
+    { code: "+52", country: "Mexico / México",                flag: "🇲🇽" },
+  ];
+
+  // ── Guest list CSV (same sheet as admin) ──
+  const GUESTS_CSV_URL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpZYFkAej3ho8qCNzumNvLpIk4_3BYv_VHqWTmOtKpajYVQycLzuoW-dD6P-dymmGifDi7QC-HoUcO/pub?gid=698292239&single=true&output=csv";
+
+  // ── Google Form submission URL ──
+  // Replace with your actual form URL and entry IDs after setting up Google Form
+  const GOOGLE_FORM_ACTION   = "https://docs.google.com/forms/d/e/1FAIpQLSearmpbQCMMvLZ0oLgtQHvFT-3z9aOG_MSzc1gvJOJQ0TR7nQ/formResponse";
+  const FORM_ENTRY_NAME      = "entry.1498135098";
+  const FORM_ENTRY_ATTENDING = "entry.877086558";
+  const FORM_ENTRY_NOTES     = "entry.1424661284";
+  const FORM_FBZ             = "7073025226565571995";
+
+  // ── CSV utilities ──
+  function normalizePhone(raw) {
+    if (!raw) return "";
+    return String(raw).replace(/[^\d+]/g, "");
+  }
+
+  function parseCsv(text) {
+    const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+    if (lines.length === 0) return [];
+    const headers = lines[0].split(",").map((h) => h.trim());
+    return lines.slice(1).map((line) => {
+      const values = line.split(",");
+      const obj = {};
+      headers.forEach((h, idx) => {
+        obj[h] = (values[idx] || "").trim();
+      });
+      return obj;
+    });
+  }
+
+  async function fetchCsv(url) {
+    if (!url || url.startsWith("YOUR_")) return [];
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    const text = await res.text();
+    return parseCsv(text);
+  }
+
+  // ── DOM refs ──
+  const rsvpModal      = document.getElementById("rsvp-modal");
   const rsvpOpenButton = document.querySelector(".hero-rsvp-button");
   const rsvpCloseTargets = document.querySelectorAll("[data-rsvp-close]");
-  const countrySelect = document.getElementById("rsvp-country");
-  const phoneInput = document.getElementById("rsvp-phone");
+  const countrySelect  = document.getElementById("rsvp-country");
+  const phoneInput     = document.getElementById("rsvp-phone");
+  const step1El        = document.getElementById("rsvp-step-1");
+  const step2El        = document.getElementById("rsvp-step-2");
+  const searchBtn      = document.getElementById("rsvp-search-btn");
+  const lookupMsgEl   = document.getElementById("rsvp-lookup-message");
+  const groupListEl   = document.getElementById("rsvp-group-list");
+  const notesEl        = document.getElementById("rsvp-notes");
+  const backBtn        = document.getElementById("rsvp-back-btn");
+  const submitBtn      = document.getElementById("rsvp-submit-btn");
+  const submitMsgEl   = document.getElementById("rsvp-submit-message");
 
+  // ── Populate country code dropdown ──
+  if (countrySelect) {
+    COUNTRY_CODES.forEach((entry) => {
+      const option = document.createElement("option");
+      option.value = entry.code;
+      option.textContent = `${entry.flag} ${entry.code} — ${entry.country}`;
+      countrySelect.appendChild(option);
+    });
+  }
+
+  // ── Modal open / close ──
   function openRsvp() {
     if (!rsvpModal) return;
     rsvpModal.classList.add("is-open");
     rsvpModal.setAttribute("aria-hidden", "false");
-    if (phoneInput) {
-      phoneInput.focus();
-    }
+    if (phoneInput) phoneInput.focus();
   }
 
   function closeRsvp() {
@@ -332,41 +417,148 @@ document.addEventListener("DOMContentLoaded", () => {
     rsvpModal.setAttribute("aria-hidden", "true");
   }
 
-  if (rsvpOpenButton) {
-    rsvpOpenButton.addEventListener("click", openRsvp);
-  }
+  if (rsvpOpenButton) rsvpOpenButton.addEventListener("click", openRsvp);
 
-  rsvpCloseTargets.forEach((el) => {
-    el.addEventListener("click", closeRsvp);
-  });
+  rsvpCloseTargets.forEach((el) => el.addEventListener("click", closeRsvp));
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeRsvp();
-    }
+    if (event.key === "Escape") closeRsvp();
   });
 
-  if (countrySelect) {
-    fetch("data/country-codes.json")
-      .then((res) => (res.ok ? res.json() : []))
-      .then((codes) => {
-        if (!Array.isArray(codes)) return;
-        countrySelect.innerHTML = "";
-        codes.forEach((entry) => {
-          const option = document.createElement("option");
-          const flag = entry.flag || "";
-          option.value = entry.code || "";
-          option.textContent = `${flag} ${entry.code || ""} — ${entry.country || ""}`.trim();
-          countrySelect.appendChild(option);
-        });
-      })
-      .catch(() => {
-        // If loading fails, fall back to a simple +1 option
-        const option = document.createElement("option");
-        option.value = "+1";
-        option.textContent = "+1";
-        countrySelect.appendChild(option);
+  // ── Guest list cache ──
+  let guestList = [];
+
+  async function ensureGuestList() {
+    if (guestList.length > 0) return;
+    guestList = await fetchCsv(GUESTS_CSV_URL);
+  }
+
+  // ── Step 1 → search ──
+  if (searchBtn) {
+    searchBtn.addEventListener("click", async () => {
+      if (!countrySelect || !phoneInput) return;
+      const code  = countrySelect.value || "";
+      const local = phoneInput.value.trim();
+      if (!local) {
+        if (lookupMsgEl) lookupMsgEl.textContent = translations[currentLang].rsvp_not_found;
+        return;
+      }
+      const fullPhone = normalizePhone(code + local);
+
+      if (lookupMsgEl) lookupMsgEl.textContent = translations[currentLang].rsvp_loading;
+      searchBtn.disabled = true;
+
+      await ensureGuestList();
+
+      searchBtn.disabled = false;
+
+      const matched = guestList.find((g) => {
+        const gPhone = normalizePhone(g["Phone #"] || g.Phone || "");
+        return gPhone === fullPhone;
       });
+
+      if (!matched) {
+        if (lookupMsgEl) lookupMsgEl.textContent = translations[currentLang].rsvp_not_found;
+        return;
+      }
+
+      if (lookupMsgEl) lookupMsgEl.textContent = "";
+
+      const groupId = matched["Group ID"] || matched.GroupNumber || matched.group || "";
+      const groupGuests = groupId
+        ? guestList.filter((g) => (g["Group ID"] || g.GroupNumber || g.group || "") === groupId)
+        : [matched];
+
+      renderGroupList(groupGuests);
+      if (step1El) step1El.hidden = true;
+      if (step2El) step2El.hidden = false;
+      if (submitBtn) submitBtn.disabled = false;
+      if (submitMsgEl) submitMsgEl.textContent = "";
+    });
+  }
+
+  // ── Render group member checklist ──
+  function renderGroupList(guests) {
+    if (!groupListEl) return;
+    groupListEl.innerHTML = "";
+    const lang = currentLang;
+
+    guests.forEach((g, i) => {
+      const name = `${g.Nombre || g.FirstName || ""} ${g.Apellido || g.LastName || ""}`.trim();
+
+      const row = document.createElement("div");
+      row.className = "rsvp-guest-row";
+
+      row.innerHTML = `
+        <label class="rsvp-guest-name">
+          <input type="checkbox" class="rsvp-guest-check" id="rsvp-guest-${i}" checked />
+          <span>${name}</span>
+        </label>
+        <div class="rsvp-guest-attend">
+          <label>
+            <input type="radio" name="rsvp-attend-${i}" value="yes" checked />
+            <span data-attend-yes>${translations[lang].rsvp_attend_yes}</span>
+          </label>
+          <label>
+            <input type="radio" name="rsvp-attend-${i}" value="no" />
+            <span data-attend-no>${translations[lang].rsvp_attend_no}</span>
+          </label>
+        </div>
+      `;
+
+      groupListEl.appendChild(row);
+    });
+  }
+
+  // ── Step 2 → back ──
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      if (step2El) step2El.hidden = true;
+      if (step1El) step1El.hidden = false;
+    });
+  }
+
+  // ── Step 2 → submit ──
+  if (submitBtn) {
+    submitBtn.addEventListener("click", async () => {
+      if (!groupListEl) return;
+      const notes = notesEl ? notesEl.value.trim() : "";
+      const rows  = groupListEl.querySelectorAll(".rsvp-guest-row");
+      const entries = [];
+
+      rows.forEach((row, i) => {
+        const checkbox = row.querySelector(`#rsvp-guest-${i}`);
+        if (!checkbox || !checkbox.checked) return;
+        const nameSpan   = row.querySelector("label.rsvp-guest-name span");
+        const name       = nameSpan ? nameSpan.textContent.trim() : "";
+        const attendRadio = row.querySelector(`input[name="rsvp-attend-${i}"]:checked`);
+        const attendingRaw = attendRadio ? attendRadio.value : "yes";
+        const attending  = attendingRaw === "yes" ? "Yes" : "No";
+        entries.push({ name, attending, notes });
+      });
+
+      if (entries.length === 0) return;
+
+      if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_submitting;
+      submitBtn.disabled = true;
+
+      if (!GOOGLE_FORM_ACTION.startsWith("YOUR_")) {
+        const promises = entries.map(({ name, attending, notes: n }) => {
+          const body = new URLSearchParams({
+            [FORM_ENTRY_NAME]:      name,
+            [FORM_ENTRY_ATTENDING]: attending,
+            [FORM_ENTRY_NOTES]:     n,
+            fvv:         "1",
+            pageHistory: "0",
+            fbzx:        FORM_FBZ,
+          });
+          return fetch(GOOGLE_FORM_ACTION, { method: "POST", mode: "no-cors", body });
+        });
+        await Promise.all(promises);
+      }
+
+      if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_success;
+    });
   }
 });
 
