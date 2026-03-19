@@ -1,0 +1,23 @@
+{
+  "name": "wedding-website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "admin.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maria-corbeira/wedding-website.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/maria-corbeira/wedding-website/issues"
+  },
+  "homepage": "https://github.com/maria-corbeira/wedding-website#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.5.0"
+  }
+}

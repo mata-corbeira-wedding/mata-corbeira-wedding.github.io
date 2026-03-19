@@ -1,0 +1,341 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Maria & Raynulfo December 29th 2026 · North Miami Beach" [ref=e4] [cursor=pointer]:
+        - /url: "#home"
+        - generic [ref=e5]: Maria & Raynulfo
+        - generic [ref=e6]: December 29th 2026 · North Miami Beach
+      - navigation "Primary" [ref=e7]:
+        - generic [ref=e8]:
+          - link "Home" [ref=e9] [cursor=pointer]:
+            - /url: "#home"
+          - link "Wedding Day" [ref=e10] [cursor=pointer]:
+            - /url: "#wedding-day"
+          - link "Registry" [ref=e11] [cursor=pointer]:
+            - /url: "#registry"
+          - link "Hotel" [ref=e12] [cursor=pointer]:
+            - /url: "#hotel"
+          - link "Things To Do" [ref=e13] [cursor=pointer]:
+            - /url: "#things-to-do"
+          - generic "Language selection" [ref=e14]:
+            - button "EN" [pressed] [ref=e15] [cursor=pointer]
+            - generic [ref=e16]: "|"
+            - button "ES" [ref=e17] [cursor=pointer]
+  - main [ref=e18]:
+    - generic [ref=e21]:
+      - heading "Maria Alejandra Corbeira Raventos & Raynulfo Jesus Mata Negrette" [level=1] [ref=e22]:
+        - generic [ref=e23]: Maria Alejandra
+        - generic [ref=e24]: Corbeira Raventos
+        - generic [ref=e25]: "&"
+        - generic [ref=e26]: Raynulfo Jesus
+        - generic [ref=e27]: Mata Negrette
+      - paragraph [ref=e28]: December 29th 2026 · Ancient Spanish Monastery · North Miami Beach, Florida
+      - button "RSVP" [ref=e30] [cursor=pointer]
+      - generic [ref=e31]:
+        - article [ref=e32]:
+          - heading "Ceremony" [level=2] [ref=e33]
+          - paragraph [ref=e34]: 4:00 PM · Chapel of St. Bernard de Clairvaux
+        - article [ref=e35]:
+          - heading "Cocktail Hour" [level=2] [ref=e36]
+          - paragraph [ref=e37]: 5:00 PM · Cloister Garden
+        - article [ref=e38]:
+          - heading "Celebration" [level=2] [ref=e39]
+          - paragraph [ref=e40]: 6:30 PM · Refectory & Courtyard
+      - complementary "Transportation notice" [ref=e41]:
+        - paragraph [ref=e42]: Parking at the monastery is limited. We kindly recommend using Uber, Lyft, or shared rides when possible.
+    - generic [ref=e44]:
+      - generic [ref=e45]:
+        - paragraph [ref=e46]: Wedding Day
+        - heading "Wedding Day Information" [level=2] [ref=e47]
+        - paragraph [ref=e48]: Everything you need to know for our celebration at the Ancient Spanish Monastery.
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - heading "Schedule & Flow" [level=3] [ref=e51]
+          - list [ref=e52]:
+            - listitem [ref=e53]:
+              - generic [ref=e54]: 4:00 PM
+              - generic [ref=e55]:
+                - heading "Catholic Ceremony" [level=4] [ref=e56]
+                - paragraph [ref=e57]: Please arrive 20–30 minutes early to find your seat in the historic chapel.
+            - listitem [ref=e58]:
+              - generic [ref=e59]: 5:00 PM
+              - generic [ref=e60]:
+                - heading "Cocktail Hour" [level=4] [ref=e61]
+                - paragraph [ref=e62]: Join us in the cloister gardens for cocktails, music, and a first look at the monastery at sunset.
+            - listitem [ref=e63]:
+              - generic [ref=e64]: 6:30 PM
+              - generic [ref=e65]:
+                - heading "Dinner & Celebration" [level=4] [ref=e66]
+                - paragraph [ref=e67]: Dinner, speeches, and dancing in the refectory and courtyard beneath the arches and oak trees.
+          - generic [ref=e68]:
+            - heading "Dress Code" [level=3] [ref=e69]
+            - paragraph [ref=e70]: Formal evening attire. The monastery features stone floors and garden paths, so we recommend comfortable shoes or block heels. December evenings can be breezy, so a light wrap or jacket is a good idea.
+          - complementary [ref=e71]:
+            - heading "Parking & Transportation" [level=3] [ref=e72]
+            - paragraph [ref=e73]: Parking at the monastery is limited. If you are able, please consider taking Uber, Lyft, or carpooling. If you do drive, allow extra time to park and walk through the gardens to the chapel.
+        - generic [ref=e75]:
+          - heading "Venue & Directions" [level=3] [ref=e76]
+          - paragraph [ref=e77]: The Ancient Spanish Monastery is a historic cloister with several distinct spaces. The chapel, gardens, and reception hall are a short walk from one another within the same grounds.
+          - list [ref=e78]:
+            - listitem [ref=e79]: "Chapel entrance: main church doors facing the front courtyard."
+            - listitem [ref=e80]: "Cocktail: cloister garden just beyond the chapel."
+            - listitem [ref=e81]: "Reception: refectory hall and adjoining courtyard."
+          - 'figure "Monastery map: chapel, cocktail area, and reception." [ref=e82]':
+            - img "Map of the Ancient Spanish Monastery showing chapel, cocktail area, and reception locations" [ref=e83]
+            - generic [ref=e84]: "Monastery map: chapel, cocktail area, and reception."
+          - link "Visit Monastery Website" [ref=e85] [cursor=pointer]:
+            - /url: https://www.spanishmonastery.com/
+    - generic [ref=e87]:
+      - generic [ref=e88]:
+        - paragraph [ref=e89]: Registry
+        - heading "Gifts & Registry" [level=2] [ref=e90]
+        - paragraph [ref=e91]: Your presence is the greatest gift. If you would also like to honor us with a present, we have gathered a few ideas below.
+      - generic [ref=e92]:
+        - article [ref=e93]:
+          - heading "Amazon Registry" [level=3] [ref=e94]
+          - paragraph [ref=e95]: We have selected a small collection of items for our home. You can view the full list on Amazon.
+          - link "View Amazon Registry" [ref=e96] [cursor=pointer]:
+            - /url: https://www.amazon.com/wedding/share/MarialeyRaynulfo1229
+        - article [ref=e97]:
+          - heading "Honeymoon & Future Home Fund" [level=3] [ref=e98]
+          - paragraph [ref=e99]: For those who prefer, you may contribute to our honeymoon and future home fund. We are deeply grateful for any gesture.
+          - paragraph [ref=e100]:
+            - strong [ref=e101]: "Zelle:"
+            - link "954-918-8129" [ref=e102] [cursor=pointer]:
+              - /url: tel:+19549188129
+          - paragraph [ref=e103]: Send to this number via your bank's Zelle app.
+        - article [ref=e104]:
+          - heading "Other Ideas" [level=3] [ref=e105]
+          - paragraph [ref=e106]: If you prefer to share a gift in another way, please feel welcome to reach out to our families or to us directly. We are simply honored to celebrate with you.
+    - generic [ref=e108]:
+      - generic [ref=e109]:
+        - paragraph [ref=e110]: Stay
+        - heading "Hotel Suggestions" [level=2] [ref=e111]
+        - paragraph [ref=e112]: For our guests traveling from near and far, here are a few areas and hotels to consider during your stay in Miami.
+      - paragraph [ref=e113]: We recommend staying either near the venue in North Miami Beach or near our home in Doral.
+      - article [ref=e114]:
+        - heading "Airbnb & Vacation Rentals" [level=3] [ref=e115]
+        - paragraph [ref=e116]: Airbnb and other vacation rentals are also available in North Miami Beach, Doral, and Miami Beach. If you prefer a home or apartment, search for stays near those areas.
+        - paragraph [ref=e117]: Would you like to share an Airbnb with other guests to split costs? Please reach out to the bride or groom and we will try to help connect you with others looking to share.
+      - generic [ref=e118]:
+        - generic [ref=e119]:
+          - heading "Near the Venue · North Miami Beach" [level=3] [ref=e120]
+          - generic [ref=e121]:
+            - article [ref=e122]:
+              - heading "Palm Tree Club Miami Hotel" [level=4] [ref=e123]
+              - paragraph [ref=e124]: 17201 Biscayne Blvd, North Miami Beach, FL 33160
+              - paragraph [ref=e125]: 3-star · 3.9/5
+              - paragraph [ref=e126]: ~$108 per night
+              - generic [ref=e127]:
+                - link "Hotel Website" [ref=e128] [cursor=pointer]:
+                  - /url: https://www.google.com/search?q=Palm+Tree+Club+Miami+Hotel+17201+Biscayne+Blvd
+                - generic [ref=e129]: ·
+                - link "View on Map" [ref=e130] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=17201+Biscayne+Blvd+North+Miami+Beach+FL+33160
+            - article [ref=e131]:
+              - heading "North Miami Beach Gardens Inn & Suites" [level=4] [ref=e132]
+              - paragraph [ref=e133]: 14800 NW 2nd Ave, Miami, FL 33168
+              - paragraph [ref=e134]: 3-star · 2.6/5
+              - paragraph [ref=e135]: ~$63 per night
+              - generic [ref=e136]:
+                - link "Hotel Website" [ref=e137] [cursor=pointer]:
+                  - /url: https://www.google.com/search?q=North+Miami+Beach+Gardens+Inn+Suites+14800+NW+2nd+Ave
+                - generic [ref=e138]: ·
+                - link "View on Map" [ref=e139] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=14800+NW+2nd+Ave+Miami+FL+33168
+            - article [ref=e140]:
+              - heading "Miami Gardens Inn & Suites" [level=4] [ref=e141]
+              - paragraph [ref=e142]: 16805 NW 12th Ave, Miami, FL 33169
+              - paragraph [ref=e143]: 2-star · 2.7/5
+              - paragraph [ref=e144]: ~$58 per night
+              - generic [ref=e145]:
+                - link "Hotel Website" [ref=e146] [cursor=pointer]:
+                  - /url: https://www.google.com/search?q=Miami+Gardens+Inn+Suites+16805+NW+12th+Ave
+                - generic [ref=e147]: ·
+                - link "View on Map" [ref=e148] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=16805+NW+12th+Ave+Miami+FL+33169
+            - article [ref=e149]:
+              - heading "Oceanside Hotel + Suites" [level=4] [ref=e150]
+              - paragraph [ref=e151]: 6084 Collins Ave, Miami Beach, FL 33140
+              - paragraph [ref=e152]: 3-star · 3.7/5
+              - paragraph [ref=e153]: ~$105 per night
+              - generic [ref=e154]:
+                - link "Hotel Website" [ref=e155] [cursor=pointer]:
+                  - /url: https://www.google.com/search?q=Oceanside+Hotel+Suites+6084+Collins+Ave+Miami+Beach
+                - generic [ref=e156]: ·
+                - link "View on Map" [ref=e157] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=6084+Collins+Ave+Miami+Beach+FL+33140
+            - article [ref=e158]:
+              - heading "Bposhtels Hollywood Florida" [level=4] [ref=e159]
+              - paragraph [ref=e160]: 3110 Hollywood Blvd, Hollywood, FL 33021
+              - paragraph [ref=e161]: 2-star · 3.5/5
+              - paragraph [ref=e162]: ~$57 per night
+              - generic [ref=e163]:
+                - link "Hotel Website" [ref=e164] [cursor=pointer]:
+                  - /url: https://www.google.com/search?q=Bposhtels+Hollywood+Florida+3110+Hollywood+Blvd
+                - generic [ref=e165]: ·
+                - link "View on Map" [ref=e166] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=3110+Hollywood+Blvd+Hollywood+FL+33021
+            - article [ref=e167]:
+              - heading "AC Hotel by Marriott Miami Aventura" [level=4] [ref=e168]
+              - paragraph [ref=e169]: 20805 Biscayne Blvd, Aventura, FL 33180
+              - paragraph [ref=e170]: 4-star · 4.4/5
+              - paragraph [ref=e171]: ~$250–$300 per night
+              - generic [ref=e172]:
+                - link "Hotel Website" [ref=e173] [cursor=pointer]:
+                  - /url: https://www.marriott.com/en-us/hotels/miahv-ac-hotel-miami-aventura/
+                - generic [ref=e174]: ·
+                - link "View on Map" [ref=e175] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=20805+Biscayne+Blvd+Aventura+FL+33180
+        - generic [ref=e176]:
+          - heading "Doral · Close to Our Home" [level=3] [ref=e177]
+          - generic [ref=e178]:
+            - article [ref=e179]:
+              - heading "Provident Doral at The Blue Miami" [level=4] [ref=e180]
+              - paragraph [ref=e181]: 5300 NW 87th Ave, Doral, FL 33178
+              - paragraph [ref=e182]: 4-star · 3.9/5
+              - paragraph [ref=e183]: ~$198 per night
+              - generic [ref=e184]:
+                - link "Hotel Website" [ref=e185] [cursor=pointer]:
+                  - /url: https://www.google.com/search?q=Provident+Doral+Blue+Miami+5300+NW+87th+Ave
+                - generic [ref=e186]: ·
+                - link "View on Map" [ref=e187] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=5300+NW+87th+Ave+Doral+FL+33178
+            - article [ref=e188]:
+              - heading "Nuvo Suites Hotel" [level=4] [ref=e189]
+              - paragraph [ref=e190]: 1750 NW 107th Ave, Miami, FL 33172
+              - paragraph [ref=e191]: 3-star · 4.4/5
+              - paragraph [ref=e192]: ~$144 per night
+              - generic [ref=e193]:
+                - link "Hotel Website" [ref=e194] [cursor=pointer]:
+                  - /url: https://www.google.com/search?q=Nuvo+Suites+Hotel+1750+NW+107th+Ave+Miami
+                - generic [ref=e195]: ·
+                - link "View on Map" [ref=e196] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=1750+NW+107th+Ave+Miami+FL+33172
+            - article [ref=e197]:
+              - heading "Wingate by Wyndham Miami Airport" [level=4] [ref=e198]
+              - paragraph [ref=e199]: 3755 NW 78th Ave, Doral, FL 33166
+              - paragraph [ref=e200]: 3-star · 4.1/5
+              - paragraph [ref=e201]: ~$108 per night
+              - generic [ref=e202]:
+                - link "Hotel Website" [ref=e203] [cursor=pointer]:
+                  - /url: https://www.wyndham.com/hotels/florida/doral/wingate-by-wyndham-miami-international-airport/hotel-overview
+                - generic [ref=e204]: ·
+                - link "View on Map" [ref=e205] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=3755+NW+78th+Ave+Doral+FL+33166
+            - article [ref=e206]:
+              - heading "Doral Inn & Suites Miami Airport West" [level=4] [ref=e207]
+              - paragraph [ref=e208]: 1212 NW 82nd Ave, Miami, FL 33126
+              - paragraph [ref=e209]: 3-star · 3.8/5
+              - paragraph [ref=e210]: ~$114 per night
+              - generic [ref=e211]:
+                - link "Hotel Website" [ref=e212] [cursor=pointer]:
+                  - /url: https://www.google.com/search?q=Doral+Inn+Suites+Miami+Airport+West+1212+NW+82nd+Ave
+                - generic [ref=e213]: ·
+                - link "View on Map" [ref=e214] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=1212+NW+82nd+Ave+Miami+FL+33126
+            - article [ref=e215]:
+              - heading "Quality Inn Miami Airport - Doral" [level=4] [ref=e216]
+              - paragraph [ref=e217]: 3959 NW 79th Ave, Doral, FL 33166
+              - paragraph [ref=e218]: 2-star · 3.0/5
+              - paragraph [ref=e219]: ~$97 per night
+              - generic [ref=e220]:
+                - link "Hotel Website" [ref=e221] [cursor=pointer]:
+                  - /url: https://www.choicehotels.com/florida/doral/quality-inn-hotels/flna6
+                - generic [ref=e222]: ·
+                - link "View on Map" [ref=e223] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=3959+NW+79th+Ave+Doral+FL+33166
+            - article [ref=e224]:
+              - heading "InterContinental at Doral Miami" [level=4] [ref=e225]
+              - paragraph [ref=e226]: 2505 NW 87th Ave, Doral, FL 33172
+              - paragraph [ref=e227]: 4-star · 4.4/5
+              - paragraph [ref=e228]: ~$180–$220 per night
+              - generic [ref=e229]:
+                - link "Hotel Website" [ref=e230] [cursor=pointer]:
+                  - /url: https://www.ihg.com/intercontinental/hotels/us/en/doral/miadf/hoteldetail
+                - generic [ref=e231]: ·
+                - link "View on Map" [ref=e232] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=2505+NW+87th+Ave+Doral+FL+33172
+    - generic [ref=e234]:
+      - generic [ref=e235]:
+        - paragraph [ref=e236]: Explore
+        - heading "Things To Do" [level=2] [ref=e237]
+        - paragraph [ref=e238]: Make a mini-vacation of your trip. Here are ideas to help you enjoy Miami before and after the wedding.
+      - generic [ref=e239]:
+        - generic [ref=e240]:
+          - heading "Near the Venue" [level=3] [ref=e241]
+          - list [ref=e242]:
+            - listitem [ref=e243]:
+              - heading "Beaches & Parks (Sample)" [level=4] [ref=e244]
+              - paragraph [ref=e245]: Enjoy nearby beaches and green spaces in North Miami Beach. We will add specific recommendations closer to the date.
+        - generic [ref=e246]:
+          - heading "Miami & Miami Beach" [level=3] [ref=e247]
+          - list [ref=e248]:
+            - listitem [ref=e249]:
+              - heading "Art, Food & Nightlife (Sample)" [level=4] [ref=e250]
+              - paragraph [ref=e251]: From Wynwood walls to restaurants and music, there is always something to do. We will share some of our favorite spots soon.
+        - generic [ref=e252]:
+          - heading "Doral & Local Favorites" [level=3] [ref=e253]
+          - list [ref=e254]:
+            - listitem [ref=e255]:
+              - heading "Neighborhood Spots (Sample)" [level=4] [ref=e256]
+              - paragraph [ref=e257]: We will add recommendations near our home in Doral—cafés, restaurants, and places we love.
+  - contentinfo [ref=e258]:
+    - paragraph [ref=e260]:
+      - text: With love from
+      - link "Maria & Raynulfo" [ref=e261] [cursor=pointer]:
+        - /url: admin.html
+      - text: · We cannot wait to celebrate with you at the Ancient Spanish Monastery.
+  - dialog "RSVP" [ref=e264]:
+    - button "Close RSVP" [ref=e265] [cursor=pointer]: ×
+    - heading "RSVP" [level=2] [ref=e266]
+    - generic [ref=e267]:
+      - paragraph [ref=e268]: Please confirm your attendance by entering your phone number and letting us know if you will join us.
+      - generic [ref=e269]:
+        - generic [ref=e270]: Country / Area Code
+        - combobox "Country / Area Code" [ref=e271]:
+          - option "🇺🇸 +1 — United States / Estados Unidos" [selected]
+          - option "🇪🇸 +34 — Spain / España"
+          - option "🇻🇪 +58 — Venezuela"
+          - option "🇨🇴 +57 — Colombia"
+          - option "🇲🇽 +52 — Mexico / México"
+      - generic [ref=e272]:
+        - generic [ref=e273]: Phone Number
+        - textbox "Phone Number" [active] [ref=e274]:
+          - /placeholder: 123 456 7890
+          - text: "9544120939"
+      - paragraph
+      - button "Find My Group" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - paragraph [ref=e277]: "Select who will be attending:"
+      - generic [ref=e286]:
+        - generic [ref=e298]:
+          - generic [ref=e299] [cursor=pointer]:
+            - checkbox "Viviana Santiago" [checked] [ref=e300]
+            - generic [ref=e301]: Viviana Santiago
+          - generic [ref=e302]:
+            - generic [ref=e303] [cursor=pointer]:
+              - radio "Attending" [checked] [ref=e304]
+              - generic [ref=e305]: Attending
+            - generic [ref=e306] [cursor=pointer]:
+              - radio "Not attending" [ref=e307]
+              - generic [ref=e308]: Not attending
+        - generic [ref=e309]:
+          - generic [ref=e310] [cursor=pointer]:
+            - checkbox "Joseph Lopez" [checked] [ref=e311]
+            - generic [ref=e312]: Joseph Lopez
+          - generic [ref=e313]:
+            - generic [ref=e314] [cursor=pointer]:
+              - radio "Attending" [checked] [ref=e315]
+              - generic [ref=e316]: Attending
+            - generic [ref=e317] [cursor=pointer]:
+              - radio "Not attending" [ref=e318]
+              - generic [ref=e319]: Not attending
+      - generic [ref=e278]:
+        - generic [ref=e279]: Notes (dietary, plus-one, etc.)
+        - textbox "Notes (dietary, plus-one, etc.)" [ref=e280]: Test notes
+      - generic [ref=e281]:
+        - button "Back" [ref=e282] [cursor=pointer]
+        - button "Submit RSVP" [disabled] [ref=e283] [cursor=pointer]
+      - paragraph [ref=e320]: Your RSVP has been recorded. Thank you!
+      - paragraph [ref=e284]: RSVP submissions are collected securely via Google Forms.

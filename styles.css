@@ -584,6 +584,8 @@ a {
   border: 1px solid rgba(209, 196, 178, 0.96);
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.25);
   padding: 1.75rem 1.75rem 1.5rem;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .rsvp-title {
@@ -606,6 +608,10 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
+}
+
+.rsvp-form[hidden] {
+  display: none;
 }
 
 .rsvp-field {

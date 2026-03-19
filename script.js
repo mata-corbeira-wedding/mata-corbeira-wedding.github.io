@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rsvp_attending_label: "Will you attend?",
       rsvp_attending_yes: "Yes, I will be there",
       rsvp_attending_no: "No, I am unable to attend",
-      rsvp_notes_label: "Notes (dietary, plus-one, etc.)",
+      rsvp_notes_label: "Allergies, Dietary preference, other",
       rsvp_submit_label: "Submit RSVP",
       rsvp_footer_note: "RSVP submissions are collected securely via Google Forms.",
       rsvp_search_button: "Find My Group",
@@ -260,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rsvp_attending_label: "¿Podrás asistir?",
       rsvp_attending_yes: "Sí, estaré allí",
       rsvp_attending_no: "No, no podré asistir",
-      rsvp_notes_label: "Notas (alimentación, acompañantes, etc.)",
+      rsvp_notes_label: "Alergias, preferencia dietética, otro",
       rsvp_submit_label: "Enviar confirmación",
       rsvp_footer_note: "Las confirmaciones se registran de forma segura a través de Google Forms.",
       rsvp_search_button: "Buscar mi grupo",
@@ -340,7 +340,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ── Guest list CSV (same sheet as admin) ──
   const GUESTS_CSV_URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpZYFkAej3ho8qCNzumNvLpIk4_3BYv_VHqWTmOtKpajYVQycLzuoW-dD6P-dymmGifDi7QC-HoUcO/pub?gid=698292239&single=true&output=csv";
-
   // ── Google Form submission URL ──
   // Replace with your actual form URL and entry IDs after setting up Google Form
   const GOOGLE_FORM_ACTION   = "https://docs.google.com/forms/d/e/1FAIpQLSearmpbQCMMvLZ0oLgtQHvFT-3z9aOG_MSzc1gvJOJQ0TR7nQ/formResponse";
@@ -355,12 +354,45 @@ document.addEventListener("DOMContentLoaded", () => {
     return String(raw).replace(/[^\d+]/g, "");
   }
 
+  function parseCsvLine(line) {
+    const fields = [];
+    let i = 0;
+    while (i < line.length) {
+      if (line[i] === '"') {
+        let field = "";
+        i++; // skip opening quote
+        while (i < line.length) {
+          if (line[i] === '"' && line[i + 1] === '"') {
+            field += '"';
+            i += 2;
+          } else if (line[i] === '"') {
+            i++; // skip closing quote
+            break;
+          } else {
+            field += line[i++];
+          }
+        }
+        fields.push(field);
+        if (line[i] === ",") i++;
+      } else {
+        const end = line.indexOf(",", i);
+        if (end === -1) {
+          fields.push(line.slice(i));
+          break;
+        }
+        fields.push(line.slice(i, end));
+        i = end + 1;
+      }
+    }
+    return fields;
+  }
+
   function parseCsv(text) {
     const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
     if (lines.length === 0) return [];
-    const headers = lines[0].split(",").map((h) => h.trim());
+    const headers = parseCsvLine(lines[0]).map((h) => h.trim());
     return lines.slice(1).map((line) => {
-      const values = line.split(",");
+      const values = parseCsvLine(line);
       const obj = {};
       headers.forEach((h, idx) => {
         obj[h] = (values[idx] || "").trim();
@@ -387,11 +419,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const step2El        = document.getElementById("rsvp-step-2");
   const searchBtn      = document.getElementById("rsvp-search-btn");
   const lookupMsgEl   = document.getElementById("rsvp-lookup-message");
-  const groupListEl   = document.getElementById("rsvp-group-list");
+  const groupListEl    = document.getElementById("rsvp-group-list");
+  const groupIntroEl   = step2El ? step2El.querySelector("[data-i18n='rsvp_group_intro']") : null;
   const notesEl        = document.getElementById("rsvp-notes");
   const backBtn        = document.getElementById("rsvp-back-btn");
   const submitBtn      = document.getElementById("rsvp-submit-btn");
-  const submitMsgEl   = document.getElementById("rsvp-submit-message");
+  const submitMsgEl    = document.getElementById("rsvp-submit-message");
 
   // ── Populate country code dropdown ──
   if (countrySelect) {
@@ -415,6 +448,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!rsvpModal) return;
     rsvpModal.classList.remove("is-open");
     rsvpModal.setAttribute("aria-hidden", "true");
+    // Reset to Step 1
+    if (step1El) step1El.hidden = false;
+    if (step2El) step2El.hidden = true;
+    if (phoneInput) phoneInput.value = "";
+    if (lookupMsgEl) lookupMsgEl.textContent = "";
+    if (groupListEl) { groupListEl.innerHTML = ""; groupListEl.style.display = ""; }
+    if (groupIntroEl) groupIntroEl.style.display = "";
+    if (notesEl) { notesEl.value = ""; notesEl.closest(".rsvp-field").style.display = ""; }
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.display = ""; }
+    if (submitMsgEl) submitMsgEl.textContent = "";
   }
 
   if (rsvpOpenButton) rsvpOpenButton.addEventListener("click", openRsvp);
@@ -483,24 +526,36 @@ document.addEventListener("DOMContentLoaded", () => {
     groupListEl.innerHTML = "";
     const lang = currentLang;
 
+    // Pre-fill notes from first guest with a meaningful allergy/note entry
+    let prefilledNotes = "";
+
     guests.forEach((g, i) => {
       const name = `${g.Nombre || g.FirstName || ""} ${g.Apellido || g.LastName || ""}`.trim();
+      const rsvpVal = String(g.RSVP || g["RSVP"] || "").trim().toLowerCase();
+      const isYes = rsvpVal === "yes" || rsvpVal === "sí" || rsvpVal === "si";
+      const isNo  = rsvpVal === "no";
+      const hasResponse = isYes || isNo;
+
+      const allergies = (g.Allergies || "").trim();
+      if (!prefilledNotes && allergies && allergies.toLowerCase() !== "no allergies") {
+        prefilledNotes = allergies;
+      }
 
       const row = document.createElement("div");
       row.className = "rsvp-guest-row";
 
       row.innerHTML = `
         <label class="rsvp-guest-name">
-          <input type="checkbox" class="rsvp-guest-check" id="rsvp-guest-${i}" checked />
+          <input type="checkbox" class="rsvp-guest-check" id="rsvp-guest-${i}" ${hasResponse ? "checked" : ""} />
           <span>${name}</span>
         </label>
         <div class="rsvp-guest-attend">
           <label>
-            <input type="radio" name="rsvp-attend-${i}" value="yes" checked />
+            <input type="radio" name="rsvp-attend-${i}" value="yes" ${isYes ? "checked" : ""} />
             <span data-attend-yes>${translations[lang].rsvp_attend_yes}</span>
           </label>
           <label>
-            <input type="radio" name="rsvp-attend-${i}" value="no" />
+            <input type="radio" name="rsvp-attend-${i}" value="no" ${isNo ? "checked" : ""} />
             <span data-attend-no>${translations[lang].rsvp_attend_no}</span>
           </label>
         </div>
@@ -508,6 +563,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       groupListEl.appendChild(row);
     });
+
+    if (notesEl) {
+      notesEl.value = prefilledNotes;
+    }
   }
 
   // ── Step 2 → back ──
@@ -542,22 +601,31 @@ document.addEventListener("DOMContentLoaded", () => {
       if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_submitting;
       submitBtn.disabled = true;
 
-      if (!GOOGLE_FORM_ACTION.startsWith("YOUR_")) {
-        const promises = entries.map(({ name, attending, notes: n }) => {
-          const body = new URLSearchParams({
-            [FORM_ENTRY_NAME]:      name,
-            [FORM_ENTRY_ATTENDING]: attending,
-            [FORM_ENTRY_NOTES]:     n,
-            fvv:         "1",
-            pageHistory: "0",
-            fbzx:        FORM_FBZ,
+      try {
+        if (!GOOGLE_FORM_ACTION.startsWith("YOUR_")) {
+          const promises = entries.map(({ name, attending, notes: n }) => {
+            const body = new URLSearchParams({
+              [FORM_ENTRY_NAME]:      name,
+              [FORM_ENTRY_ATTENDING]: attending,
+              [FORM_ENTRY_NOTES]:     n,
+              fvv:         "1",
+              pageHistory: "0",
+              fbzx:        FORM_FBZ,
+            });
+            return fetch(GOOGLE_FORM_ACTION, { method: "POST", mode: "no-cors", body });
           });
-          return fetch(GOOGLE_FORM_ACTION, { method: "POST", mode: "no-cors", body });
-        });
-        await Promise.all(promises);
+          await Promise.all(promises);
+        }
+        if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_success;
+        // Hide form content — only success message + back button remain
+        if (groupIntroEl) groupIntroEl.style.display = "none";
+        if (groupListEl) groupListEl.style.display = "none";
+        if (notesEl) notesEl.closest(".rsvp-field").style.display = "none";
+        if (submitBtn) submitBtn.style.display = "none";
+      } catch (_err) {
+        if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_error || "Something went wrong. Please try again.";
+        submitBtn.disabled = false;
       }
-
-      if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_success;
     });
   }
 });
