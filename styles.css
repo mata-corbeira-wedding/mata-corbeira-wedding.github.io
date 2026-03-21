@@ -882,6 +882,31 @@ a {
   .callout {
     border-radius: 18px;
   }
+
+  .rsvp-modal {
+    padding: 1rem;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .rsvp-dialog {
+    width: 100%;
+    margin: auto;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+
+  .rsvp-close {
+    top: 0.75rem;
+    right: 0.75rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
