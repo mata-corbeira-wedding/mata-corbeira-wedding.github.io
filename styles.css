@@ -827,17 +827,32 @@ a {
     align-items: flex-start;
   }
 
+  .brand-names {
+    font-size: clamp(0.75rem, 3vw, 0.9rem);
+  }
+
+  .brand-date {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60vw;
+  }
+
   .nav-toggle {
     display: inline-flex;
     flex-direction: column;
     justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
   }
 
   .nav-links-wrapper {
     position: absolute;
-    right: 1.5rem;
+    left: 0;
+    right: 0;
+    margin: 0.4rem 0.5rem 0;
     top: 100%;
-    margin-top: 0.4rem;
     padding: 0.7rem 0.9rem;
     border-radius: 12px;
     background: rgba(244, 239, 229, 0.98);
