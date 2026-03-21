@@ -744,25 +744,58 @@ a {
   flex: 1;
 }
 
-.things-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 2rem;
+#things-map {
+  width: 100%;
+  height: 420px;
+  border-radius: 10px;
+  margin-bottom: 2.5rem;
+  border: 1px solid rgba(209, 196, 178, 0.6);
 }
 
-.things-list {
+.things-list-numbered {
   list-style: none;
-  margin: 0.75rem 0 0;
+  margin: 0;
   padding: 0;
+  counter-reset: things-counter;
 }
 
-.things-list h4 {
+.things-list-numbered > li {
+  counter-increment: things-counter;
+  position: relative;
+  padding-left: 2.8rem;
+  margin-bottom: 1.8rem;
+}
+
+.things-list-numbered > li:last-child {
+  margin-bottom: 0;
+}
+
+.things-list-numbered > li::before {
+  content: counter(things-counter);
+  position: absolute;
+  left: 0;
+  top: 0.05em;
+  width: 1.9rem;
+  height: 1.9rem;
+  background: var(--color-accent-soft);
+  color: var(--color-text);
+  border-radius: 50%;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.things-list-numbered h4 {
   margin: 0 0 0.25rem;
   font-family: var(--font-serif);
+  font-size: 1.05rem;
 }
 
-.things-list p {
-  margin: 0;
+.things-list-numbered p {
+  margin: 0 0 0.35rem;
   font-size: 0.95rem;
   line-height: 1.6;
 }
