@@ -886,7 +886,6 @@ a {
   .rsvp-modal {
     padding: 1rem;
     align-items: flex-start;
-    overflow-y: auto;
   }
 
   .rsvp-dialog {
