@@ -887,15 +887,28 @@ a {
   }
 
   .hero {
-    min-height: 70vh;
+    min-height: 60vh;
+  }
+
+  .hero-content {
+    padding: 4rem 1rem 3rem;
+  }
+
+  .hero-names {
+    font-size: clamp(1.9rem, 7vw, 2.6rem);
   }
 
   .schedule-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .schedule-card {
+    padding: 1rem 1.1rem;
+  }
+
   .callout {
-    border-radius: 18px;
+    border-radius: var(--radius-soft);
+    padding: 0.9rem 1rem;
   }
 
   .rsvp-modal {
