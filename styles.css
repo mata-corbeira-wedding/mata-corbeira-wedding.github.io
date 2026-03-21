@@ -934,6 +934,18 @@ a {
     align-items: center;
     justify-content: center;
   }
+
+  .section {
+    padding: 3rem 0;
+  }
+
+  #things-map {
+    height: 260px;
+  }
+
+  .site-footer {
+    padding-bottom: max(1.8rem, env(safe-area-inset-bottom));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
