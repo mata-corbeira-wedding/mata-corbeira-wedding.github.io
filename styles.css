@@ -948,6 +948,24 @@ a {
   }
 }
 
+@media (max-width: 480px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hotel-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-item {
+    padding-left: 1.2rem;
+  }
+
+  .things-list-numbered > li {
+    padding-left: 2.2rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
