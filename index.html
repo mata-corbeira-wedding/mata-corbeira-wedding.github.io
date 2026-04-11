@@ -15,13 +15,15 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   </head>
   <body>
     <header class="site-header">
       <div class="container site-header-inner">
         <a href="#home" class="brand">
           <span class="brand-names" data-i18n="brand_names">Maria &amp; Raynulfo</span>
-          <span class="brand-date" data-i18n="brand_date">December 29ᵗʰ 2026 · North Miami Beach</span>
+          <span class="brand-date" data-i18n="brand_date">December 29ᵗʰ, 2026</span>
         </a>
         <nav class="main-nav" aria-label="Primary">
           <button
@@ -157,12 +159,16 @@
               </ol>
 
               <div class="card">
-                <h3 class="subsection-title" data-i18n="wedding_dress_code_title">Dress Code</h3>
-                <p data-i18n="wedding_dress_code_body">
-                  Formal evening attire. The monastery features stone floors and garden paths, so we recommend
-                  comfortable shoes or block heels. December evenings can be breezy, so a light wrap or jacket is a
-                  good idea.
+                <h3 class="subsection-title" data-i18n="wedding_child_free_title">Child Free Affair</h3>
+                <p data-i18n="wedding_child_free_body">
+                  While we adore your little ones, our wedding is going to be an adults-only event so that everyone can relax and enjoy the evening. We appreciate you making arrangements ahead of time to celebrate with us!
                 </p>
+              </div>
+
+              <div class="card">
+                <h3 class="subsection-title" data-i18n="wedding_dress_code_title">Dress Code: Formal Evening Attire</h3>
+                <p><span data-i18n="wedding_dress_code_intro">We invite you to dress in your finest formal evening wear.</span> <strong data-i18n="wedding_dress_code_bold">To honor the bride's traditional attire, we kindly ask that guests refrain from wearing white, cream, or ivory.</strong></p>
+                <p><strong data-i18n="wedding_dress_code_venue_label">Note on the Venue:</strong> <span data-i18n="wedding_dress_code_venue_note">The monastery features historic stone floors and garden paths; we recommend block heels or comfortable shoes. December evenings in Miami can be breezy, so a light wrap or jacket is suggested.</span></p>
               </div>
 
               <aside class="callout callout-soft">
@@ -277,99 +283,53 @@
         <div class="container section-inner">
           <header class="section-header">
             <p class="section-kicker" data-i18n="hotel_kicker">Stay</p>
-            <h2 class="section-title" data-i18n="hotel_title">Hotel Suggestions</h2>
+            <h2 class="section-title" data-i18n="hotel_title">Where to stay?</h2>
             <p class="section-subtitle" data-i18n="hotel_subtitle">
               For our guests traveling from near and far, here are a few areas and hotels to consider during your stay
               in Miami.
             </p>
           </header>
 
-          <p data-i18n="hotel_intro">
-            We recommend staying either near the venue in North Miami Beach or near our home in Doral.
-          </p>
-
           <article class="card hotel-airbnb-card">
             <h3 class="subsection-title" data-i18n="hotel_airbnb_title">Airbnb &amp; Vacation Rentals</h3>
             <p data-i18n="hotel_airbnb_body">
-              Airbnb and other vacation rentals are also available in North Miami Beach, Doral, and Miami Beach. If you
-              prefer a home or apartment, search for stays near those areas.
-            </p>
-            <p data-i18n="hotel_airbnb_pairing">
-              Would you like to share an Airbnb with other guests to split costs? Please reach out to the bride or groom
-              and we will try to help connect you with others looking to share.
+              Airbnb and other vacation rentals are widely available across Miami. If you'd like to share a rental with
+              other guests to split costs, please reach out to the bride or groom and we'll do our best to connect you
+              with other friends and family looking for a shared stay!
             </p>
           </article>
 
           <div class="hotel-groups">
             <section class="hotel-group">
               <h3 class="subsection-title" data-i18n="hotel_group_venue_title">
-                Near the Venue · North Miami Beach
+                Near the Ancient Spanish Monastery · Aventura Area
               </h3>
               <div class="card-grid hotel-card-grid">
                 <article class="card hotel-card">
-                  <h4>Palm Tree Club Miami Hotel</h4>
-                  <p class="hotel-address">17201 Biscayne Blvd, North Miami Beach, FL 33160</p>
-                  <p class="badge">3-star · 3.9/5</p>
-                  <p class="small">~$108 per night</p>
+                  <h4>Courtyard by Marriott Miami Aventura Mall</h4>
+                  <p class="hotel-description" data-i18n="hotel_aventura1_desc">A reliable 3-star choice steps from Aventura Mall, with comfortable rooms and solid amenities for a wedding weekend.</p>
+                  <p class="small" data-i18n="hotel_aventura1_price">~$275 per night</p>
+                  <p class="hotel-highlights" data-i18n="hotel_aventura1_highlights">Heated outdoor pool · On-site restaurant &amp; bar · Bicycle rentals</p>
                   <div class="hotel-links">
-                    <a href="https://www.google.com/search?q=Palm+Tree+Club+Miami+Hotel+17201+Biscayne+Blvd" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=17201+Biscayne+Blvd+North+Miami+Beach+FL+33160" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                    <a href="https://www.marriott.com/en-us/hotels/miaav-courtyard-miami-aventura-mall/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
                   </div>
                 </article>
                 <article class="card hotel-card">
-                  <h4>North Miami Beach Gardens Inn &amp; Suites</h4>
-                  <p class="hotel-address">14800 NW 2nd Ave, Miami, FL 33168</p>
-                  <p class="badge">3-star · 2.6/5</p>
-                  <p class="small">~$63 per night</p>
+                  <h4>AC Hotel Miami Aventura</h4>
+                  <p class="hotel-description" data-i18n="hotel_aventura2_desc">A stylish 4-star European-inspired hotel with a rooftop pool and bar — a great option for guests who want a little extra luxury.</p>
+                  <p class="small" data-i18n="hotel_aventura2_price">~$245 per night</p>
+                  <p class="hotel-highlights" data-i18n="hotel_aventura2_highlights">Rooftop pool &amp; bar · AC Kitchen breakfast · Pet-friendly</p>
                   <div class="hotel-links">
-                    <a href="https://www.google.com/search?q=North+Miami+Beach+Gardens+Inn+Suites+14800+NW+2nd+Ave" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=14800+NW+2nd+Ave+Miami+FL+33168" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                    <a href="https://www.marriott.com/en-us/hotels/miahv-ac-hotel-miami-aventura/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
                   </div>
                 </article>
                 <article class="card hotel-card">
-                  <h4>Miami Gardens Inn &amp; Suites</h4>
-                  <p class="hotel-address">16805 NW 12th Ave, Miami, FL 33169</p>
-                  <p class="badge">2-star · 2.7/5</p>
-                  <p class="small">~$58 per night</p>
+                  <h4>Ramada Plaza by Wyndham Marco Polo Beach Resort</h4>
+                  <p class="hotel-description" data-i18n="hotel_aventura3_desc">A beachfront resort with direct ocean access — ideal for guests who want to combine the wedding with a beach getaway.</p>
+                  <p class="small" data-i18n="hotel_aventura3_price">~$235 per night</p>
+                  <p class="hotel-highlights" data-i18n="hotel_aventura3_highlights">Direct beach access · Oceanfront pool · Poolside bar &amp; restaurant</p>
                   <div class="hotel-links">
-                    <a href="https://www.google.com/search?q=Miami+Gardens+Inn+Suites+16805+NW+12th+Ave" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=16805+NW+12th+Ave+Miami+FL+33169" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
-                  </div>
-                </article>
-                <article class="card hotel-card">
-                  <h4>Oceanside Hotel + Suites</h4>
-                  <p class="hotel-address">6084 Collins Ave, Miami Beach, FL 33140</p>
-                  <p class="badge">3-star · 3.7/5</p>
-                  <p class="small">~$105 per night</p>
-                  <div class="hotel-links">
-                    <a href="https://www.google.com/search?q=Oceanside+Hotel+Suites+6084+Collins+Ave+Miami+Beach" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=6084+Collins+Ave+Miami+Beach+FL+33140" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
-                  </div>
-                </article>
-                <article class="card hotel-card">
-                  <h4>Bposhtels Hollywood Florida</h4>
-                  <p class="hotel-address">3110 Hollywood Blvd, Hollywood, FL 33021</p>
-                  <p class="badge">2-star · 3.5/5</p>
-                  <p class="small">~$57 per night</p>
-                  <div class="hotel-links">
-                    <a href="https://www.google.com/search?q=Bposhtels+Hollywood+Florida+3110+Hollywood+Blvd" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=3110+Hollywood+Blvd+Hollywood+FL+33021" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
-                  </div>
-                </article>
-                <article class="card hotel-card">
-                  <h4>AC Hotel by Marriott Miami Aventura</h4>
-                  <p class="hotel-address">20805 Biscayne Blvd, Aventura, FL 33180</p>
-                  <p class="badge">4-star · 4.4/5</p>
-                  <p class="small">~$250–$300 per night</p>
-                  <div class="hotel-links">
-                    <a href="https://www.marriott.com/en-us/hotels/miahv-ac-hotel-miami-aventura/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=20805+Biscayne+Blvd+Aventura+FL+33180" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                    <a href="https://www.wyndhamhotels.com/ramada/miami-beach-florida/ramada-plaza-marco-polo-beach-resort/overview" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
                   </div>
                 </article>
               </div>
@@ -377,73 +337,69 @@
 
             <section class="hotel-group">
               <h3 class="subsection-title" data-i18n="hotel_group_doral_title">
-                Doral · Close to Our Home
+                Near Doral
               </h3>
               <div class="card-grid hotel-card-grid">
                 <article class="card hotel-card">
-                  <h4>Provident Doral at The Blue Miami</h4>
-                  <p class="hotel-address">5300 NW 87th Ave, Doral, FL 33178</p>
-                  <p class="badge">4-star · 3.9/5</p>
-                  <p class="small">~$198 per night</p>
+                  <h4>Element Miami Doral</h4>
+                  <p class="hotel-description" data-i18n="hotel_doral1_desc">An eco-conscious extended-stay hotel with fully equipped kitchens — great value for guests planning a longer trip.</p>
+                  <p class="small" data-i18n="hotel_doral1_price">~$159 per night</p>
+                  <p class="hotel-highlights" data-i18n="hotel_doral1_highlights">Fully equipped kitchens · Free healthy breakfast · Free airport shuttle · Pet-friendly</p>
                   <div class="hotel-links">
-                    <a href="https://www.google.com/search?q=Provident+Doral+Blue+Miami+5300+NW+87th+Ave" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=5300+NW+87th+Ave+Doral+FL+33178" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                    <a href="https://www.marriott.com/en-us/hotels/miade-element-miami-doral/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
                   </div>
                 </article>
                 <article class="card hotel-card">
-                  <h4>Nuvo Suites Hotel</h4>
-                  <p class="hotel-address">1750 NW 107th Ave, Miami, FL 33172</p>
-                  <p class="badge">3-star · 4.4/5</p>
-                  <p class="small">~$144 per night</p>
+                  <h4>Hyatt Place Miami Airport-West/Doral</h4>
+                  <p class="hotel-description" data-i18n="hotel_doral2_desc">A reliable and comfortable choice close to local dining and shopping, with generous breakfast included.</p>
+                  <p class="small" data-i18n="hotel_doral2_price">~$175 per night</p>
+                  <p class="hotel-highlights" data-i18n="hotel_doral2_highlights">Free breakfast buffet · 24/7 café &amp; bar · Outdoor pool · Pet-friendly</p>
                   <div class="hotel-links">
-                    <a href="https://www.google.com/search?q=Nuvo+Suites+Hotel+1750+NW+107th+Ave+Miami" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=1750+NW+107th+Ave+Miami+FL+33172" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                    <a href="https://www.hyatt.com/hyatt-place/en-US/miazd-hyatt-place-miami-airport-west-doral" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
                   </div>
                 </article>
                 <article class="card hotel-card">
-                  <h4>Wingate by Wyndham Miami Airport</h4>
-                  <p class="hotel-address">3755 NW 78th Ave, Doral, FL 33166</p>
-                  <p class="badge">3-star · 4.1/5</p>
-                  <p class="small">~$108 per night</p>
+                  <h4>SpringHill Suites by Marriott Miami Doral</h4>
+                  <p class="hotel-description" data-i18n="hotel_doral3_desc">All-suite rooms with separate living areas — perfect for guests who want extra space to get ready for the big day.</p>
+                  <p class="small" data-i18n="hotel_doral3_price">~$193 per night</p>
+                  <p class="hotel-highlights" data-i18n="hotel_doral3_highlights">Free hot breakfast · Free parking · Outdoor pool</p>
                   <div class="hotel-links">
-                    <a href="https://www.wyndham.com/hotels/florida/doral/wingate-by-wyndham-miami-international-airport/hotel-overview" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=3755+NW+78th+Ave+Doral+FL+33166" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                    <a href="https://www.marriott.com/en-us/hotels/miadl-springhill-suites-miami-doral/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="hotel-group">
+              <h3 class="subsection-title" data-i18n="hotel_group_miramar_title">
+                Near Miramar
+              </h3>
+              <div class="card-grid hotel-card-grid">
+                <article class="card hotel-card">
+                  <h4>Hilton Garden Inn Ft. Lauderdale SW/Miramar</h4>
+                  <p class="hotel-description" data-i18n="hotel_miramar1_desc">A well-rounded option with on-site dining and free parking — one of the most affordable picks for the weekend.</p>
+                  <p class="small" data-i18n="hotel_miramar1_price">~$136 per night</p>
+                  <p class="hotel-highlights" data-i18n="hotel_miramar1_highlights">On-site restaurant &amp; bar · Outdoor pool · Free parking · Pet-friendly</p>
+                  <div class="hotel-links">
+                    <a href="https://www.hilton.com/en/hotels/fllmrgi-hilton-garden-inn-ft-lauderdale-sw-miramar/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
                   </div>
                 </article>
                 <article class="card hotel-card">
-                  <h4>Doral Inn &amp; Suites Miami Airport West</h4>
-                  <p class="hotel-address">1212 NW 82nd Ave, Miami, FL 33126</p>
-                  <p class="badge">3-star · 3.8/5</p>
-                  <p class="small">~$114 per night</p>
+                  <h4>Holiday Inn Express &amp; Suites Miramar</h4>
+                  <p class="hotel-description" data-i18n="hotel_miramar2_desc">A straightforward and comfortable stay with free breakfast and parking included — great for budget-conscious guests.</p>
+                  <p class="small" data-i18n="hotel_miramar2_price">~$179 per night</p>
+                  <p class="hotel-highlights" data-i18n="hotel_miramar2_highlights">Free breakfast buffet · Outdoor pool · Free self-parking · Mini-fridges &amp; microwaves</p>
                   <div class="hotel-links">
-                    <a href="https://www.google.com/search?q=Doral+Inn+Suites+Miami+Airport+West+1212+NW+82nd+Ave" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=1212+NW+82nd+Ave+Miami+FL+33126" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                    <a href="https://www.ihg.com/holidayinnexpress/hotels/us/en/miramar/mirbr/hoteldetail" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
                   </div>
                 </article>
                 <article class="card hotel-card">
-                  <h4>Quality Inn Miami Airport - Doral</h4>
-                  <p class="hotel-address">3959 NW 79th Ave, Doral, FL 33166</p>
-                  <p class="badge">2-star · 3.0/5</p>
-                  <p class="small">~$97 per night</p>
+                  <h4>Home2 Suites by Hilton Miramar Ft. Lauderdale</h4>
+                  <p class="hotel-description" data-i18n="hotel_miramar3_desc">Spacious suites with full kitchens and a saline pool — ideal for families or guests who want a home-away-from-home feel.</p>
+                  <p class="small" data-i18n="hotel_miramar3_price">~$177 per night</p>
+                  <p class="hotel-highlights" data-i18n="hotel_miramar3_highlights">Full kitchen suites · Free hot breakfast · Saline pool · Pet-friendly</p>
                   <div class="hotel-links">
-                    <a href="https://www.choicehotels.com/florida/doral/quality-inn-hotels/flna6" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=3959+NW+79th+Ave+Doral+FL+33166" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
-                  </div>
-                </article>
-                <article class="card hotel-card">
-                  <h4>InterContinental at Doral Miami</h4>
-                  <p class="hotel-address">2505 NW 87th Ave, Doral, FL 33172</p>
-                  <p class="badge">4-star · 4.4/5</p>
-                  <p class="small">~$180–$220 per night</p>
-                  <div class="hotel-links">
-                    <a href="https://www.ihg.com/intercontinental/hotels/us/en/doral/miadf/hoteldetail" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">Hotel Website</a>
-                    <span>·</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=2505+NW+87th+Ave+Doral+FL+33172" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_map">View on Map</a>
+                    <a href="https://www.hilton.com/en/hotels/fllmrht-home2-suites-miramar-ft-lauderdale/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
                   </div>
                 </article>
               </div>
@@ -463,57 +419,91 @@
             </p>
           </header>
 
-          <div class="things-grid">
-            <section class="things-group">
-              <h3 class="subsection-title" data-i18n="things_near_venue_title">
-                Near the Venue
-              </h3>
-              <ul class="things-list">
-                <li>
-                  <h4 data-i18n="things_near_venue_item1_title">
-                    Beaches &amp; Parks (Sample)
-                  </h4>
-                  <p data-i18n="things_near_venue_item1_body">
-                    Enjoy nearby beaches and green spaces in North Miami Beach. We will add specific recommendations
-                    closer to the date.
-                  </p>
-                </li>
-              </ul>
-            </section>
-
-            <section class="things-group">
-              <h3 class="subsection-title" data-i18n="things_miami_beach_title">
-                Miami &amp; Miami Beach
-              </h3>
-              <ul class="things-list">
-                <li>
-                  <h4 data-i18n="things_miami_beach_item1_title">
-                    Art, Food &amp; Nightlife (Sample)
-                  </h4>
-                  <p data-i18n="things_miami_beach_item1_body">
-                    From Wynwood walls to restaurants and music, there is always something to do. We will share some of
-                    our favorite spots soon.
-                  </p>
-                </li>
-              </ul>
-            </section>
-
-            <section class="things-group">
-              <h3 class="subsection-title" data-i18n="things_doral_title">
-                Doral &amp; Local Favorites
-              </h3>
-              <ul class="things-list">
-                <li>
-                  <h4 data-i18n="things_doral_item1_title">
-                    Neighborhood Spots (Sample)
-                  </h4>
-                  <p data-i18n="things_doral_item1_body">
-                    We will add recommendations near our home in Doral—cafés, restaurants, and places we love.
-                  </p>
-                </li>
-              </ul>
-            </section>
+          <div class="callout-soft" style="text-align:center;">
+            <p data-i18n="things_transport">
+              Miami has very limited to no public transportation. It is highly recommended to rent a car to fully explore the city and get around comfortably during your stay.
+            </p>
           </div>
+
+          <div id="things-map"></div>
+
+          <ol class="things-list-numbered">
+            <li>
+              <h4 data-i18n="things_item1_title">Wynwood Walls</h4>
+              <p data-i18n="things_item1_body">This is the heart of Miami's urban art scene and a must-see for anyone wanting to see the city's modern, creative side. Features massive, colorful murals by world-renowned street artists. The surrounding neighborhood is filled with trendy galleries and craft breweries.</p>
+              <a href="https://thewynwoodwalls.com" target="_blank" rel="noopener" class="text-link">thewynwoodwalls.com</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item2_title">Vizcaya Museum &amp; Gardens</h4>
+              <p data-i18n="things_item2_body">A stunning historic estate that feels like a European palace dropped into the middle of a tropical jungle. Showcases a 1914 Italian Renaissance-style mansion with elaborate formal gardens and breathtaking views overlooking Biscayne Bay.</p>
+              <a href="https://vizcaya.org" target="_blank" rel="noopener" class="text-link">vizcaya.org</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item3_title">Miami Design District</h4>
+              <p data-i18n="things_item3_body">This is where high fashion meets architectural innovation, perfect for those who appreciate luxury and design. Home to flagship stores for the world's most prestigious fashion brands, dotted with public art installations and sleek, modern architecture.</p>
+              <a href="https://miamidesigndistrict.com" target="_blank" rel="noopener" class="text-link">miamidesigndistrict.com</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item4_title">Little Havana &amp; Calle Ocho</h4>
+              <p data-i18n="things_item4_body">This is the soul of Miami's Cuban community and provides the most authentic international experience in the city. Known for the Walk of Fame honoring Latin stars and the famous Domino Park, filled with the scents of Cuban coffee (cafecitos) and hand-rolled cigars.</p>
+              <a href="https://www.miamiandbeaches.com/neighborhoods/little-havana" target="_blank" rel="noopener" class="text-link">miamiandbeaches.com</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item5_title">Fairchild Tropical Botanic Garden</h4>
+              <p data-i18n="things_item5_body">A lush, 83-acre paradise that showcases the unique flora of South Florida. Features rare tropical plants, a butterfly conservatory, and sunken gardens. Tram tours are available to explore the vast grounds comfortably.</p>
+              <a href="https://fairchildgarden.org" target="_blank" rel="noopener" class="text-link">fairchildgarden.org</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item6_title">Phillip &amp; Patricia Frost Museum of Science</h4>
+              <p data-i18n="things_item6_body">A world-class facility located in Downtown Miami that is both educational and visually spectacular. Features a three-level aquarium and a state-of-the-art planetarium, with interactive exhibits on the Everglades and space exploration.</p>
+              <a href="https://frostscience.org" target="_blank" rel="noopener" class="text-link">frostscience.org</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item7_title">Pérez Art Museum Miami (PAMM)</h4>
+              <p data-i18n="things_item7_body">Commonly known as PAMM, this museum focuses on international art from the 20th and 21st centuries. The building itself is an architectural marvel with hanging gardens, located directly on the water with beautiful outdoor seating areas.</p>
+              <a href="https://pamm.org" target="_blank" rel="noopener" class="text-link">pamm.org</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item8_title">Bayside Marketplace</h4>
+              <p data-i18n="things_item8_body">An energetic waterfront festival center that serves as the gateway to the bay. Offers a mix of shops, restaurants, and daily live music. The primary spot for catching boat tours and sightseeing cruises.</p>
+              <a href="https://baysidemarketplace.com" target="_blank" rel="noopener" class="text-link">baysidemarketplace.com</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item9_title">Aventura Mall</h4>
+              <p data-i18n="things_item9_body">One of the top-tier shopping destinations in the country, blending high-end retail with art. Includes a massive slide tower designed by artist Carsten Höller, with over 300 stores including luxury boutiques and major department stores.</p>
+              <a href="https://aventuramall.com" target="_blank" rel="noopener" class="text-link">aventuramall.com</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item10_title">Dolphin Mall</h4>
+              <p data-i18n="things_item10_body">Miami's largest outlet shopping center, perfect for visitors looking for great deals. Provides over 240 retail outlets and brand-name discounters, with an extensive entertainment zone with a cinema and bowling.</p>
+              <a href="https://dolphinmall.com" target="_blank" rel="noopener" class="text-link">dolphinmall.com</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item11_title">Sawgrass Mills</h4>
+              <p data-i18n="things_item11_body">Located slightly north in Sunrise, this is one of the largest outlet malls in the world. Known for The Colonnade Outlets, which features luxury brands at outlet prices — a true destination for serious shoppers coming from overseas.</p>
+              <a href="https://simon.com/mall/sawgrass-mills" target="_blank" rel="noopener" class="text-link">simon.com/mall/sawgrass-mills</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item12_title">Miami Beach</h4>
+              <p data-i18n="things_item12_body">Miami Beach offers a more relaxed vibe as you move further north. Beautiful white sand beaches with a lively atmosphere, great dining, and vibrant nightlife.</p>
+              <a href="https://miamibeachfl.gov" target="_blank" rel="noopener" class="text-link">miamibeachfl.gov</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item13_title">South Beach</h4>
+              <p data-i18n="things_item13_body">South Beach is the southern tip, famous for Ocean Drive and its neon lights. The iconic Art Deco architecture lines the streets just steps from the sand, and the energy here is unlike anywhere else in Miami.</p>
+              <a href="https://www.miamiandbeaches.com/neighborhoods/south-beach" target="_blank" rel="noopener" class="text-link">miamiandbeaches.com</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item14_title">Hollywood Beach Broadwalk</h4>
+              <p data-i18n="things_item14_body">A classic Florida boardwalk experience that is perfect for families and long walks. Features a 2.5-mile pedestrian promenade right on the Atlantic Ocean, lined with cozy cafes, ice cream shops, and oceanfront parks.</p>
+              <a href="https://hollywoodfl.org" target="_blank" rel="noopener" class="text-link">hollywoodfl.org</a>
+            </li>
+            <li>
+              <h4 data-i18n="things_item15_title">Dania Beach</h4>
+              <p data-i18n="things_item15_body">A quieter, more natural beach alternative located just south of Fort Lauderdale. Home to a popular fishing pier and beautiful dunes — perfect for those looking to escape the heavier crowds of Miami.</p>
+              <a href="https://daniabeachfl.gov" target="_blank" rel="noopener" class="text-link">daniabeachfl.gov</a>
+            </li>
+          </ol>
         </div>
       </section>
     </main>
@@ -521,9 +511,9 @@
     <footer class="site-footer">
       <div class="container">
         <p class="small">
-          With love from
+          <span data-i18n="footer_text_before">With love from</span>
           <a href="admin.html" class="admin-link">Maria &amp; Raynulfo</a>
-          · We cannot wait to celebrate with you at the Ancient Spanish Monastery.
+          · <span data-i18n="footer_text_after">We cannot wait to celebrate with you at the Ancient Spanish Monastery.</span>
         </p>
       </div>
     </footer>
@@ -587,6 +577,37 @@
         </div>
       </div>
     </div>
+
+    <script>
+      (function () {
+        var map = L.map('things-map', { scrollWheelZoom: false }).setView([25.84, -80.22], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        var locations = [
+          [1,  "Wynwood Walls",                          25.8010, -80.1994],
+          [2,  "Vizcaya Museum & Gardens",               25.7444, -80.2103],
+          [3,  "Miami Design District",                  25.8127, -80.1925],
+          [4,  "Little Havana & Calle Ocho",             25.7654, -80.2191],
+          [5,  "Fairchild Tropical Botanic Garden",      25.6770, -80.2740],
+          [6,  "Frost Museum of Science",                25.7853, -80.1862],
+          [7,  "Pérez Art Museum Miami (PAMM)",          25.7858, -80.1863],
+          [8,  "Bayside Marketplace",                    25.7784, -80.1868],
+          [9,  "Aventura Mall",                          25.9569, -80.1423],
+          [10, "Dolphin Mall",                           25.7893, -80.3823],
+          [11, "Sawgrass Mills",                         26.1512, -80.3222],
+          [12, "Miami Beach",                            25.8103, -80.1326],
+          [13, "South Beach",                            25.7826, -80.1341],
+          [14, "Hollywood Beach Broadwalk",              26.0112, -80.1171],
+          [15, "Dania Beach",                            26.0520, -80.1109]
+        ];
+        locations.forEach(function(loc) {
+          L.marker([loc[2], loc[3]])
+            .addTo(map)
+            .bindPopup('<strong>' + loc[0] + '. ' + loc[1] + '</strong>');
+        });
+      })();
+    </script>
   </body>
 </html>
 

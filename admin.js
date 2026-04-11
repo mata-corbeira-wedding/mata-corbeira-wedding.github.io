@@ -1,23 +1,9 @@
 const ADMIN_PASSWORD = "BuddyBupsters";
 
-// Published Google Sheets CSV URLs
-// Guests: main list with Nombre, Apellido, Bride or Groom, Phone #, Group ID, RSVP, Area Code, Country...
-// RSVPs: responses with Phone Number, Attending, Food restriction, Timestamp, Notes
+// Published Google Sheets CSV URL — Guest List tab (gid=698292239)
+// Columns: Nombre, Bride or Groom, Phone #, Group ID, RVSP, Allergies
 const GUESTS_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpZYFkAej3ho8qCNzumNvLpIk4_3BYv_VHqWTmOtKpajYVQycLzuoW-dD6P-dymmGifDi7QC-HoUcO/pub?gid=698292239&single=true&output=csv";
-const RSVPS_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpZYFkAej3ho8qCNzumNvLpIk4_3BYv_VHqWTmOtKpajYVQycLzuoW-dD6P-dymmGifDi7QC-HoUcO/pub?gid=521377647&single=true&output=csv";
-
-const RSVP_PHONE_HEADER = "Phone #";
-const RSVP_ATTENDING_HEADER = "Attending";
-const RSVP_TIMESTAMP_HEADER = "Timestamp";
-const RSVP_FOOD_HEADER = "Food restriction";
-const RSVP_NOTES_HEADER = "Notes";
-
-function normalizePhone(raw) {
-  if (!raw) return "";
-  return String(raw).replace(/[^\d+]/g, "");
-}
 
 function parseCsv(text) {
   const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
@@ -52,15 +38,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const summaryNotAttending = document.getElementById("summary-not-attending");
   const summaryNoResponse = document.getElementById("summary-no-response");
 
-  const searchForm = document.getElementById("admin-search-form");
-  const searchPhoneInput = document.getElementById("admin-search-phone");
-  const searchMessage = document.getElementById("admin-search-message");
   const guestsTableBody = document.querySelector("#admin-guests-table tbody");
 
   let guests = [];
-  let rsvps = [];
-  let guestsByPhone = {};
-  let rsvpByPhone = {};
 
   function showDashboard() {
     if (loginSection) loginSection.style.display = "none";
@@ -79,6 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.localStorage.setItem("wedding_admin_authenticated", "true");
         loginError.textContent = "";
         showDashboard();
+        loadData();
       } else {
         loginError.textContent = "Incorrect password.";
       }
@@ -88,35 +69,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function loadData() {
     try {
       guests = await fetchCsv(GUESTS_CSV_URL);
-      rsvps = await fetchCsv(RSVPS_CSV_URL);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("Error loading CSV data", e);
     }
-
-    guestsByPhone = {};
-    guests.forEach((g) => {
-      const phoneNorm = normalizePhone(g["Phone #"] || g.Phone || g[RSVP_PHONE_HEADER]);
-      if (!phoneNorm) return;
-      guestsByPhone[phoneNorm] = g;
-    });
-
-    rsvpByPhone = {};
-    rsvps.forEach((r) => {
-      const phoneNorm = normalizePhone(r[RSVP_PHONE_HEADER]);
-      if (!phoneNorm) return;
-      rsvpByPhone[phoneNorm] = r;
-    });
-
     updateSummary();
+    renderResponded();
   }
 
-  function getGuestGroup(guest) {
-    return guest["Group ID"] || guest.GroupNumber || guest.group || guest.Group || "";
+  function getRsvp(g) {
+    return String(g.RVSP || g.RSVP || "").trim();
   }
 
-  function getGuestSide(guest) {
-    return guest["Bride or Groom"] || guest.PartySide || guest.Side || "";
+  function isYes(att) {
+    const v = att.toLowerCase();
+    return v === "yes" || v === "sí" || v === "si";
+  }
+
+  function isNo(att) {
+    return att.toLowerCase() === "no";
   }
 
   function updateSummary() {
@@ -125,85 +96,74 @@ document.addEventListener("DOMContentLoaded", async () => {
     let responded = 0;
 
     guests.forEach((g) => {
-      const phoneNorm = normalizePhone(g["Phone #"] || g.Phone || g[RSVP_PHONE_HEADER]);
-      const r = rsvpByPhone[phoneNorm];
-      if (!r) return;
+      const att = getRsvp(g);
+      if (!att || (!isYes(att) && !isNo(att))) return;
       responded += 1;
-      const att = String(r[RSVP_ATTENDING_HEADER] || "").toLowerCase();
-      if (att.includes("yes") || att.includes("sí") || att.includes("si")) {
-        attending += 1;
-      } else if (att.includes("no")) {
-        notAttending += 1;
-      }
+      if (isYes(att)) attending += 1;
+      else notAttending += 1;
     });
 
-    const totalGuests = guests.length;
-    const noResponse = Math.max(totalGuests - responded, 0);
+    const noResponse = Math.max(guests.length - responded, 0);
 
     if (summaryAttending) summaryAttending.textContent = String(attending);
     if (summaryNotAttending) summaryNotAttending.textContent = String(notAttending);
     if (summaryNoResponse) summaryNoResponse.textContent = String(noResponse);
   }
 
-  function renderGroupByPhone(rawPhone) {
+  function renderResponded() {
     if (!guestsTableBody) return;
     guestsTableBody.innerHTML = "";
 
-    const phoneNorm = normalizePhone(rawPhone);
-    if (!phoneNorm) {
-      searchMessage.textContent = "Please enter a phone number.";
-      return;
-    }
-
-    let matchedGuest = guests.find((g) => {
-      const gPhone = normalizePhone(g["Phone #"] || g.Phone || g[RSVP_PHONE_HEADER]);
-      return gPhone === phoneNorm;
+    // Only guests with a Yes or No response
+    const responded = guests.filter((g) => {
+      const att = getRsvp(g);
+      return isYes(att) || isNo(att);
     });
 
-    if (!matchedGuest) {
-      searchMessage.textContent = "No guest found with that phone number.";
+    // Sort: Yes first, then No
+    responded.sort((a, b) => {
+      const aYes = isYes(getRsvp(a)) ? 0 : 1;
+      const bYes = isYes(getRsvp(b)) ? 0 : 1;
+      return aYes - bYes;
+    });
+
+    if (responded.length === 0) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 6;
+      cell.style.padding = "0.75rem 0.5rem";
+      cell.style.color = "#888";
+      cell.textContent = "No responses yet.";
+      row.appendChild(cell);
+      guestsTableBody.appendChild(row);
       return;
     }
 
-    const groupNumber = getGuestGroup(matchedGuest);
-    const groupGuests = guests.filter((g) => getGuestGroup(g) === groupNumber);
-
-    searchMessage.textContent = groupNumber
-      ? `Showing group ${groupNumber} (${groupGuests.length} guest${groupGuests.length === 1 ? "" : "s"})`
-      : `Showing ${groupGuests.length} guest${groupGuests.length === 1 ? "" : "s"}.`;
-
-    groupGuests.forEach((g) => {
+    responded.forEach((g) => {
       const row = document.createElement("tr");
-      const fullName = `${g.Nombre || g.FirstName || ""} ${g.Apellido || g.LastName || ""}`.trim();
-      const side = getGuestSide(g);
-      const gPhone = g["Phone #"] || g.Phone || "";
-      const phoneNormGuest = normalizePhone(g["Phone #"] || g.Phone || g[RSVP_PHONE_HEADER]);
-      const r = rsvpByPhone[phoneNormGuest];
-      const att = r ? String(r[RSVP_ATTENDING_HEADER] || "").trim() : "No response";
-      const ts = r ? String(r[RSVP_TIMESTAMP_HEADER] || "").trim() : "";
-      const food = r ? String(r[RSVP_FOOD_HEADER] || "").trim() : "";
-      const notes = r ? String(r[RSVP_NOTES_HEADER] || "").trim() : "";
+      const att = getRsvp(g);
+      const allergies = String(g.Allergies || "").trim();
+      const food = allergies.toLowerCase() === "no allergies" ? "" : allergies;
 
-      [fullName, side, getGuestGroup(g), gPhone, att || "No response", ts, food, notes].forEach(
-        (val) => {
+      [
+        g.Nombre || "",
+        g["Bride or Groom"] || "",
+        g["Phone #"] || "",
+        g["Group ID"] || "",
+        att,
+        food,
+      ].forEach((val) => {
         const cell = document.createElement("td");
         cell.style.padding = "0.35rem 0.5rem";
-        cell.textContent = val || "";
+        cell.textContent = val;
         row.appendChild(cell);
-      }
-      );
+      });
 
       guestsTableBody.appendChild(row);
     });
   }
 
-  if (searchForm) {
-    searchForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      renderGroupByPhone(searchPhoneInput.value);
-    });
+  if (stored === "true") {
+    loadData();
   }
-
-  loadData();
 });
-

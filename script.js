@@ -35,11 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const translations = {
     en: {
       brand_names: "Maria & Raynulfo",
-      brand_date: "December 29th 2026 · North Miami Beach",
+      brand_date: "December 29th, 2026",
       nav_home: "Home",
       nav_wedding_day: "Wedding Day",
       nav_registry: "Registry",
-      nav_hotel: "Hotel",
+      nav_hotel: "Stay",
       nav_things_to_do: "Things To Do",
       home_rsvp_button: "RSVP",
       home_names_line1: "Maria Alejandra",
@@ -74,9 +74,15 @@ document.addEventListener("DOMContentLoaded", () => {
       wedding_timeline_reception_title: "Dinner & Celebration",
       wedding_timeline_reception_desc:
         "Dinner, speeches, and dancing in the refectory and courtyard beneath the arches and oak trees.",
-      wedding_dress_code_title: "Dress Code",
-      wedding_dress_code_body:
-        "Formal evening attire. The monastery features stone floors and garden paths, so we recommend comfortable shoes or block heels. December evenings can be breezy, so a light wrap or jacket is a good idea.",
+      wedding_child_free_title: "Child Free Affair",
+      wedding_child_free_body:
+        "While we adore your little ones, our wedding is going to be an adults-only event so that everyone can relax and enjoy the evening. We appreciate you making arrangements ahead of time to celebrate with us!",
+      wedding_dress_code_title: "Dress Code: Formal Evening Attire",
+      wedding_dress_code_intro: "We invite you to dress in your finest formal evening wear.",
+      wedding_dress_code_bold: "To honor the bride's traditional attire, we kindly ask that guests refrain from wearing white, cream, or ivory.",
+      wedding_dress_code_venue_label: "Note on the Venue:",
+      wedding_dress_code_venue_note:
+        "The monastery features historic stone floors and garden paths; we recommend block heels or comfortable shoes. December evenings in Miami can be breezy, so a light wrap or jacket is suggested.",
       wedding_venue_title: "Venue & Directions",
       wedding_venue_body:
         "The Ancient Spanish Monastery is a historic cloister with several distinct spaces. The chapel, gardens, and reception hall are a short walk from one another within the same grounds.",
@@ -108,20 +114,45 @@ document.addEventListener("DOMContentLoaded", () => {
       registry_other_body:
         "If you prefer to share a gift in another way, please feel welcome to reach out to our families or to us directly. We are simply honored to celebrate with you.",
       hotel_kicker: "Stay",
-      hotel_title: "Hotel Suggestions",
+      hotel_title: "Where to stay?",
       hotel_subtitle:
-        "For our guests traveling from near and far, here are a few areas and hotels to consider during your stay in Miami.",
-      hotel_intro:
-        "We recommend staying either near the venue in North Miami Beach or near our home in Doral.",
+        "Here are some hotels we suggest for your stay in Miami. These are simply recommendations — you are more than welcome to choose any hotel that is most convenient for you!",
       hotel_airbnb_title: "Airbnb & Vacation Rentals",
       hotel_airbnb_body:
-        "Airbnb and other vacation rentals are also available in North Miami Beach, Doral, and Miami Beach. If you prefer a home or apartment, search for stays near those areas.",
-      hotel_airbnb_pairing:
-        "Would you like to share an Airbnb with other guests to split costs? Please reach out to the bride or groom and we will try to help connect you with others looking to share.",
-      hotel_group_venue_title: "Near the Venue · North Miami Beach",
-      hotel_group_doral_title: "Doral · Close to Our Home",
-      hotel_link_website: "Hotel Website",
-      hotel_link_map: "View on Map",
+        "Airbnb and other vacation rentals are widely available across Miami. If you'd like to share a rental with other guests to split costs, please reach out to the bride or groom and we'll do our best to connect you with other friends and family looking for a shared stay!",
+      hotel_group_venue_title: "Near the Ancient Spanish Monastery · Aventura Area",
+      hotel_group_doral_title: "Near Doral",
+      hotel_group_miramar_title: "Near Miramar",
+      hotel_link_website: "View Hotel",
+      hotel_aventura1_desc: "A reliable 3-star choice steps from Aventura Mall, with comfortable rooms and solid amenities for a wedding weekend.",
+      hotel_aventura1_price: "~$275 per night",
+      hotel_aventura1_highlights: "Heated outdoor pool · On-site restaurant & bar · Bicycle rentals",
+      hotel_aventura2_desc: "A stylish 4-star European-inspired hotel with a rooftop pool and bar — a great option for guests who want a little extra luxury.",
+      hotel_aventura2_price: "~$245 per night",
+      hotel_aventura2_highlights: "Rooftop pool & bar · AC Kitchen breakfast · Pet-friendly",
+      hotel_aventura3_desc: "A beachfront resort with direct ocean access — ideal for guests who want to combine the wedding with a beach getaway.",
+      hotel_aventura3_price: "~$235 per night",
+      hotel_aventura3_highlights: "Direct beach access · Oceanfront pool · Poolside bar & restaurant",
+      hotel_doral1_desc: "An eco-conscious extended-stay hotel with fully equipped kitchens — great value for guests planning a longer trip.",
+      hotel_doral1_price: "~$159 per night",
+      hotel_doral1_highlights: "Fully equipped kitchens · Free healthy breakfast · Free airport shuttle · Pet-friendly",
+      hotel_doral2_desc: "A reliable and comfortable choice close to local dining and shopping, with generous breakfast included.",
+      hotel_doral2_price: "~$175 per night",
+      hotel_doral2_highlights: "Free breakfast buffet · 24/7 café & bar · Outdoor pool · Pet-friendly",
+      hotel_doral3_desc: "All-suite rooms with separate living areas — perfect for guests who want extra space to get ready for the big day.",
+      hotel_doral3_price: "~$193 per night",
+      hotel_doral3_highlights: "Free hot breakfast · Free parking · Outdoor pool",
+      hotel_miramar1_desc: "A well-rounded option with on-site dining and free parking — one of the most affordable picks for the weekend.",
+      hotel_miramar1_price: "~$136 per night",
+      hotel_miramar1_highlights: "On-site restaurant & bar · Outdoor pool · Free parking · Pet-friendly",
+      hotel_miramar2_desc: "A straightforward and comfortable stay with free breakfast and parking included — great for budget-conscious guests.",
+      hotel_miramar2_price: "~$179 per night",
+      hotel_miramar2_highlights: "Free breakfast buffet · Outdoor pool · Free self-parking · Mini-fridges & microwaves",
+      hotel_miramar3_desc: "Spacious suites with full kitchens and a saline pool — ideal for families or guests who want a home-away-from-home feel.",
+      hotel_miramar3_price: "~$177 per night",
+      hotel_miramar3_highlights: "Full kitchen suites · Free hot breakfast · Saline pool · Pet-friendly",
+      footer_text_before: "With love from",
+      footer_text_after: "We cannot wait to celebrate with you at the Ancient Spanish Monastery.",
       rsvp_title: "RSVP",
       rsvp_intro:
         "Please confirm your attendance by entering your phone number and letting us know if you will join us.",
@@ -147,26 +178,61 @@ document.addEventListener("DOMContentLoaded", () => {
       things_title: "Things To Do",
       things_subtitle:
         "Make a mini-vacation of your trip. Here are ideas to help you enjoy Miami before and after the wedding.",
-      things_near_venue_title: "Near the Venue",
-      things_near_venue_item1_title: "Beaches & Parks (Sample)",
-      things_near_venue_item1_body:
-        "Enjoy nearby beaches and green spaces in North Miami Beach. We will add specific recommendations closer to the date.",
-      things_miami_beach_title: "Miami & Miami Beach",
-      things_miami_beach_item1_title: "Art, Food & Nightlife (Sample)",
-      things_miami_beach_item1_body:
-        "From Wynwood walls to restaurants and music, there is always something to do. We will share some of our favorite spots soon.",
-      things_doral_title: "Doral & Local Favorites",
-      things_doral_item1_title: "Neighborhood Spots (Sample)",
-      things_doral_item1_body:
-        "We will add recommendations near our home in Doral—cafés, restaurants, and places we love.",
+      things_transport:
+        "Miami has very limited to no public transportation. It is highly recommended to rent a car to fully explore the city and get around comfortably during your stay.",
+      things_item1_title: "Wynwood Walls",
+      things_item1_body:
+        "This is the heart of Miami's urban art scene and a must-see for anyone wanting to see the city's modern, creative side. Features massive, colorful murals by world-renowned street artists. The surrounding neighborhood is filled with trendy galleries and craft breweries.",
+      things_item2_title: "Vizcaya Museum & Gardens",
+      things_item2_body:
+        "A stunning historic estate that feels like a European palace dropped into the middle of a tropical jungle. Showcases a 1914 Italian Renaissance-style mansion with elaborate formal gardens and breathtaking views overlooking Biscayne Bay.",
+      things_item3_title: "Miami Design District",
+      things_item3_body:
+        "This is where high fashion meets architectural innovation, perfect for those who appreciate luxury and design. Home to flagship stores for the world's most prestigious fashion brands, dotted with public art installations and sleek, modern architecture.",
+      things_item4_title: "Little Havana & Calle Ocho",
+      things_item4_body:
+        "This is the soul of Miami's Cuban community and provides the most authentic international experience in the city. Known for the Walk of Fame honoring Latin stars and the famous Domino Park, filled with the scents of Cuban coffee (cafecitos) and hand-rolled cigars.",
+      things_item5_title: "Fairchild Tropical Botanic Garden",
+      things_item5_body:
+        "A lush, 83-acre paradise that showcases the unique flora of South Florida. Features rare tropical plants, a butterfly conservatory, and sunken gardens. Tram tours are available to explore the vast grounds comfortably.",
+      things_item6_title: "Phillip & Patricia Frost Museum of Science",
+      things_item6_body:
+        "A world-class facility located in Downtown Miami that is both educational and visually spectacular. Features a three-level aquarium and a state-of-the-art planetarium, with interactive exhibits on the Everglades and space exploration.",
+      things_item7_title: "Pérez Art Museum Miami (PAMM)",
+      things_item7_body:
+        "Commonly known as PAMM, this museum focuses on international art from the 20th and 21st centuries. The building itself is an architectural marvel with hanging gardens, located directly on the water with beautiful outdoor seating areas.",
+      things_item8_title: "Bayside Marketplace",
+      things_item8_body:
+        "An energetic waterfront festival center that serves as the gateway to the bay. Offers a mix of shops, restaurants, and daily live music. The primary spot for catching boat tours and sightseeing cruises.",
+      things_item9_title: "Aventura Mall",
+      things_item9_body:
+        "One of the top-tier shopping destinations in the country, blending high-end retail with art. Includes a massive slide tower designed by artist Carsten Höller, with over 300 stores including luxury boutiques and major department stores.",
+      things_item10_title: "Dolphin Mall",
+      things_item10_body:
+        "Miami's largest outlet shopping center, perfect for visitors looking for great deals. Provides over 240 retail outlets and brand-name discounters, with an extensive entertainment zone with a cinema and bowling.",
+      things_item11_title: "Sawgrass Mills",
+      things_item11_body:
+        "Located slightly north in Sunrise, this is one of the largest outlet malls in the world. Known for The Colonnade Outlets, which features luxury brands at outlet prices — a true destination for serious shoppers coming from overseas.",
+      things_item12_title: "Miami Beach",
+      things_item12_body:
+        "Miami Beach offers a more relaxed vibe as you move further north. Beautiful white sand beaches with a lively atmosphere, great dining, and vibrant nightlife.",
+      things_item13_title: "South Beach",
+      things_item13_body:
+        "South Beach is the southern tip, famous for Ocean Drive and its neon lights. The iconic Art Deco architecture lines the streets just steps from the sand, and the energy here is unlike anywhere else in Miami.",
+      things_item14_title: "Hollywood Beach Broadwalk",
+      things_item14_body:
+        "A classic Florida boardwalk experience that is perfect for families and long walks. Features a 2.5-mile pedestrian promenade right on the Atlantic Ocean, lined with cozy cafes, ice cream shops, and oceanfront parks.",
+      things_item15_title: "Dania Beach",
+      things_item15_body:
+        "A quieter, more natural beach alternative located just south of Fort Lauderdale. Home to a popular fishing pier and beautiful dunes — perfect for those looking to escape the heavier crowds of Miami.",
     },
     es: {
       brand_names: "Maria y Raynulfo",
-      brand_date: "29 de diciembre de 2026 · North Miami Beach",
+      brand_date: "29 de diciembre de 2026",
       nav_home: "Inicio",
       nav_wedding_day: "El Gran Día",
       nav_registry: "Regalos",
-      nav_hotel: "Hoteles",
+      nav_hotel: "Hospedaje",
       nav_things_to_do: "Qué Hacer",
       home_rsvp_button: "Confirmar asistencia",
       home_names_line1: "Maria Alejandra",
@@ -201,9 +267,15 @@ document.addEventListener("DOMContentLoaded", () => {
       wedding_timeline_reception_title: "Cena y fiesta",
       wedding_timeline_reception_desc:
         "Cena, brindis y baile en el refectorio y el patio, bajo los arcos y el gran roble.",
-      wedding_dress_code_title: "Código de vestimenta",
-      wedding_dress_code_body:
-        "Etiqueta de noche. El monasterio tiene pisos de piedra y senderos en el jardín, por lo que recomendamos zapatos cómodos o tacones anchos. Las noches de diciembre pueden ser frescas, así que un chal o saco ligero es buena idea.",
+      wedding_child_free_title: "Evento Solo para Adultos",
+      wedding_child_free_body:
+        "Aunque adoramos a sus pequeños, nuestra boda será un evento exclusivo para adultos para que todos puedan relajarse y disfrutar de la noche. ¡Agradecemos que hagan los arreglos con anticipación para celebrar con nosotros!",
+      wedding_dress_code_title: "Código de vestimenta: Etiqueta de Noche",
+      wedding_dress_code_intro: "Los invitamos a vestir con su mejor ropa de etiqueta.",
+      wedding_dress_code_bold: "Para honrar el atuendo tradicional de la novia, pedimos amablemente que los invitados eviten usar blanco, crema o marfil.",
+      wedding_dress_code_venue_label: "Nota sobre el lugar:",
+      wedding_dress_code_venue_note:
+        "El monasterio tiene pisos históricos de piedra y senderos en el jardín; recomendamos tacones anchos o zapatos cómodos. Las noches de diciembre en Miami pueden ser frescas, así que se sugiere un chal o saco ligero.",
       wedding_venue_title: "El lugar y cómo llegar",
       wedding_venue_body:
         "El Ancient Spanish Monastery es un claustro histórico con varios espacios. La capilla, los jardines y el salón de recepción están a pocos pasos unos de otros dentro del mismo recinto.",
@@ -237,20 +309,45 @@ document.addEventListener("DOMContentLoaded", () => {
       registry_other_body:
         "Si prefieres compartir un regalo de otra forma, siéntete libre de hablar con nuestras familias o con nosotros directamente. Lo más importante para nosotros es celebrar contigo.",
       hotel_kicker: "Hospedaje",
-      hotel_title: "Sugerencias de hoteles",
+      hotel_title: "¿Dónde hospedarse?",
       hotel_subtitle:
-        "Para quienes viajan desde fuera o desde otras ciudades, aquí van algunas zonas y hoteles a considerar durante su estancia en Miami.",
-      hotel_intro:
-        "Recomendamos hospedarse cerca del lugar en North Miami Beach o cerca de nuestra casa en Doral.",
+        "Aquí hay algunos hoteles que sugerimos para tu estadía en Miami. Estas son simplemente recomendaciones — ¡eres más que bienvenido a elegir el hotel que sea más conveniente para ti!",
       hotel_airbnb_title: "Airbnb y alquileres vacacionales",
       hotel_airbnb_body:
-        "También hay Airbnb y otros alquileres vacacionales en North Miami Beach, Doral y Miami Beach. Si prefieres una casa o apartamento, busca alojamientos cerca de esas zonas.",
-      hotel_airbnb_pairing:
-        "¿Te gustaría compartir un Airbnb con otros invitados para dividir gastos? Comunícate con la novia o el novio y trataremos de conectarte con quienes busquen compartir.",
-      hotel_group_venue_title: "Cerca del lugar · North Miami Beach",
-      hotel_group_doral_title: "Doral · Cerca de nuestra casa",
-      hotel_link_website: "Sitio del hotel",
-      hotel_link_map: "Ver mapa",
+        "Los Airbnb y otros alquileres vacacionales están ampliamente disponibles en Miami. Si te gustaría compartir un alquiler con otros invitados para dividir gastos, ¡comunícate con la novia o el novio y haremos lo posible por conectarte con otros amigos y familiares que también busquen compartir!",
+      hotel_group_venue_title: "Cerca del Ancient Spanish Monastery · Área de Aventura",
+      hotel_group_doral_title: "Cerca de Doral",
+      hotel_group_miramar_title: "Cerca de Miramar",
+      hotel_link_website: "Ver Hotel",
+      hotel_aventura1_desc: "Una opción confiable de 3 estrellas a pasos de Aventura Mall, con habitaciones cómodas y buenas comodidades para un fin de semana de boda.",
+      hotel_aventura1_price: "~$275 por noche",
+      hotel_aventura1_highlights: "Piscina exterior climatizada · Restaurante y bar en el lugar · Alquiler de bicicletas",
+      hotel_aventura2_desc: "Un elegante hotel de 4 estrellas con inspiración europea, con piscina y bar en la azotea — una gran opción para quienes buscan un poco más de lujo.",
+      hotel_aventura2_price: "~$245 por noche",
+      hotel_aventura2_highlights: "Piscina y bar en la azotea · Desayuno en AC Kitchen · Acepta mascotas",
+      hotel_aventura3_desc: "Un resort frente al mar con acceso directo al océano — ideal para quienes quieran combinar la boda con unas vacaciones en la playa.",
+      hotel_aventura3_price: "~$235 por noche",
+      hotel_aventura3_highlights: "Acceso directo a la playa · Piscina frente al mar · Bar y restaurante junto a la piscina",
+      hotel_doral1_desc: "Un hotel ecológico de estadía extendida con cocinas totalmente equipadas — excelente relación calidad-precio para quienes planean un viaje más largo.",
+      hotel_doral1_price: "~$159 por noche",
+      hotel_doral1_highlights: "Cocinas totalmente equipadas · Desayuno saludable gratuito · Transporte gratuito al aeropuerto · Acepta mascotas",
+      hotel_doral2_desc: "Una opción confiable y cómoda cerca de restaurantes y tiendas locales, con un generoso desayuno incluido.",
+      hotel_doral2_price: "~$175 por noche",
+      hotel_doral2_highlights: "Desayuno buffet gratuito · Café y bar 24/7 · Piscina exterior · Acepta mascotas",
+      hotel_doral3_desc: "Habitaciones tipo suite con áreas de estar separadas — perfecto para quienes quieran espacio extra para prepararse para el gran día.",
+      hotel_doral3_price: "~$193 por noche",
+      hotel_doral3_highlights: "Desayuno caliente gratuito · Estacionamiento gratuito · Piscina exterior",
+      hotel_miramar1_desc: "Una opción completa con restaurante en el lugar y estacionamiento gratuito — una de las opciones más económicas para el fin de semana.",
+      hotel_miramar1_price: "~$136 por noche",
+      hotel_miramar1_highlights: "Restaurante y bar en el lugar · Piscina exterior · Estacionamiento gratuito · Acepta mascotas",
+      hotel_miramar2_desc: "Una estadía sencilla y cómoda con desayuno y estacionamiento gratuitos — excelente para invitados que buscan ahorrar.",
+      hotel_miramar2_price: "~$179 por noche",
+      hotel_miramar2_highlights: "Desayuno buffet gratuito · Piscina exterior · Estacionamiento gratuito · Mini-refrigeradores y microondas",
+      hotel_miramar3_desc: "Suites amplias con cocinas completas y piscina salina — ideal para familias o quienes buscan sentirse como en casa.",
+      hotel_miramar3_price: "~$177 por noche",
+      hotel_miramar3_highlights: "Suites con cocina completa · Desayuno caliente gratuito · Piscina salina · Acepta mascotas",
+      footer_text_before: "Con amor de",
+      footer_text_after: "No podemos esperar para celebrar contigo en el Ancient Spanish Monastery.",
       rsvp_title: "Confirmar asistencia",
       rsvp_intro:
         "Por favor confirma tu asistencia ingresando tu número de teléfono y contándonos si podrás acompañarnos.",
@@ -276,18 +373,53 @@ document.addEventListener("DOMContentLoaded", () => {
       things_title: "Qué hacer en Miami",
       things_subtitle:
         "Aprovecha el viaje como unas mini vacaciones. Aquí compartiremos ideas para disfrutar Miami antes y después de la boda.",
-      things_near_venue_title: "Cerca del monasterio",
-      things_near_venue_item1_title: "Playas y parques (ejemplo)",
-      things_near_venue_item1_body:
-        "Disfruta de las playas y áreas verdes en North Miami Beach. Agregaremos recomendaciones específicas más adelante.",
-      things_miami_beach_title: "Miami y Miami Beach",
-      things_miami_beach_item1_title: "Arte, comida y vida nocturna (ejemplo)",
-      things_miami_beach_item1_body:
-        "Desde Wynwood hasta los restaurantes y la música, siempre hay algo que hacer. Pronto compartiremos algunos de nuestros lugares favoritos.",
-      things_doral_title: "Doral y nuestros favoritos",
-      things_doral_item1_title: "Sitios de barrio (ejemplo)",
-      things_doral_item1_body:
-        "Agregaremos recomendaciones cerca de nuestra casa en Doral: cafés, restaurantes y sitios que nos encantan.",
+      things_transport:
+        "Miami tiene muy limitado o ningún transporte público. Se recomienda ampliamente alquilar un auto para explorar la ciudad y movilizarte cómodamente durante tu estadía.",
+      things_item1_title: "Wynwood Walls",
+      things_item1_body:
+        "Es el corazón de la escena artística urbana de Miami y una visita obligada para quienes quieren descubrir el lado moderno y creativo de la ciudad. Exhibe enormes murales coloridos de artistas de renombre mundial, y el barrio circundante está lleno de galerías y cervecerías artesanales.",
+      things_item2_title: "Vizcaya Museum & Gardens",
+      things_item2_body:
+        "Una impresionante finca histórica que parece un palacio europeo en medio de la jungla tropical. Presenta una mansión de estilo renacentista italiano de 1914 con elaborados jardines formales y vistas espectaculares de la Bahía Biscayne.",
+      things_item3_title: "Miami Design District",
+      things_item3_body:
+        "Aquí la alta moda se encuentra con la innovación arquitectónica, ideal para quienes aprecian el lujo y el diseño. Alberga tiendas insignia de las marcas de moda más prestigiosas del mundo, con instalaciones de arte público y arquitectura moderna.",
+      things_item4_title: "La Pequeña Habana y Calle Ocho",
+      things_item4_body:
+        "El alma de la comunidad cubana de Miami y la experiencia internacional más auténtica de la ciudad. Famosa por el Paseo de la Fama latino y el Domino Park, impregnada del aroma del café cubano (cafecitos) y puros artesanales.",
+      things_item5_title: "Fairchild Tropical Botanic Garden",
+      things_item5_body:
+        "Un exuberante paraíso de 83 acres que muestra la flora única del sur de Florida. Cuenta con plantas tropicales raras, un conservatorio de mariposas y jardines hundidos. Se ofrecen tours en tranvía para recorrer los amplios terrenos cómodamente.",
+      things_item6_title: "Phillip & Patricia Frost Museum of Science",
+      things_item6_body:
+        "Una instalación de clase mundial en el centro de Miami, educativa y visualmente espectacular. Cuenta con un acuario de tres niveles y un planetario de última generación, con exhibiciones interactivas sobre los Everglades y la exploración espacial.",
+      things_item7_title: "Pérez Art Museum Miami (PAMM)",
+      things_item7_body:
+        "Conocido como PAMM, este museo se centra en arte internacional de los siglos XX y XXI. El edificio en sí es una maravilla arquitectónica con jardines colgantes, ubicado directamente frente al agua con hermosas áreas de descanso al aire libre.",
+      things_item8_title: "Bayside Marketplace",
+      things_item8_body:
+        "Un animado centro frente al mar que sirve como puerta de entrada a la bahía. Ofrece tiendas, restaurantes y música en vivo a diario. El lugar principal para tomar tours en bote y cruceros turísticos.",
+      things_item9_title: "Aventura Mall",
+      things_item9_body:
+        "Uno de los principales destinos de compras del país, combinando tiendas de lujo con arte. Incluye una enorme torre tobogán diseñada por el artista Carsten Höller, con más de 300 tiendas entre boutiques de lujo y grandes almacenes.",
+      things_item10_title: "Dolphin Mall",
+      things_item10_body:
+        "El centro comercial outlet más grande de Miami, ideal para quienes buscan buenas ofertas. Ofrece más de 240 tiendas outlet y marcas reconocidas, con una extensa zona de entretenimiento con cine y boliche.",
+      things_item11_title: "Sawgrass Mills",
+      things_item11_body:
+        "Ubicado al norte en Sunrise, es uno de los centros outlet más grandes del mundo. Conocido por The Colonnade Outlets, con marcas de lujo a precios de outlet — un verdadero destino para compradores serios que vienen del exterior.",
+      things_item12_title: "Miami Beach",
+      things_item12_body:
+        "Miami Beach ofrece un ambiente más relajado conforme avanzas hacia el norte. Hermosas playas de arena blanca con un ambiente animado, excelente gastronomía y vibrante vida nocturna.",
+      things_item13_title: "South Beach",
+      things_item13_body:
+        "South Beach es el extremo sur, famoso por Ocean Drive y sus luces de neón. La icónica arquitectura Art Déco bordea las calles a pasos de la arena, y la energía aquí es única en Miami.",
+      things_item14_title: "Hollywood Beach Broadwalk",
+      things_item14_body:
+        "Una experiencia clásica de paseo marítimo en Florida, perfecta para familias y caminatas largas. Cuenta con un paseo peatonal de 2.5 millas frente al Océano Atlántico, bordeado de cafés, heladerías y parques frente al mar.",
+      things_item15_title: "Dania Beach",
+      things_item15_body:
+        "Una alternativa de playa más tranquila y natural al sur de Fort Lauderdale. Hogar de un popular muelle de pesca y hermosas dunas — perfecta para quienes buscan escapar de las multitudes de Miami.",
     },
   };
 
@@ -403,7 +535,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function fetchCsv(url) {
     if (!url || url.startsWith("YOUR_")) return [];
-    const res = await fetch(url);
+    const cacheBuster = url + (url.includes("?") ? "&" : "?") + "_t=" + Date.now();
+    const res = await fetch(cacheBuster);
     if (!res.ok) return [];
     const text = await res.text();
     return parseCsv(text);
@@ -472,7 +605,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let guestList = [];
 
   async function ensureGuestList() {
-    if (guestList.length > 0) return;
     guestList = await fetchCsv(GUESTS_CSV_URL);
   }
 
@@ -526,20 +658,24 @@ document.addEventListener("DOMContentLoaded", () => {
     groupListEl.innerHTML = "";
     const lang = currentLang;
 
-    // Pre-fill notes from first guest with a meaningful allergy/note entry
+    // Pre-fill notes from the first group member who has a prior response
     let prefilledNotes = "";
 
     guests.forEach((g, i) => {
       const name = `${g.Nombre || g.FirstName || ""} ${g.Apellido || g.LastName || ""}`.trim();
-      const rsvpVal = String(g.RSVP || g["RSVP"] || "").trim().toLowerCase();
-      const isYes = rsvpVal === "yes" || rsvpVal === "sí" || rsvpVal === "si";
-      const isNo  = rsvpVal === "no";
-      const hasResponse = isYes || isNo;
 
-      const allergies = (g.Allergies || "").trim();
-      if (!prefilledNotes && allergies && allergies.toLowerCase() !== "no allergies") {
-        prefilledNotes = allergies;
+      // Read attending status and allergies directly from the guest list row
+      const attending = String(g.RVSP || g.RSVP || "").trim().toLowerCase();
+      const isYes = attending === "yes" || attending === "sí" || attending === "si";
+      const isNo  = attending === "no";
+
+      if (!prefilledNotes) {
+        const allergies = (g.Allergies || "").trim();
+        if (allergies && allergies.toLowerCase() !== "no allergies") {
+          prefilledNotes = allergies;
+        }
       }
+      const hasResponse = isYes || isNo;
 
       const row = document.createElement("div");
       row.className = "rsvp-guest-row";
@@ -629,4 +765,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
 

@@ -66,23 +66,10 @@
           </div>
 
           <div class="card" style="margin-top: 1.5rem">
-            <h2 class="subsection-title" style="margin-bottom: 0.5rem">Find Group by Phone</h2>
+            <h2 class="subsection-title" style="margin-bottom: 0.25rem">Responses</h2>
             <p class="small muted" style="margin-top: 0">
-              Paste the full phone number exactly as stored in your guest sheet. All guests with the same group
-              number will be shown.
+              All guests who have responded Yes or No. Sorted: attending first, then not attending.
             </p>
-            <form
-              id="admin-search-form"
-              class="rsvp-form"
-              style="flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem; margin-top: 0.75rem"
-            >
-              <div class="rsvp-field" style="flex: 1 1 220px">
-                <label for="admin-search-phone">Phone</label>
-                <input id="admin-search-phone" type="text" autocomplete="off" />
-              </div>
-              <button type="submit" class="button" style="flex: 0 0 auto">Find Group</button>
-            </form>
-            <p id="admin-search-message" class="small muted" style="margin-top: 0.75rem"></p>
 
             <div style="overflow-x: auto; margin-top: 1rem">
               <table
@@ -91,14 +78,12 @@
               >
                 <thead>
                   <tr>
-                    <th style="text-align: left; padding: 0.4rem 0.5rem">Name</th>
-                    <th style="text-align: left; padding: 0.4rem 0.5rem">Side</th>
-                    <th style="text-align: left; padding: 0.4rem 0.5rem">Group</th>
-                    <th style="text-align: left; padding: 0.4rem 0.5rem">Phone</th>
-                    <th style="text-align: left; padding: 0.4rem 0.5rem">RSVP</th>
-                    <th style="text-align: left; padding: 0.4rem 0.5rem">Updated</th>
-                    <th style="text-align: left; padding: 0.4rem 0.5rem">Food</th>
-                    <th style="text-align: left; padding: 0.4rem 0.5rem">Notes</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Nombre</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Bride or Groom</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Phone #</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Group ID</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">RVSP</th>
+                    <th style="text-align: left; padding: 0.4rem 0.5rem">Allergies</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
