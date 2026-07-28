@@ -6,3 +6,25 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/.playwright-cli/
+/.playwright/
+
+# Guest data — lives in Google Sheets, never publish it.
+# These stay on disk as a local backup but must not be committed:
+# the repo is public and GitHub Pages serves every tracked file.
+*.csv
+
+# Source material for the site's images — not served, kept locally
+/Map.pdf
+/Monastery Map.png
+/WhatsApp Image*.jpeg
+/Images of Monastery/
+/Images of sample website/
+
+# Debug artifacts
+/rsvp-*-state.png
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
