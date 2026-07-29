@@ -115,19 +115,46 @@ the response is a real readable JSON body.
 
 ```jsonc
 // request
-{ "action": "adminList", "token": "…" }
+{ "action": "adminList", "passphrase": "…" }
 
 // response
 { "ok": true, "guests": [ { "name", "side", "phone", "groupId", "attending", "allergies" }, … ] }
 { "ok": false, "error": "unauthorized" }
+{ "ok": false, "error": "throttled", "retryAfter": 300 }
 ```
 
-The token is compared **server-side** against a value in Apps Script **Script
-Properties** — never in the repository, never in client JavaScript. Comparison is
-length-checked then constant-time to avoid leaking the token via timing.
+The passphrase is compared **server-side** against `ADMIN_PASSPHRASE` in Apps Script
+**Script Properties** — never in the repository, never in client JavaScript. Comparison
+is length-checked then constant-time to avoid leaking it through response timing.
 
 This is the only action that returns phone numbers, and the only one that returns
 guests who have none.
+
+#### Why a memorable passphrase, not a random token
+
+One of the two admins is non-technical. A token long enough to resist offline guessing
+is a token nobody can type, which pushes it into a sticky note or a chat message — a
+worse outcome than a weaker secret used correctly.
+
+The original flaw was never that `BuddyBupsters` was memorable. It was that it lived in
+`admin.js` where anyone could read it, and was compared in the browser where anyone
+could skip the comparison. Moving the check server-side fixes both. Once the only
+remaining attack is guessing over the network, a 3–4 word phrase is sufficient:
+
+- Choose something like `sage-monastery-lentils-2026`. Roughly 40+ bits against a
+  dictionary attack, which is far beyond what a rate-limited network endpoint allows.
+- **Failed attempts are throttled** via `CacheService`: a global counter, since Apps
+  Script cannot see caller IPs. After 10 failures in 15 minutes, `adminList` returns
+  `throttled` for everyone until the window expires. A wedding dashboard is opened a
+  handful of times, so a blunt global lock is acceptable and is the only mechanism the
+  platform actually supports.
+- Failures are recorded in the `_log` tab.
+
+The passphrase can be rotated at any time by editing the Script Property. No code
+change, no redeploy, no site update.
+
+Operationally: choose it, tell Maria out-of-band (in person, or a message she deletes),
+and never put it in the repository, in this document, or in a chat with an assistant.
 
 ## Sheet contract
 
@@ -165,7 +192,7 @@ text in the guest's notes box — which is what `script.js:722` already does tod
 | Exposure | Before | After |
 |---|---|---|
 | Bulk guest-list download | 236 rows, names + phones, anonymous | endpoint returns one group, no phones |
-| Admin password | `BuddyBupsters` in client JS | token in Script Properties, checked server-side |
+| Admin password | `BuddyBupsters` in client JS, compared in browser | passphrase in Script Properties, compared server-side, attempts throttled |
 | RSVP silent failure | opaque `no-cors` response | real JSON success/failure |
 | Form Responses tab | not exposed | not exposed (Form retired) |
 
@@ -209,11 +236,16 @@ untrusted values.
 
 **`admin.js`**
 - Delete `ADMIN_PASSWORD` and `GUESTS_CSV_URL`.
-- The login form posts the typed token to `adminList`. Success is "the server returned
-  data"; there is no client-side comparison.
-- The token is held in `sessionStorage`, not `localStorage`, so it does not persist on
-  a shared machine. This is a deliberate, minor UX regression: the admin re-enters the
-  token once per browser session.
+- The login form posts the typed passphrase to `adminList`. Success is "the server
+  returned data"; there is no client-side comparison. The `wedding_admin_authenticated`
+  localStorage flag is deleted — it was a client-side boolean anyone could set to `true`
+  to reveal the dashboard.
+- The passphrase is held in `sessionStorage`, not `localStorage`, so it does not persist
+  on a shared or borrowed machine. The admin re-enters it once per browser session,
+  which is cheap precisely because it is memorable.
+- The `throttled` error is surfaced as its own message ("too many attempts, try again in
+  N minutes"), distinct from "incorrect passphrase", so a locked-out admin is not left
+  guessing that they have forgotten it.
 - Summary counts and the responded-table render from the JSON response. The existing
   `updateSummary` / `renderResponded` logic is preserved as-is.
 
@@ -225,7 +257,7 @@ at `index.html:564` stays as the admin entry point.
 Order matters. Un-publishing the sheet first would take the live site down.
 
 1. Deploy the Apps Script web app, note the `/exec` URL.
-2. Set `ADMIN_TOKEN` in Script Properties.
+2. Set `ADMIN_PASSPHRASE` in Script Properties.
 3. Point the site's `API_URL` at it; verify lookup, submit, and admin against the live
    endpoint while the CSV is still published (both paths work, so there is no outage).
 4. Merge and publish to GitHub Pages. Verify on the live origin.
@@ -244,8 +276,12 @@ requires re-publishing the sheet.
   a guest whose group has 9 members, and a guest with no phone (must miss).
 - Assert no response from `lookup` or `submit` contains a phone number or Group ID.
 - `submit` with an out-of-range index must be rejected without writing.
-- `adminList` with a wrong token, an empty token, and no token must all return
-  `unauthorized` and no data.
+- `adminList` with a wrong passphrase, an empty passphrase, and no passphrase field at
+  all must each return `unauthorized` and no data.
+- 10 consecutive failures must flip `adminList` to `throttled`; a correct passphrase
+  during the lock window must still be refused, and must succeed after it expires.
+- Setting `wedding_admin_authenticated` in localStorage by hand must not reveal the
+  dashboard.
 - After a `submit`, confirm `# confirmed` / `# declined` formulas are intact.
 - Browser-level verification against the deployed site: RSVP round-trip and admin login.
 
@@ -261,7 +297,8 @@ These require the owner's Google account; they cannot be automated from here.
 
 1. Create the Apps Script project bound to the guest Sheet and paste in the delivered code.
 2. Deploy as a web app: **Execute as:** Me — **Who has access:** Anyone.
-3. Set Script Property `ADMIN_TOKEN` to a long random string; share it with Maria
-   out-of-band. Do not put it in the repo or in chat.
+3. Set Script Property `ADMIN_PASSPHRASE` to a 3–4 word phrase of your choosing. Share
+   it with Maria out-of-band. Do not put it in the repo, in this document, or in a chat
+   with an assistant. It can be rotated later by editing this property alone.
 4. Send back the `/exec` URL.
 5. After step 4 of the rollout is verified: un-publish the sheet and close the Form.
