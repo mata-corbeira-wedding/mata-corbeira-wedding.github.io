@@ -168,11 +168,13 @@ document.addEventListener("DOMContentLoaded", () => {
       rsvp_footer_note: "RSVP submissions are collected securely via Google Forms.",
       rsvp_search_button: "Find My Group",
       rsvp_not_found: "No guest found with that number. Please try again.",
+      rsvp_lookup_error: "Something went wrong. Please try again in a moment.",
       rsvp_loading: "Searching\u2026",
       rsvp_group_intro: "Select who will be attending:",
       rsvp_back_button: "Back",
       rsvp_submitting: "Submitting\u2026",
       rsvp_success: "Your RSVP has been recorded. Thank you!",
+      rsvp_error: "Something went wrong. Please try again.",
       rsvp_attend_yes: "Attending",
       rsvp_attend_no: "Not attending",
       things_kicker: "Explore",
@@ -386,12 +388,14 @@ document.addEventListener("DOMContentLoaded", () => {
       rsvp_submit_label: "Enviar confirmación",
       rsvp_footer_note: "Las confirmaciones se registran de forma segura a través de Google Forms.",
       rsvp_search_button: "Buscar mi grupo",
+      rsvp_lookup_error: "Algo salió mal. Por favor intenta de nuevo en un momento.",
       rsvp_not_found: "No encontramos un invitado con ese número. Intenta de nuevo.",
       rsvp_loading: "Buscando\u2026",
       rsvp_group_intro: "Selecciona quién asistirá:",
       rsvp_back_button: "Atrás",
       rsvp_submitting: "Enviando\u2026",
       rsvp_success: "¡Tu confirmación fue registrada. Gracias!",
+      rsvp_error: "Algo salió mal. Por favor intenta de nuevo.",
       rsvp_attend_yes: "Asistirá",
       rsvp_attend_no: "No asistirá",
       things_kicker: "Para disfrutar",
@@ -517,77 +521,9 @@ document.addEventListener("DOMContentLoaded", () => {
     { code: "+52", country: "Mexico / México",                flag: "🇲🇽" },
   ];
 
-  // ── Guest list CSV (same sheet as admin) ──
-  const GUESTS_CSV_URL =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpZYFkAej3ho8qCNzumNvLpIk4_3BYv_VHqWTmOtKpajYVQycLzuoW-dD6P-dymmGifDi7QC-HoUcO/pub?gid=698292239&single=true&output=csv";
-  // ── Google Form submission URL ──
-  // Replace with your actual form URL and entry IDs after setting up Google Form
-  const GOOGLE_FORM_ACTION   = "https://docs.google.com/forms/d/e/1FAIpQLSearmpbQCMMvLZ0oLgtQHvFT-3z9aOG_MSzc1gvJOJQ0TR7nQ/formResponse";
-  const FORM_ENTRY_NAME      = "entry.1498135098";
-  const FORM_ENTRY_ATTENDING = "entry.877086558";
-  const FORM_ENTRY_NOTES     = "entry.1424661284";
-  const FORM_FBZ             = "7073025226565571995";
-
-  // ── CSV utilities ──
   function normalizePhone(raw) {
     if (!raw) return "";
     return String(raw).replace(/[^\d+]/g, "");
-  }
-
-  function parseCsvLine(line) {
-    const fields = [];
-    let i = 0;
-    while (i < line.length) {
-      if (line[i] === '"') {
-        let field = "";
-        i++; // skip opening quote
-        while (i < line.length) {
-          if (line[i] === '"' && line[i + 1] === '"') {
-            field += '"';
-            i += 2;
-          } else if (line[i] === '"') {
-            i++; // skip closing quote
-            break;
-          } else {
-            field += line[i++];
-          }
-        }
-        fields.push(field);
-        if (line[i] === ",") i++;
-      } else {
-        const end = line.indexOf(",", i);
-        if (end === -1) {
-          fields.push(line.slice(i));
-          break;
-        }
-        fields.push(line.slice(i, end));
-        i = end + 1;
-      }
-    }
-    return fields;
-  }
-
-  function parseCsv(text) {
-    const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
-    if (lines.length === 0) return [];
-    const headers = parseCsvLine(lines[0]).map((h) => h.trim());
-    return lines.slice(1).map((line) => {
-      const values = parseCsvLine(line);
-      const obj = {};
-      headers.forEach((h, idx) => {
-        obj[h] = (values[idx] || "").trim();
-      });
-      return obj;
-    });
-  }
-
-  async function fetchCsv(url) {
-    if (!url || url.startsWith("YOUR_")) return [];
-    const cacheBuster = url + (url.includes("?") ? "&" : "?") + "_t=" + Date.now();
-    const res = await fetch(cacheBuster);
-    if (!res.ok) return [];
-    const text = await res.text();
-    return parseCsv(text);
   }
 
   // ── DOM refs ──
@@ -625,6 +561,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (phoneInput) phoneInput.focus();
   }
 
+  // A successful submit hides the step-2 form and leaves only the success
+  // message. Every path back into step 2 has to undo that, or the guest sees an
+  // empty step with no submit button.
+  function resetStep2Display() {
+    if (groupIntroEl) groupIntroEl.style.display = "";
+    if (groupListEl) groupListEl.style.display = "";
+    if (notesEl && notesEl.closest(".rsvp-field")) notesEl.closest(".rsvp-field").style.display = "";
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.display = ""; }
+  }
+
   function closeRsvp() {
     if (!rsvpModal) return;
     rsvpModal.classList.remove("is-open");
@@ -634,11 +580,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (step2El) step2El.hidden = true;
     if (phoneInput) phoneInput.value = "";
     if (lookupMsgEl) lookupMsgEl.textContent = "";
-    if (groupListEl) { groupListEl.innerHTML = ""; groupListEl.style.display = ""; }
-    if (groupIntroEl) groupIntroEl.style.display = "";
-    if (notesEl) { notesEl.value = ""; notesEl.closest(".rsvp-field").style.display = ""; }
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.display = ""; }
+    if (groupListEl) groupListEl.innerHTML = "";
+    if (notesEl) notesEl.value = "";
     if (submitMsgEl) submitMsgEl.textContent = "";
+    resetStep2Display();
   }
 
   if (rsvpOpenButton) rsvpOpenButton.addEventListener("click", openRsvp);
@@ -649,12 +594,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "Escape") closeRsvp();
   });
 
-  // ── Guest list cache ──
-  let guestList = [];
-
-  async function ensureGuestList() {
-    guestList = await fetchCsv(GUESTS_CSV_URL);
-  }
+  // Phone used for the current lookup; replayed on submit so the server can
+  // re-resolve the group. The browser never learns sheet row numbers.
+  let currentPhone = "";
 
   // ── Step 1 → search ──
   if (searchBtn) {
@@ -666,33 +608,38 @@ document.addEventListener("DOMContentLoaded", () => {
         if (lookupMsgEl) lookupMsgEl.textContent = translations[currentLang].rsvp_not_found;
         return;
       }
-      const fullPhone = normalizePhone(code + local);
+      currentPhone = normalizePhone(code + local);
 
+      // Captured before we overwrite it, so it's whatever label the current
+      // language is showing — never a hardcoded string.
+      const originalBtnLabel = searchBtn.textContent;
       if (lookupMsgEl) lookupMsgEl.textContent = translations[currentLang].rsvp_loading;
+      searchBtn.textContent = translations[currentLang].rsvp_loading;
       searchBtn.disabled = true;
 
-      await ensureGuestList();
+      const res = await WeddingApi.lookup(currentPhone);
 
       searchBtn.disabled = false;
+      searchBtn.textContent = originalBtnLabel;
 
-      const matched = guestList.find((g) => {
-        const gPhone = normalizePhone(g["Phone #"] || g.Phone || "");
-        return gPhone === fullPhone;
-      });
+      // A failed call (network, throttled, server_error, not_configured…) is not
+      // the same as a successful lookup that matched nobody. Telling a guest
+      // whose wifi dropped that they are not invited makes them stop trying.
+      if (!res.ok) {
+        if (lookupMsgEl) lookupMsgEl.textContent = translations[currentLang].rsvp_lookup_error;
+        return;
+      }
 
-      if (!matched) {
+      if (!res.group || res.group.length === 0) {
         if (lookupMsgEl) lookupMsgEl.textContent = translations[currentLang].rsvp_not_found;
         return;
       }
 
+      resetStep2Display();
+
       if (lookupMsgEl) lookupMsgEl.textContent = "";
 
-      const groupId = matched["Group ID"] || matched.GroupNumber || matched.group || "";
-      const groupGuests = groupId
-        ? guestList.filter((g) => (g["Group ID"] || g.GroupNumber || g.group || "") === groupId)
-        : [matched];
-
-      renderGroupList(groupGuests);
+      renderGroupList(res.group, res.notes || "");
       if (step1El) step1El.hidden = true;
       if (step2El) step2El.hidden = false;
       if (submitBtn) submitBtn.disabled = false;
@@ -700,57 +647,56 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ── Render group member checklist ──
-  function renderGroupList(guests) {
+  // Renders [{name, attending}] from the API. Builds nodes rather than
+  // interpolating into innerHTML so sheet text can never become markup.
+  function renderGroupList(group, notes) {
     if (!groupListEl) return;
     groupListEl.innerHTML = "";
     const lang = currentLang;
 
-    // Pre-fill notes from the first group member who has a prior response
-    let prefilledNotes = "";
-
-    guests.forEach((g, i) => {
-      const name = `${g.Nombre || g.FirstName || ""} ${g.Apellido || g.LastName || ""}`.trim();
-
-      // Read attending status and allergies directly from the guest list row
-      const attending = String(g.RVSP || g.RSVP || "").trim().toLowerCase();
-      const isYes = attending === "yes" || attending === "sí" || attending === "si";
-      const isNo  = attending === "no";
-
-      if (!prefilledNotes) {
-        const allergies = (g.Allergies || "").trim();
-        if (allergies && allergies.toLowerCase() !== "no allergies") {
-          prefilledNotes = allergies;
-        }
-      }
+    group.forEach((g, i) => {
+      const isYes = g.attending === "yes";
+      const isNo  = g.attending === "no";
       const hasResponse = isYes || isNo;
 
       const row = document.createElement("div");
       row.className = "rsvp-guest-row";
 
-      row.innerHTML = `
-        <label class="rsvp-guest-name">
-          <input type="checkbox" class="rsvp-guest-check" id="rsvp-guest-${i}" ${hasResponse ? "checked" : ""} />
-          <span>${name}</span>
-        </label>
-        <div class="rsvp-guest-attend">
-          <label>
-            <input type="radio" name="rsvp-attend-${i}" value="yes" ${isYes ? "checked" : ""} />
-            <span data-attend-yes>${translations[lang].rsvp_attend_yes}</span>
-          </label>
-          <label>
-            <input type="radio" name="rsvp-attend-${i}" value="no" ${isNo ? "checked" : ""} />
-            <span data-attend-no>${translations[lang].rsvp_attend_no}</span>
-          </label>
-        </div>
-      `;
+      const nameLabel = document.createElement("label");
+      nameLabel.className = "rsvp-guest-name";
+      const check = document.createElement("input");
+      check.type = "checkbox";
+      check.className = "rsvp-guest-check";
+      check.id = `rsvp-guest-${i}`;
+      check.checked = hasResponse;
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = g.name || "";
+      nameLabel.append(check, nameSpan);
 
+      const attendDiv = document.createElement("div");
+      attendDiv.className = "rsvp-guest-attend";
+      [
+        ["yes", isYes, translations[lang].rsvp_attend_yes],
+        ["no",  isNo,  translations[lang].rsvp_attend_no],
+      ].forEach(([value, checked, label]) => {
+        const wrap = document.createElement("label");
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = `rsvp-attend-${i}`;
+        radio.value = value;
+        radio.checked = checked;
+        const span = document.createElement("span");
+        span.textContent = label;
+        span.setAttribute(value === "yes" ? "data-attend-yes" : "data-attend-no", "");
+        wrap.append(radio, span);
+        attendDiv.appendChild(wrap);
+      });
+
+      row.append(nameLabel, attendDiv);
       groupListEl.appendChild(row);
     });
 
-    if (notesEl) {
-      notesEl.value = prefilledNotes;
-    }
+    if (notesEl) notesEl.value = notes || "";
   }
 
   // ── Step 2 → back ──
@@ -758,6 +704,9 @@ document.addEventListener("DOMContentLoaded", () => {
     backBtn.addEventListener("click", () => {
       if (step2El) step2El.hidden = true;
       if (step1El) step1El.hidden = false;
+      // Undo the post-submit hiding so the next lookup lands on a usable step 2.
+      resetStep2Display();
+      if (submitMsgEl) submitMsgEl.textContent = "";
     });
   }
 
@@ -767,49 +716,34 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!groupListEl) return;
       const notes = notesEl ? notesEl.value.trim() : "";
       const rows  = groupListEl.querySelectorAll(".rsvp-guest-row");
-      const entries = [];
+      const responses = [];
 
       rows.forEach((row, i) => {
         const checkbox = row.querySelector(`#rsvp-guest-${i}`);
         if (!checkbox || !checkbox.checked) return;
-        const nameSpan   = row.querySelector("label.rsvp-guest-name span");
-        const name       = nameSpan ? nameSpan.textContent.trim() : "";
         const attendRadio = row.querySelector(`input[name="rsvp-attend-${i}"]:checked`);
-        const attendingRaw = attendRadio ? attendRadio.value : "yes";
-        const attending  = attendingRaw === "yes" ? "Yes" : "No";
-        entries.push({ name, attending, notes });
+        responses.push({ i, attending: attendRadio && attendRadio.value === "no" ? "no" : "yes" });
       });
 
-      if (entries.length === 0) return;
+      if (responses.length === 0) return;
 
       if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_submitting;
       submitBtn.disabled = true;
 
-      try {
-        if (!GOOGLE_FORM_ACTION.startsWith("YOUR_")) {
-          const promises = entries.map(({ name, attending, notes: n }) => {
-            const body = new URLSearchParams({
-              [FORM_ENTRY_NAME]:      name,
-              [FORM_ENTRY_ATTENDING]: attending,
-              [FORM_ENTRY_NOTES]:     n,
-              fvv:         "1",
-              pageHistory: "0",
-              fbzx:        FORM_FBZ,
-            });
-            return fetch(GOOGLE_FORM_ACTION, { method: "POST", mode: "no-cors", body });
-          });
-          await Promise.all(promises);
-        }
-        if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_success;
-        // Hide form content — only success message + back button remain
-        if (groupIntroEl) groupIntroEl.style.display = "none";
-        if (groupListEl) groupListEl.style.display = "none";
-        if (notesEl) notesEl.closest(".rsvp-field").style.display = "none";
-        if (submitBtn) submitBtn.style.display = "none";
-      } catch (_err) {
-        if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_error || "Something went wrong. Please try again.";
+      const res = await WeddingApi.submit(currentPhone, responses, notes);
+
+      if (!res.ok) {
+        if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_error;
         submitBtn.disabled = false;
+        return;
       }
+
+      if (submitMsgEl) submitMsgEl.textContent = translations[currentLang].rsvp_success;
+      // Hide form content — only success message + back button remain
+      if (groupIntroEl) groupIntroEl.style.display = "none";
+      if (groupListEl) groupListEl.style.display = "none";
+      if (notesEl) notesEl.closest(".rsvp-field").style.display = "none";
+      if (submitBtn) submitBtn.style.display = "none";
     });
   }
 });

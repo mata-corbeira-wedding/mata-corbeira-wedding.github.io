@@ -24,11 +24,11 @@
               Admin Access
             </h1>
             <p style="text-align: center; margin-top: 0.5rem">
-              Enter the password to view RSVP details.
+              Enter the passphrase to view RSVP details.
             </p>
             <form id="admin-login-form" class="rsvp-form" style="max-width: 360px; margin: 1rem auto 0">
               <div class="rsvp-field">
-                <label for="admin-password">Password</label>
+                <label for="admin-password">Passphrase</label>
                 <input
                   id="admin-password"
                   type="password"
@@ -46,8 +46,7 @@
           <div class="card">
             <h2 class="subsection-title" style="margin-bottom: 0.25rem">RSVP Overview</h2>
             <p class="small muted" style="margin-top: 0">
-              Data is loaded from your published Google Sheets CSV links. Update the URLs in
-              <code>admin.js</code> when your sheet changes.
+              Live data from the RSVP proxy. Counts cover every guest on the list.
             </p>
             <div
               id="admin-summary"
@@ -94,6 +93,7 @@
       </div>
     </main>
 
+    <script src="api.js"></script>
     <script src="admin.js"></script>
   </body>
 </html>

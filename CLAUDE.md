@@ -20,10 +20,11 @@ python3 -m http.server 8080
 - `data/country-codes.json` — phone country codes for RSVP form dropdown
 
 ### Data Flow
-1. Guests submit RSVPs via modal form → posts to Google Form (external)
-2. Google Forms stores responses in Google Sheets
-3. Admin dashboard fetches both the master guest list and RSVP responses as CSVs from published Google Sheets URLs (hardcoded in `admin.js` lines 6–9)
-4. Admin correlates guests with RSVPs by phone number, displaying group-based results
+1. The browser never talks to Google Sheets directly — `api.js` (`window.WeddingApi`) POSTs to a Google Apps Script proxy deployed at the `/exec` URL in `API_URL`
+2. The proxy (`apps-script/Code.gs`) reads and writes the private guest Sheet server-side
+3. A guest lookup (`WeddingApi.lookup(phone)`) returns only that caller's own group — the response never includes a phone number or Group ID for anyone
+4. RSVP submissions (`WeddingApi.submit(...)`) are written into the Sheet by the proxy
+5. The admin dashboard requests the full guest list via `WeddingApi.adminList(passphrase)`; Apps Script checks the passphrase server-side before returning anything
 
 ### Key Design Decisions
 - **Bilingual (EN/ES):** All visible text is driven by a translation map in `script.js`. To add or change UI text, update the `translations` object — do not hardcode strings in HTML.
@@ -40,8 +41,18 @@ CSS variables defined in `styles.css`:
 
 ## Admin Access
 
-Password is hardcoded in `admin.js` (`BuddyBupsters`). Auth state persists in `localStorage`. Google Sheets CSV URLs are also hardcoded in `admin.js`.
+There is no password in the repository and no client-side auth check. The passphrase lives only in Apps Script Script Properties as `ADMIN_PASSPHRASE` and is verified inside Apps Script when the dashboard calls `adminList`. Rotate it by editing that Script Property — nothing in the repo changes. The dashboard holds the passphrase in `sessionStorage` for the tab's lifetime only.
 
-## Google Form Integration
+## Apps Script Proxy
 
-The RSVP form submits to a Google Form URL. The placeholder `YOUR_GOOGLE_FORM_URL_HERE` in `script.js` must be replaced with the actual form URL for submissions to work. Field names must match the Google Form's entry IDs.
+The RSVP/admin backend is a Google Apps Script web app deployed behind the URL in `api.js` (`API_URL`). See `apps-script/README.md` for deployment and re-deployment steps.
+
+The Apps Script code is deliberately split in two:
+- `apps-script/logic.gs` — pure functions with no Google globals (no `SpreadsheetApp`, `ContentService`, etc.). Unit-tested in Node via `npm test`.
+- `apps-script/Code.gs` — every call into a Google API. Cannot be tested outside the Apps Script environment, so keep it thin and push logic into `logic.gs`.
+
+## Testing
+
+- `npm test` — Node unit tests for `apps-script/logic.gs`.
+- `npx playwright test tests/rsvp.spec.js tests/admin.spec.js --project=chromium` — browser tests for the public site and admin dashboard, run against a stubbed Apps Script endpoint.
+- `tests/example.spec.js` and `tests/seed.spec.ts` are unrelated Playwright scaffolding that hit external sites; they are not part of this project's test suite.

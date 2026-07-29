@@ -28,7 +28,7 @@ isProject: false
     - Build the area-code + country dropdown from static data.
 - **Admin view**
   - `[admin.html](/Users/mariacorbeira/Documents/wedding website/admin.html)`: new page for you only.
-    - Simple login screen that asks for a password (`BuddyBupsters`).
+    - Simple login screen that asks for a password (`<redacted>`).
     - After correct password, displays RSVP dashboard.
   - `[admin.js](/Users/mariacorbeira/Documents/wedding website/admin.js)`: logic for password check (client-side), loading guest/RSVP data, and grouping.
   - `[data/country-codes.json](/Users/mariacorbeira/Documents/wedding website/data/country-codes.json)`: static mapping of country codes + country name + flag emoji, generated from your Sheet columns I and J.
@@ -57,7 +57,7 @@ isProject: false
 - **Access and login**
   - The footer text `Maria & Raynulfo` is turned into a link to `admin.html`.
   - `admin.html` initially shows a small password form.
-  - Password is checked client-side against the string `BuddyBupsters`.
+  - Password is checked client-side against the string `<redacted>`.
   - On success, store a flag in `localStorage` so you don’t need to re-enter the password every refresh on the same browser.
 - **Loading data from Google Sheets**
   - In your Google Sheet (guest master), create **two tabs**:
@@ -115,7 +115,7 @@ isProject: false
 - Add `data/country-codes.json` based on your Sheet’s area codes and countries.
 - Test:
   - RSVP submission from the main page.
-  - Admin login with `BuddyBupsters`.
+  - Admin login with `<redacted>`.
   - Guest grouping by phone and headcount calculations.
   - English/Spanish text for all new UI pieces.
 
