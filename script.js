@@ -610,12 +610,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       currentPhone = normalizePhone(code + local);
 
+      // Captured before we overwrite it, so it's whatever label the current
+      // language is showing — never a hardcoded string.
+      const originalBtnLabel = searchBtn.textContent;
       if (lookupMsgEl) lookupMsgEl.textContent = translations[currentLang].rsvp_loading;
+      searchBtn.textContent = translations[currentLang].rsvp_loading;
       searchBtn.disabled = true;
 
       const res = await WeddingApi.lookup(currentPhone);
 
       searchBtn.disabled = false;
+      searchBtn.textContent = originalBtnLabel;
 
       // A failed call (network, throttled, server_error, not_configured…) is not
       // the same as a successful lookup that matched nobody. Telling a guest
