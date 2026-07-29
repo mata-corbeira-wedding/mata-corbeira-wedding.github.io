@@ -23,7 +23,7 @@ const ROWS = [
   ["", "Ana García",  "Bride", "+34 612 345 678", "G1", "Yes",         "seafood"],
   ["", "Luis García", "Bride", "612345678",       "G1", "No Response", "No allergies"],
   ["", "Sam Smith",   "Groom", "+1 555 000 1111", "G2", "No",          "No allergies"],
-  ["", "",            "",      "",                "",   "",            ""],
+  ["", "",            "",      "+34612345678",    "",   "",            ""],
 ];
 
 test("phoneKey strips everything but digits", () => {
@@ -90,9 +90,29 @@ test("findGroup refuses an ambiguous tail match across groups", () => {
   assert.deepEqual(findGroup(rows, H(), "612345678"), []);
 });
 
+test("findGroup rejects ambiguous blank Group IDs", () => {
+  // Two unrelated rows with empty Group ID and matching phone tail should
+  // not be resolved (would leak a stranger's name).
+  const rows = [
+    ["", "A", "Bride", "+34612345678", "", "Yes", ""],
+    ["", "B", "Groom", "+1612345678",  "", "No Response", ""],
+  ];
+  assert.deepEqual(findGroup(rows, H(), "612345678"), []);
+});
+
+test("findGroup resolves a single row with blank Group ID", () => {
+  // One row with empty Group ID and a matching phone can be resolved as that
+  // guest alone (not part of a group).
+  const rows = [
+    ["", "A", "Bride", "+34612345678", "", "Yes", ""],
+  ];
+  assert.deepEqual(findGroup(rows, H(), "+34612345678"), [0]);
+});
+
 test("findGroup ignores the blank trailing row", () => {
-  // ROWS[3] has no name and no phone. It must never appear in a result, and an
-  // empty query must not match it.
+  // ROWS[3] has no name but has a matching phone. It must never appear in a
+  // result because the blank name is filtered by isBlankRow. An empty query
+  // must not match anything.
   assert.ok(!findGroup(ROWS, H(), "+34612345678").includes(3));
   assert.deepEqual(findGroup(ROWS, H(), ""), []);
 });

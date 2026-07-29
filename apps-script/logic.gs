@@ -96,7 +96,12 @@ function findGroup(rows, headers, rawPhone) {
   if (distinct.length !== 1) return [];
 
   var groupId = distinct[0];
-  if (!groupId) return hits;
+  if (!groupId) {
+    // No Group ID means no group can be established. A single row is that
+    // guest alone; several rows are unrelated people who merely share a
+    // blank cell, and resolving them together would leak strangers' names.
+    return hits.length === 1 ? hits : [];
+  }
 
   var members = [];
   for (var j = 0; j < rows.length; j++) {
