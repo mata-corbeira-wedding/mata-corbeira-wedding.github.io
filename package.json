@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "admin.js",
-  "scripts": {},
+  "scripts": {
+    "test": "node --test tests/logic.test.js",
+    "test:e2e": "playwright test"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maria-corbeira/wedding-website.git"
