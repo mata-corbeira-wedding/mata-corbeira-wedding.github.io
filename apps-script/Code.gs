@@ -7,6 +7,12 @@
 
 var SHEET_NAME = "Guest List";   // adjust if the tab is named differently
 var LOG_SHEET_NAME = "_log";
+var GUEST_TABLE_CACHE_KEY = "guest_table";
+var GUEST_TABLE_CACHE_TTL_S = 120;
+// CacheService caps a value at ~100KB per key; stay well under that so a
+// larger-than-expected sheet never throws on put — it just skips the cache
+// and falls through to a live read for that request.
+var GUEST_TABLE_CACHE_MAX_BYTES = 90 * 1024;
 var ADMIN_FAIL_LIMIT = 10;
 var ADMIN_FAIL_WINDOW_S = 900;   // 15 minutes
 var LOOKUP_LIMIT_PER_PHONE = 20;
@@ -26,12 +32,55 @@ function sheet_() {
   return sh;
 }
 
-/** Returns {headers, rows, headerRowIndex}. rows excludes the header row. */
-function readTable_() {
+/**
+ * Returns {headers, rows}. rows excludes the header row.
+ *
+ * Backed by a short-lived CacheService cache (see GUEST_TABLE_CACHE_*) so
+ * repeated lookups within the TTL skip getDataRange().getValues() — a read
+ * that also forces re-evaluation of the "# confirmed" / "# declined" summary
+ * formula columns and costs real latency on every call.
+ *
+ * Pass { bypassCache: true } to force a live read that neither reads nor
+ * populates the cache. handleAdminList_ uses this: the admin is specifically
+ * checking current RSVP state, and a stale-by-up-to-120s view there would be
+ * actively misleading rather than just a minor inconvenience.
+ */
+function readTable_(opts) {
+  var bypassCache = !!(opts && opts.bypassCache);
+  var cache = CacheService.getScriptCache();
+
+  if (!bypassCache) {
+    var cached = cache.get(GUEST_TABLE_CACHE_KEY);
+    if (cached) {
+      try {
+        var parsed = JSON.parse(cached);
+        if (parsed && parsed.headers && parsed.rows) return parsed;
+      } catch (e) {
+        // Corrupt/undecodable cache entry: fall through to a live read
+        // instead of throwing.
+      }
+    }
+  }
+
   var values = sheet_().getDataRange().getValues();
   if (!values.length) throw new Error("Sheet is empty");
   var headers = resolveHeaders(values[0]);
-  return { headers: headers, rows: values.slice(1) };
+  var table = { headers: headers, rows: values.slice(1) };
+
+  if (!bypassCache) {
+    try {
+      var json = JSON.stringify(table);
+      if (json.length <= GUEST_TABLE_CACHE_MAX_BYTES) {
+        cache.put(GUEST_TABLE_CACHE_KEY, json, GUEST_TABLE_CACHE_TTL_S);
+      }
+      // Else: too large to cache safely. Skip caching and just return the
+      // live read below — do not throw.
+    } catch (e) {
+      // Caching is an optimization; it must never break the request.
+    }
+  }
+
+  return table;
 }
 
 /** Sheet row number for a 0-based index into `rows` (header is row 1). */
@@ -188,6 +237,15 @@ function handleSubmit_(req) {
     sh.getRange(row, t.headers.allergies + 1).setValue(allergies);
   });
 
+  // Invalidate the guest-table cache immediately after writing. Without this,
+  // a guest who submits and then looks up again within the TTL would see
+  // their own stale pre-submit state for up to GUEST_TABLE_CACHE_TTL_S.
+  try {
+    CacheService.getScriptCache().remove(GUEST_TABLE_CACHE_KEY);
+  } catch (e) {
+    // Cache invalidation must never break a request that already succeeded.
+  }
+
   log_("submit", phone, "wrote " + req.responses.length);
   return { ok: true, written: req.responses.length };
 }
@@ -201,7 +259,10 @@ function handleAdminList_(req) {
   if (expected && constantTimeEquals(String(req.passphrase || ""), expected)) {
     // Correct passphrase: grant access immediately, clear any prior failures.
     CacheService.getScriptCache().remove("admin_fail");
-    var t = readTable_();
+    // Bypass the guest-table cache: the admin is specifically checking
+    // current RSVP state, and a stale-by-up-to-120s view would be actively
+    // misleading right after a guest submits.
+    var t = readTable_({ bypassCache: true });
     var h = t.headers;
     var guests = [];
     t.rows.forEach(function (row) {
