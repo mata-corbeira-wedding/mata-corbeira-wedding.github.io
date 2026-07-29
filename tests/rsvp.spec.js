@@ -71,6 +71,47 @@ test("an unmatched phone shows the not-found message and stays on step 1", async
   await expect(page.locator("#rsvp-step-1")).toBeVisible();
 });
 
+test("a failed lookup shows the error message, not the not-found message", async ({ page }) => {
+  // A guest whose wifi drops must not be told they are off the guest list.
+  await stub(page, () => ({ ok: false, error: "network" }));
+
+  await page.click(".hero-rsvp-button");
+  await page.fill("#rsvp-phone", "612345678");
+  await page.click("#rsvp-search-btn");
+
+  await expect(page.locator("#rsvp-lookup-message")).toContainText(
+    "Something went wrong. Please try again in a moment."
+  );
+  await expect(page.locator("#rsvp-lookup-message")).not.toContainText("No guest found");
+  await expect(page.locator("#rsvp-step-1")).toBeVisible();
+});
+
+test("Back after a successful submit leaves step 2 usable for the next lookup", async ({ page }) => {
+  await stub(page, (body) =>
+    body.action === "lookup"
+      ? { ok: true, group: [{ name: "Ana García", attending: null }], notes: "" }
+      : { ok: true, written: 1 }
+  );
+
+  await page.click(".hero-rsvp-button");
+  await page.fill("#rsvp-phone", "612345678");
+  await page.click("#rsvp-search-btn");
+  await page.check("#rsvp-guest-0");
+  await page.check('input[name="rsvp-attend-0"][value="yes"]');
+  await page.click("#rsvp-submit-btn");
+  await expect(page.locator("#rsvp-submit-message")).toContainText("recorded");
+
+  await page.click("#rsvp-back-btn");
+  await page.fill("#rsvp-phone", "612345679");
+  await page.click("#rsvp-search-btn");
+
+  await expect(page.locator("#rsvp-step-2")).toBeVisible();
+  await expect(page.locator("#rsvp-group-list")).toBeVisible();
+  await expect(page.locator("#rsvp-submit-btn")).toBeVisible();
+  await expect(page.locator("#rsvp-submit-btn")).toBeEnabled();
+  await expect(page.locator("#rsvp-notes")).toBeVisible();
+});
+
 test("a successful submit sends indexes, not names, and reports success", async ({ page }) => {
   let submitted = null;
   await stub(page, (body) => {

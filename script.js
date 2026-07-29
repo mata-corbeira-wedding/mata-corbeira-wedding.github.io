@@ -168,6 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rsvp_footer_note: "RSVP submissions are collected securely via Google Forms.",
       rsvp_search_button: "Find My Group",
       rsvp_not_found: "No guest found with that number. Please try again.",
+      rsvp_lookup_error: "Something went wrong. Please try again in a moment.",
       rsvp_loading: "Searching\u2026",
       rsvp_group_intro: "Select who will be attending:",
       rsvp_back_button: "Back",
@@ -387,6 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rsvp_submit_label: "Enviar confirmación",
       rsvp_footer_note: "Las confirmaciones se registran de forma segura a través de Google Forms.",
       rsvp_search_button: "Buscar mi grupo",
+      rsvp_lookup_error: "Algo salió mal. Por favor intenta de nuevo en un momento.",
       rsvp_not_found: "No encontramos un invitado con ese número. Intenta de nuevo.",
       rsvp_loading: "Buscando\u2026",
       rsvp_group_intro: "Selecciona quién asistirá:",
@@ -559,6 +561,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (phoneInput) phoneInput.focus();
   }
 
+  // A successful submit hides the step-2 form and leaves only the success
+  // message. Every path back into step 2 has to undo that, or the guest sees an
+  // empty step with no submit button.
+  function resetStep2Display() {
+    if (groupIntroEl) groupIntroEl.style.display = "";
+    if (groupListEl) groupListEl.style.display = "";
+    if (notesEl && notesEl.closest(".rsvp-field")) notesEl.closest(".rsvp-field").style.display = "";
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.display = ""; }
+  }
+
   function closeRsvp() {
     if (!rsvpModal) return;
     rsvpModal.classList.remove("is-open");
@@ -568,11 +580,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (step2El) step2El.hidden = true;
     if (phoneInput) phoneInput.value = "";
     if (lookupMsgEl) lookupMsgEl.textContent = "";
-    if (groupListEl) { groupListEl.innerHTML = ""; groupListEl.style.display = ""; }
-    if (groupIntroEl) groupIntroEl.style.display = "";
-    if (notesEl) { notesEl.value = ""; notesEl.closest(".rsvp-field").style.display = ""; }
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.display = ""; }
+    if (groupListEl) groupListEl.innerHTML = "";
+    if (notesEl) notesEl.value = "";
     if (submitMsgEl) submitMsgEl.textContent = "";
+    resetStep2Display();
   }
 
   if (rsvpOpenButton) rsvpOpenButton.addEventListener("click", openRsvp);
@@ -606,10 +617,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       searchBtn.disabled = false;
 
-      if (!res.ok || !res.group || res.group.length === 0) {
+      // A failed call (network, throttled, server_error, not_configured…) is not
+      // the same as a successful lookup that matched nobody. Telling a guest
+      // whose wifi dropped that they are not invited makes them stop trying.
+      if (!res.ok) {
+        if (lookupMsgEl) lookupMsgEl.textContent = translations[currentLang].rsvp_lookup_error;
+        return;
+      }
+
+      if (!res.group || res.group.length === 0) {
         if (lookupMsgEl) lookupMsgEl.textContent = translations[currentLang].rsvp_not_found;
         return;
       }
+
+      resetStep2Display();
 
       if (lookupMsgEl) lookupMsgEl.textContent = "";
 
@@ -678,6 +699,9 @@ document.addEventListener("DOMContentLoaded", () => {
     backBtn.addEventListener("click", () => {
       if (step2El) step2El.hidden = true;
       if (step1El) step1El.hidden = false;
+      // Undo the post-submit hiding so the next lookup lands on a usable step 2.
+      resetStep2Display();
+      if (submitMsgEl) submitMsgEl.textContent = "";
     });
   }
 

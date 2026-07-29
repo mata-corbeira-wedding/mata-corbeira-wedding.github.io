@@ -44,15 +44,31 @@ function hash_(s) {
   return Utilities.base64EncodeWebSafe(bytes).slice(0, 16);
 }
 
+/**
+ * Increments a fixed-window counter and returns the new count.
+ *
+ * The window must NOT slide: re-putting with the full ttl on every hit would let
+ * a caller sending one request every few seconds hold the counter over its limit
+ * forever, locking out every guest. So the window's expiry is stored alongside
+ * the count ("count|epochSeconds") and a fresh ttl is only used when starting a
+ * new window; inside an existing window we put with just the time remaining.
+ */
 function bump_(key, ttl) {
   var cache = CacheService.getScriptCache();
-  var n = Number(cache.get(key) || 0) + 1;
-  cache.put(key, String(n), ttl);
-  return n;
-}
+  var now = Math.floor(Date.now() / 1000);
+  var parts = String(cache.get(key) || "").split("|");
+  var n = Number(parts[0]) || 0;
+  var expires = Number(parts[1]) || 0;
 
-function peek_(key) {
-  return Number(CacheService.getScriptCache().get(key) || 0);
+  if (!n || !expires || expires <= now) {
+    n = 1;
+    expires = now + ttl;
+    cache.put(key, n + "|" + expires, ttl);
+  } else {
+    n = n + 1;
+    cache.put(key, n + "|" + expires, Math.max(1, expires - now));
+  }
+  return n;
 }
 
 function log_(action, phone, result) {
@@ -78,15 +94,25 @@ function doPost(e) {
     return json_({ ok: false, error: "bad_request" });
   }
 
+  // A body of "null" or "[]" or "3" parses fine but has no .action. Reject it
+  // here so nothing downstream (including the catch below) dereferences it.
+  if (!req || typeof req !== "object" || Array.isArray(req)) {
+    return json_({ ok: false, error: "bad_request" });
+  }
+
+  var action = String(req.action || "");
   try {
-    switch (req.action) {
+    switch (action) {
       case "lookup":    return json_(handleLookup_(req));
       case "submit":    return json_(handleSubmit_(req));
       case "adminList": return json_(handleAdminList_(req));
       default:          return json_({ ok: false, error: "bad_request" });
     }
   } catch (err) {
-    log_(String(req.action || "?"), "", "error: " + err.message);
+    // The handler already failed; this block must not be able to fail too.
+    try {
+      log_(action || "?", "", "error: " + (err && err.message ? err.message : err));
+    } catch (ignored) {}
     return json_({ ok: false, error: "server_error" });
   }
 }
@@ -96,18 +122,30 @@ function doGet() {
   return json_({ ok: false, error: "bad_request" });
 }
 
+/**
+ * Shared budget for lookup and submit: one global ceiling plus one per-phone
+ * allowance. Both actions must spend from the same counters, otherwise the
+ * unthrottled one becomes a free membership oracle for guessing numbers.
+ * Returns an error response to send back, or null to continue.
+ */
+function throttleByPhone_(action, phone) {
+  if (bump_("g_lookup", GLOBAL_WINDOW_S) > GLOBAL_LOOKUP_LIMIT) {
+    log_(action, phone, "throttled_global");
+    return { ok: false, error: "throttled", retryAfter: GLOBAL_WINDOW_S };
+  }
+  if (bump_("lk_" + hash_(phoneKey(phone)), LOOKUP_WINDOW_S) > LOOKUP_LIMIT_PER_PHONE) {
+    log_(action, phone, "throttled_phone");
+    return { ok: false, error: "throttled", retryAfter: LOOKUP_WINDOW_S };
+  }
+  return null;
+}
+
 function handleLookup_(req) {
   var phone = String(req.phone || "");
   if (!phone) return { ok: true, group: [] };
 
-  if (bump_("g_lookup", GLOBAL_WINDOW_S) > GLOBAL_LOOKUP_LIMIT) {
-    log_("lookup", phone, "throttled_global");
-    return { ok: false, error: "throttled", retryAfter: GLOBAL_WINDOW_S };
-  }
-  if (bump_("lk_" + hash_(phoneKey(phone)), LOOKUP_WINDOW_S) > LOOKUP_LIMIT_PER_PHONE) {
-    log_("lookup", phone, "throttled_phone");
-    return { ok: false, error: "throttled", retryAfter: LOOKUP_WINDOW_S };
-  }
+  var blocked = throttleByPhone_("lookup", phone);
+  if (blocked) return blocked;
 
   var t = readTable_();
   var members = findGroup(t.rows, t.headers, phone);
@@ -118,6 +156,11 @@ function handleLookup_(req) {
 
 function handleSubmit_(req) {
   var phone = String(req.phone || "");
+
+  // Throttle before the group is resolved, on the same budget as lookup.
+  var blocked = throttleByPhone_("submit", phone);
+  if (blocked) return blocked;
+
   var t = readTable_();
   var members = findGroup(t.rows, t.headers, phone);
   if (!members.length) {
@@ -127,8 +170,11 @@ function handleSubmit_(req) {
 
   var check = validateResponses(members, req.responses);
   if (!check.ok) {
+    // Deliberately the SAME error a missing group returns. Distinguishable
+    // outcomes here would tell an attacker whether a guessed number is on the
+    // list. The real reason is logged server-side for debugging.
     log_("submit", phone, "invalid: " + check.error);
-    return { ok: false, error: "bad_request" };
+    return { ok: false, error: "not_found" };
   }
 
   var sh = sheet_();

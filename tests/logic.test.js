@@ -168,6 +168,58 @@ test("buildLookupResponse omits the default allergies string", () => {
   assert.equal(buildLookupResponse(ROWS, H(), [2]).notes, "");
 });
 
+test("buildLookupResponse joins every distinct note in the group", () => {
+  // The one notes field is written back to every member's row on submit, so a
+  // note that lookup did not show would be destroyed.
+  const rows = [
+    ["", "Ana",  "Bride", "+34600000001", "G9", "Yes", "nuts"],
+    ["", "Luis", "Bride", "+34600000001", "G9", "Yes", "shellfish"],
+  ];
+  assert.equal(buildLookupResponse(rows, H(), [0, 1]).notes, "nuts; shellfish");
+});
+
+test("buildLookupResponse does not repeat a note the group shares", () => {
+  const rows = [
+    ["", "Ana",  "Bride", "+34600000001", "G9", "Yes", "nuts"],
+    ["", "Luis", "Bride", "+34600000001", "G9", "Yes", "nuts"],
+  ];
+  assert.equal(buildLookupResponse(rows, H(), [0, 1]).notes, "nuts");
+});
+
+test("buildLookupResponse skips blank and default notes when joining", () => {
+  const rows = [
+    ["", "Ana",  "Bride", "+34600000001", "G9", "Yes", "nuts"],
+    ["", "Luis", "Bride", "+34600000001", "G9", "Yes", ""],
+    ["", "Mia",  "Bride", "+34600000001", "G9", "Yes", "No allergies"],
+  ];
+  assert.equal(buildLookupResponse(rows, H(), [0, 1, 2]).notes, "nuts");
+  assert.equal(buildLookupResponse(rows, H(), [1, 2]).notes, "");
+});
+
+test("validateResponses rejects more responses than the group has members", () => {
+  // 20,000 copies of one answer would issue 40,000 setValue calls and burn the
+  // daily quota, taking RSVP down for everyone.
+  const flood = Array.from({ length: 20000 }, () => ({ i: 0, attending: "yes" }));
+  assert.deepEqual(validateResponses([0, 1], flood), { ok: false, error: "too_many" });
+  assert.equal(validateResponses([0, 1], [
+    { i: 0, attending: "yes" },
+    { i: 1, attending: "no" },
+    { i: 0, attending: "yes" },
+  ]).error, "too_many");
+});
+
+test("validateResponses rejects a repeated index", () => {
+  assert.deepEqual(
+    validateResponses([0, 1], [{ i: 0, attending: "yes" }, { i: 0, attending: "no" }]),
+    { ok: false, error: "duplicate_index" }
+  );
+  // Distinct indexes still pass.
+  assert.deepEqual(
+    validateResponses([0, 1], [{ i: 0, attending: "yes" }, { i: 1, attending: "no" }]),
+    { ok: true }
+  );
+});
+
 test("validateResponses rejects out-of-range and malformed indexes", () => {
   assert.deepEqual(validateResponses([0, 1], [{ i: 0, attending: "yes" }]), { ok: true });
   assert.equal(validateResponses([0, 1], [{ i: 2, attending: "yes" }]).ok, false);

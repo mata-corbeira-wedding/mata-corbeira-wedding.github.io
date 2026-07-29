@@ -126,27 +126,46 @@ function findGroup(rows, headers, rawPhone) {
 }
 
 function buildLookupResponse(rows, headers, memberIdx) {
-  var notes = "";
+  // Every distinct note in the group, in order. The guest edits one field and
+  // the result is written back to every row, so returning only the first note
+  // would silently erase the others.
+  var seen = {};
+  var collected = [];
   var group = memberIdx.map(function (i) {
-    if (!notes) notes = readAllergies(rows[i][headers.allergies]);
+    var note = readAllergies(rows[i][headers.allergies]);
+    if (note && !Object.prototype.hasOwnProperty.call(seen, note)) {
+      seen[note] = true;
+      collected.push(note);
+    }
     return {
       name: String(rows[i][headers.nombre] || "").trim(),
       attending: readAttending(rows[i][headers.rvsp]),
     };
   });
-  return { group: group, notes: notes };
+  return { group: group, notes: collected.join("; ") };
 }
 
 function validateResponses(memberIdx, responses) {
   if (!Array.isArray(responses) || responses.length === 0) {
     return { ok: false, error: "no_responses" };
   }
+  // A group can never need more answers than it has members. Without this a
+  // single request could issue tens of thousands of setValue calls and burn
+  // the daily quota.
+  if (responses.length > memberIdx.length) {
+    return { ok: false, error: "too_many" };
+  }
+  var used = {};
   for (var i = 0; i < responses.length; i++) {
     var r = responses[i];
     if (!r || typeof r !== "object") return { ok: false, error: "bad_response" };
     if (typeof r.i !== "number" || r.i < 0 || r.i >= memberIdx.length || r.i % 1 !== 0) {
       return { ok: false, error: "bad_index" };
     }
+    if (Object.prototype.hasOwnProperty.call(used, String(r.i))) {
+      return { ok: false, error: "duplicate_index" };
+    }
+    used[String(r.i)] = true;
     if (r.attending !== "yes" && r.attending !== "no") {
       return { ok: false, error: "bad_attending" };
     }

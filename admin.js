@@ -36,6 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (res.error === "network") return "Could not reach the server. Check your connection.";
     if (res.error === "not_configured") return "The dashboard is not configured yet.";
+    // The proxy really does return these; reporting them as a typo sends the
+    // admin hunting the wrong problem during an outage.
+    if (res.error === "server_error" || res.error === "bad_request") {
+      return "The server had a problem. Try again in a moment.";
+    }
     return "Incorrect passphrase.";
   }
 
