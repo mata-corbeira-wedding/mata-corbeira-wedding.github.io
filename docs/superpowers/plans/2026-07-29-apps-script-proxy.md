@@ -1351,7 +1351,7 @@ Expected: PASS, 6 tests.
 
 - [ ] **Step 6: Confirm no secret remains in the client**
 
-Run: `grep -rn "BuddyBupsters\|ADMIN_PASSWORD\|wedding_admin_authenticated" . --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=docs`
+Run: `grep -rn "<redacted>\|ADMIN_PASSWORD\|wedding_admin_authenticated" . --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=docs`
 Expected: only the `removeItem` cleanup line in `admin.js`.
 
 - [ ] **Step 7: Commit**
@@ -1409,7 +1409,7 @@ passphrase works again.
 Three sections are now wrong. Rewrite them:
 
 - **Data Flow** — replace the four Google Forms/Sheets steps with: the browser calls the Apps Script proxy (`api.js`); the proxy reads and writes the private Sheet; guests receive only their own group; the admin dashboard requests the full list with a passphrase checked server-side.
-- **Admin Access** — replace the `BuddyBupsters` paragraph with: the passphrase lives in Apps Script Script Properties as `ADMIN_PASSPHRASE`, is never in the repository, and is rotated by editing that property.
+- **Admin Access** — replace the `<redacted>` paragraph with: the passphrase lives in Apps Script Script Properties as `ADMIN_PASSPHRASE`, is never in the repository, and is rotated by editing that property.
 - **Google Form Integration** — delete it. Replace with a short **Apps Script Proxy** section pointing at `apps-script/README.md`, and note that `apps-script/logic.gs` is pure and unit-tested via `npm test` while `apps-script/Code.gs` holds all Google API calls.
 
 Also correct the stale claim that `admin.js` fetches two CSVs from lines 6–9.

@@ -12,7 +12,7 @@ touches ships to the browser. Two of those secrets are real:
 1. **The published Google Sheets CSV URL** is hardcoded in `script.js` and `admin.js:5`.
    GitHub Pages serves those files to everyone. Fetching that URL anonymously returns
    **all 236 guest rows with names and phone numbers**. Verified 2026-07-29.
-2. **The admin password** (`BuddyBupsters`) is hardcoded at `admin.js:1` and compared
+2. **The admin password** (`<redacted>`) is hardcoded at `admin.js:1` and compared
    client-side. View-source defeats it.
 
 A third defect is data loss rather than disclosure: the RSVP submit at `script.js:799`
@@ -136,7 +136,7 @@ One of the two admins is non-technical. A token long enough to resist offline gu
 is a token nobody can type, which pushes it into a sticky note or a chat message — a
 worse outcome than a weaker secret used correctly.
 
-The original flaw was never that `BuddyBupsters` was memorable. It was that it lived in
+The original flaw was never that `<redacted>` was memorable. It was that it lived in
 `admin.js` where anyone could read it, and was compared in the browser where anyone
 could skip the comparison. Moving the check server-side fixes both. Once the only
 remaining attack is guessing over the network, a 3–4 word phrase is sufficient:
@@ -192,7 +192,7 @@ text in the guest's notes box — which is what `script.js:722` already does tod
 | Exposure | Before | After |
 |---|---|---|
 | Bulk guest-list download | 236 rows, names + phones, anonymous | endpoint returns one group, no phones |
-| Admin password | `BuddyBupsters` in client JS, compared in browser | passphrase in Script Properties, compared server-side, attempts throttled |
+| Admin password | `<redacted>` in client JS, compared in browser | passphrase in Script Properties, compared server-side, attempts throttled |
 | RSVP silent failure | opaque `no-cors` response | real JSON success/failure |
 | Form Responses tab | not exposed | not exposed (Form retired) |
 
