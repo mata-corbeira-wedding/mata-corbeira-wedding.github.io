@@ -23,7 +23,7 @@ const ROWS = [
   ["", "Ana García",  "Bride", "+34 612 345 678", "G1", "Yes",         "seafood"],
   ["", "Luis García", "Bride", "612345678",       "G1", "No Response", "No allergies"],
   ["", "Sam Smith",   "Groom", "+1 555 000 1111", "G2", "No",          "No allergies"],
-  ["", "",            "",      "+34612345678",    "",   "",            ""],
+  ["", "",            "",      "+34612345678",    "G1", "",            ""],
 ];
 
 test("phoneKey strips everything but digits", () => {
@@ -110,9 +110,9 @@ test("findGroup resolves a single row with blank Group ID", () => {
 });
 
 test("findGroup ignores the blank trailing row", () => {
-  // ROWS[3] has no name but has a matching phone. It must never appear in a
-  // result because the blank name is filtered by isBlankRow. An empty query
-  // must not match anything.
+  // ROWS[3] has blank name, matching phone (+34612345678), and same Group ID (G1)
+  // as rows 0-1. Without the isBlankRow skip, it would be included in the group.
+  // The test confirms that blank-name rows are filtered out even when they match.
   assert.ok(!findGroup(ROWS, H(), "+34612345678").includes(3));
   assert.deepEqual(findGroup(ROWS, H(), ""), []);
 });
