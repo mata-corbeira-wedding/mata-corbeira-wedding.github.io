@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
       home_cocktail_title: "Cocktail Hour",
       home_cocktail_time: "5:00 PM · Cloister Garden",
       home_reception_title: "Celebration",
-      home_reception_time: "6:30 PM · Refectory & Courtyard",
+      home_reception_time: "6:00 PM · Refectory & Courtyard",
       home_transport:
         "Parking at the monastery is limited. We kindly recommend using Uber, Lyft, or shared rides when possible.",
       wedding_kicker: "Wedding Day",
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
       wedding_timeline_cocktail_title: "Cocktail Hour",
       wedding_timeline_cocktail_desc:
         "Join us in the cloister gardens for cocktails, music, and a first look at the monastery at sunset.",
-      wedding_timeline_reception_time: "6:30 PM",
+      wedding_timeline_reception_time: "6:00 PM",
       wedding_timeline_reception_title: "Dinner & Celebration",
       wedding_timeline_reception_desc:
         "Dinner, speeches, and dancing in the refectory and courtyard beneath the arches and oak trees.",
@@ -274,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
       home_cocktail_title: "Coctel",
       home_cocktail_time: "5:00 p. m. · Jardines del claustro",
       home_reception_title: "Celebración",
-      home_reception_time: "6:30 p. m. · Refectorio y patio",
+      home_reception_time: "6:00 p. m. · Refectorio y patio",
       home_transport:
         "El estacionamiento en el monasterio es limitado. Les recomendamos usar Uber, Lyft o compartir carro siempre que sea posible.",
       wedding_kicker: "El Gran Día",
@@ -290,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
       wedding_timeline_cocktail_title: "Coctel",
       wedding_timeline_cocktail_desc:
         "Acompáñanos en los jardines del claustro para cocteles, música y la magia del atardecer en el monasterio.",
-      wedding_timeline_reception_time: "6:30 p. m.",
+      wedding_timeline_reception_time: "6:00 p. m.",
       wedding_timeline_reception_title: "Cena y fiesta",
       wedding_timeline_reception_desc:
         "Cena, brindis y baile en el refectorio y el patio, bajo los arcos y el gran roble.",
