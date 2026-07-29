@@ -120,6 +120,26 @@ function bump_(key, ttl) {
   return n;
 }
 
+/**
+ * Appends one row to the hidden `_log` sheet. This is a spreadsheet WRITE
+ * that takes a document lock and costs ~1s; under concurrent traffic, writes
+ * queuing behind that lock are what turn a ~2s lookup into a multi-second
+ * spike. So this is called ONLY for events with an abuse or failure signal,
+ * never for the common legitimate case:
+ *
+ *   - lookup: a MISS or a throttled request IS logged. A successful (hit)
+ *     lookup is deliberately NOT logged here — see bumpLookupHit_(), which
+ *     records it with a CacheService counter instead of a sheet write. Do
+ *     not "restore" a log_() call on the hit path; that would silently
+ *     reintroduce the write this optimization exists to remove.
+ *   - submit: not_found (including validation failures, which return the
+ *     same not_found response) and successful writes ARE logged.
+ *   - adminList: unauthorized attempts, throttled attempts, and successful
+ *     loads ARE logged.
+ *   - doPost's catch-all: any uncaught handler error IS logged.
+ *
+ * Never throws — logging must never break a request.
+ */
 function log_(action, phone, result) {
   try {
     var ss = SpreadsheetApp.getActive();
@@ -132,6 +152,24 @@ function log_(action, phone, result) {
     sh.appendRow([new Date(), action, phone ? hash_(phone) : "", result]);
   } catch (e) {
     // Logging must never break a request.
+  }
+}
+
+/**
+ * Cheap, approximate visibility into successful lookup volume without a
+ * spreadsheet write. Not authoritative (CacheService values can be evicted
+ * early and the counter resets whenever the key expires); it exists only so
+ * successful lookups aren't completely invisible now that they no longer
+ * write a `_log` row.
+ */
+function bumpLookupHit_() {
+  try {
+    var cache = CacheService.getScriptCache();
+    var n = Number(cache.get("lk_hits")) || 0;
+    // 21600s (6h) is CacheService's max TTL.
+    cache.put("lk_hits", String(n + 1), 21600);
+  } catch (e) {
+    // Counting must never break a request.
   }
 }
 
@@ -198,8 +236,11 @@ function handleLookup_(req) {
 
   var t = readTable_();
   var members = findGroup(t.rows, t.headers, phone);
-  log_("lookup", phone, members.length ? "hit" : "miss");
-  if (!members.length) return { ok: true, group: [] };
+  if (!members.length) {
+    log_("lookup", phone, "miss");
+    return { ok: true, group: [] };
+  }
+  bumpLookupHit_();
   return Object.assign({ ok: true }, buildLookupResponse(t.rows, t.headers, members));
 }
 
