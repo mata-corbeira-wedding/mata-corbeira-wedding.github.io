@@ -147,34 +147,38 @@ function handleSubmit_(req) {
 }
 
 function handleAdminList_(req) {
-  if (peek_("admin_fail") >= ADMIN_FAIL_LIMIT) {
+  var expected = PropertiesService.getScriptProperties().getProperty("ADMIN_PASSPHRASE");
+
+  // Passphrase check first. The throttle counter only blocks wrong attempts, never
+  // a correct one. This prevents anyone with the public URL from locking out the real
+  // admins by posting ten wrong passphrases.
+  if (expected && constantTimeEquals(String(req.passphrase || ""), expected)) {
+    // Correct passphrase: grant access immediately, clear any prior failures.
+    CacheService.getScriptCache().remove("admin_fail");
+    var t = readTable_();
+    var h = t.headers;
+    var guests = [];
+    t.rows.forEach(function (row) {
+      if (String(row[h.nombre] || "").trim() === "") return;
+      guests.push({
+        name: String(row[h.nombre] || "").trim(),
+        side: String(row[h.side] || "").trim(),
+        phone: String(row[h.phone] || "").trim(),
+        groupId: String(row[h.groupId] || "").trim(),
+        attending: readAttending(row[h.rvsp]),
+        allergies: readAllergies(row[h.allergies]),
+      });
+    });
+    log_("adminList", "", "ok " + guests.length);
+    return { ok: true, guests: guests };
+  }
+
+  // Wrong or missing passphrase: bump the failure counter.
+  var failCount = bump_("admin_fail", ADMIN_FAIL_WINDOW_S);
+  if (failCount >= ADMIN_FAIL_LIMIT) {
     log_("adminList", "", "throttled");
     return { ok: false, error: "throttled", retryAfter: ADMIN_FAIL_WINDOW_S };
   }
-
-  var expected = PropertiesService.getScriptProperties().getProperty("ADMIN_PASSPHRASE");
-  if (!expected || !constantTimeEquals(String(req.passphrase || ""), expected)) {
-    bump_("admin_fail", ADMIN_FAIL_WINDOW_S);
-    log_("adminList", "", "unauthorized");
-    return { ok: false, error: "unauthorized" };
-  }
-  CacheService.getScriptCache().remove("admin_fail");
-
-  var t = readTable_();
-  var h = t.headers;
-  var guests = [];
-  t.rows.forEach(function (row) {
-    if (String(row[h.nombre] || "").trim() === "") return;
-    guests.push({
-      name: String(row[h.nombre] || "").trim(),
-      side: String(row[h.side] || "").trim(),
-      phone: String(row[h.phone] || "").trim(),
-      groupId: String(row[h.groupId] || "").trim(),
-      attending: readAttending(row[h.rvsp]),
-      allergies: readAllergies(row[h.allergies]),
-    });
-  });
-
-  log_("adminList", "", "ok " + guests.length);
-  return { ok: true, guests: guests };
+  log_("adminList", "", "unauthorized");
+  return { ok: false, error: "unauthorized" };
 }
