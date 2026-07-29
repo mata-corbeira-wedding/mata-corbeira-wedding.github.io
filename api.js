@@ -8,7 +8,7 @@
   // Apps Script web app /exec URL. Set this after deploying; see apps-script/README.md.
   // This is not a secret: the script decides what it returns, and it never
   // returns the full guest list without the admin passphrase.
-  var API_URL = "https://script.google.com/macros/s/REPLACE_ME/exec";
+  var API_URL = "https://script.google.com/macros/s/AKfycbyqDky8vSDuzNK4bZmp0E7wnk96s7QBmomsLEnc17NSLlP7gYcb9NJshxeCtr1THoy3Jg/exec";
 
   async function call(payload) {
     if (API_URL.indexOf("REPLACE_ME") !== -1) {
