@@ -17,6 +17,13 @@ var REQUIRED_HEADERS = {
 };
 
 var DEFAULT_ALLERGIES = "No allergies";
+var MAX_ALLERGIES_LEN = 500;
+
+// Sheets treats a cell whose text starts with any of these as a formula, so a
+// guest-supplied note could otherwise run =IMPORTDATA(...) with the owner's
+// authority and exfiltrate the whole guest list, or spill an array over the
+// summary formulas in the neighbouring columns.
+var FORMULA_PREFIXES = ["=", "+", "-", "@"];
 
 function phoneKey(raw) {
   if (!raw) return "";
@@ -41,12 +48,19 @@ function writeAttending(v) {
 
 function readAllergies(cell) {
   var v = String(cell == null ? "" : cell).trim();
+  // Undo the single leading apostrophe writeAllergies adds to neutralise a
+  // formula prefix, so "-peanuts" reads back as "-peanuts", not "'-peanuts".
+  if (v.charAt(0) === "'") v = v.slice(1);
   return v.toLowerCase() === DEFAULT_ALLERGIES.toLowerCase() ? "" : v;
 }
 
 function writeAllergies(notes) {
   var v = String(notes == null ? "" : notes).trim();
-  return v === "" ? DEFAULT_ALLERGIES : v;
+  if (v === "") return DEFAULT_ALLERGIES;
+  if (v.length > MAX_ALLERGIES_LEN) v = v.slice(0, MAX_ALLERGIES_LEN);
+  // A leading apostrophe makes Sheets store the rest verbatim as text.
+  if (FORMULA_PREFIXES.indexOf(v.charAt(0)) !== -1) v = "'" + v;
+  return v;
 }
 
 function resolveHeaders(headerRow) {

