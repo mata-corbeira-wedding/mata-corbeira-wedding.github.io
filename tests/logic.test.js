@@ -196,6 +196,37 @@ test("buildLookupResponse skips blank and default notes when joining", () => {
   assert.equal(buildLookupResponse(rows, H(), [1, 2]).notes, "");
 });
 
+test("buildLookupResponse does not re-append a note already inside a joined cell", () => {
+  // script.js only submits CHECKED rows, so a partial submit writes the joined
+  // string to some rows and leaves the others holding their original note. If
+  // dedup compared whole cell values, "nuts; wheat" and "wheat" would look
+  // distinct and every later lookup would append another "; wheat" until
+  // MAX_ALLERGIES_LEN truncated the note away.
+  const rows = [
+    ["", "Ana",  "Bride", "+34600000001", "G9", "Yes", "nuts; wheat"],
+    ["", "Luis", "Bride", "+34600000001", "G9", "Yes", "nuts; wheat"],
+    ["", "Mia",  "Bride", "+34600000001", "G9", "Yes", "wheat"],
+  ];
+  assert.equal(buildLookupResponse(rows, H(), [0, 1, 2]).notes, "nuts; wheat");
+});
+
+test("buildLookupResponse is idempotent over an already-joined group", () => {
+  // Re-joining a group whose cells all hold the joined value must return that
+  // same value, so repeated partial submits converge instead of growing.
+  const rows = [
+    ["", "Ana",  "Bride", "+34600000001", "G9", "Yes", "nuts; wheat"],
+    ["", "Luis", "Bride", "+34600000001", "G9", "Yes", "nuts; wheat"],
+  ];
+  const once = buildLookupResponse(rows, H(), [0, 1]).notes;
+  assert.equal(once, "nuts; wheat");
+  // Feeding the output back in as every member's cell is a fixed point.
+  const again = [
+    ["", "Ana",  "Bride", "+34600000001", "G9", "Yes", once],
+    ["", "Luis", "Bride", "+34600000001", "G9", "Yes", once],
+  ];
+  assert.equal(buildLookupResponse(again, H(), [0, 1]).notes, once);
+});
+
 test("validateResponses rejects more responses than the group has members", () => {
   // 20,000 copies of one answer would issue 40,000 setValue calls and burn the
   // daily quota, taking RSVP down for everyone.

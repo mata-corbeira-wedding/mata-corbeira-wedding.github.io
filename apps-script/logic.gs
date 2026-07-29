@@ -126,17 +126,27 @@ function findGroup(rows, headers, rawPhone) {
 }
 
 function buildLookupResponse(rows, headers, memberIdx) {
-  // Every distinct note in the group, in order. The guest edits one field and
-  // the result is written back to every row, so returning only the first note
-  // would silently erase the others.
+  // Every distinct note in the group, in first-seen order. The guest edits one
+  // field and the result is written back to every row, so returning only the
+  // first note would silently erase the others.
+  //
+  // Dedup on "; "-separated SEGMENTS, not on whole cell values. A partial
+  // submit only writes the joined string to the rows it answered for, so the
+  // group ends up holding a mix of joined and unjoined cells ("nuts; wheat"
+  // next to "wheat"). Comparing whole values would treat those as distinct and
+  // append "; wheat" again on every lookup, growing until MAX_ALLERGIES_LEN
+  // truncates it away. Splitting first makes the join idempotent: re-joining an
+  // already-joined value yields the same string, so repeats converge.
   var seen = {};
   var collected = [];
   var group = memberIdx.map(function (i) {
-    var note = readAllergies(rows[i][headers.allergies]);
-    if (note && !Object.prototype.hasOwnProperty.call(seen, note)) {
-      seen[note] = true;
-      collected.push(note);
-    }
+    readAllergies(rows[i][headers.allergies]).split("; ").forEach(function (part) {
+      var segment = part.trim();
+      if (!segment) return;
+      if (Object.prototype.hasOwnProperty.call(seen, segment)) return;
+      seen[segment] = true;
+      collected.push(segment);
+    });
     return {
       name: String(rows[i][headers.nombre] || "").trim(),
       attending: readAttending(rows[i][headers.rvsp]),
