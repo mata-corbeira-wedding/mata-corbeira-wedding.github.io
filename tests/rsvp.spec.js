@@ -12,9 +12,32 @@ const API = "**/macros/s/**";
 // Uses __dirname (not import.meta.url) because this project's package.json
 // has "type": "commonjs" — Playwright transpiles this spec to CJS, where
 // import.meta.url is not available and __dirname is.
-const API_JS = fs
-  .readFileSync(path.join(__dirname, "../api.js"), "utf8")
-  .replace("REPLACE_ME", "TESTDEPLOY");
+//
+// IMPORTANT: api.js now holds a real, live production deployment URL —
+// "REPLACE_ME" only remains as a substring later in the file, in the
+// not-configured guard (`indexOf("REPLACE_ME")`). A naive first-match
+// string replace would rewrite that guard instead of the URL, leaving the
+// production URL in the script served to tests. That would only be masked
+// by the fact that the `**/macros/s/**` route stub below happens to also
+// match the real URL — fragile, and one route-pattern change away from
+// sending test traffic (including writes) to the real guest sheet. So we
+// rewrite the `API_URL` assignment itself and serve a fixed, obviously-fake
+// test URL instead.
+const RAW_API_JS = fs.readFileSync(path.join(__dirname, "../api.js"), "utf8");
+const REAL_API_URL_MATCH = RAW_API_JS.match(/var API_URL = "([^"]*)";/);
+const TEST_API_URL = "https://script.google.com/macros/s/TESTDEPLOY/exec";
+const API_JS = RAW_API_JS.replace(
+  /var API_URL = "[^"]*";/,
+  `var API_URL = "${TEST_API_URL}";`
+);
+
+// Fail loudly rather than silently serving the real production URL to
+// tests if the replacement above ever fails to take effect.
+if (REAL_API_URL_MATCH && API_JS.includes(REAL_API_URL_MATCH[1])) {
+  throw new Error(
+    "serveApiJs: failed to strip the production API_URL from api.js before serving it to tests"
+  );
+}
 
 async function serveApiJs(page) {
   await page.route("**/api.js", (route) =>
