@@ -155,6 +155,258 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     panels.forEach((panel) => observer.observe(panel));
+
+    /* ── Snap controller ───────────────────────────────────────────
+       One gesture moves exactly one step, however hard it was. Native scroll
+       snapping cannot promise that — a hard flick still coasts past several
+       panels before it settles — so the page takes the gesture itself and
+       decides where it lands.
+
+       A "step" is usually a panel. A panel taller than the viewport gets a
+       second stop at its bottom edge, so nothing becomes unreachable, and the
+       footer gets one at the end of the document. */
+
+    const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let stops = [];
+    let animating = false;
+    let settleTimer = null;
+    let releaseTimer = null;
+
+    // Reduced motion gets plain native scrolling with the CSS proximity snap:
+    // taking the gesture away implies animating the page for them.
+    function controllerActive() {
+      return !reduceMotionQuery.matches;
+    }
+
+    // Nothing is jacked while a dialog owns the screen.
+    function enabled() {
+      return controllerActive() && !document.body.classList.contains("is-modal-open");
+    }
+
+    function measure() {
+      const viewport = window.innerHeight;
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewport);
+      const next = [];
+
+      panels.forEach((panel) => {
+        const rect = panel.getBoundingClientRect();
+        const top = Math.round(rect.top + window.scrollY);
+        next.push(Math.min(Math.max(top, 0), maxScroll));
+
+        const overflow = Math.round(rect.height - viewport);
+        if (overflow > 8) next.push(Math.min(top + overflow, maxScroll));
+      });
+
+      if (next.length && maxScroll > next[next.length - 1] + 8) next.push(maxScroll);
+
+      stops = Array.from(new Set(next)).sort((a, b) => a - b);
+    }
+
+    function nearestStop() {
+      const y = window.scrollY;
+      let best = 0;
+      let bestGap = Infinity;
+      stops.forEach((stop, index) => {
+        const gap = Math.abs(stop - y);
+        if (gap < bestGap) {
+          bestGap = gap;
+          best = index;
+        }
+      });
+      return best;
+    }
+
+    function goToStop(index) {
+      if (!stops.length) return;
+      const target = stops[Math.min(Math.max(index, 0), stops.length - 1)];
+      if (Math.abs(window.scrollY - target) < 2) return;
+
+      animating = true;
+      clearTimeout(releaseTimer);
+      releaseTimer = setTimeout(() => {
+        animating = false;
+      }, 1000);
+
+      window.scrollTo({ top: target, behavior: "smooth" });
+    }
+
+    function step(direction) {
+      if (animating) return;
+      goToStop(nearestStop() + direction);
+    }
+
+    // Regions that do their own scrolling and must keep the gesture.
+    const passThrough = ".rsvp-dialog, .info-dialog, .leaflet-container, select, textarea";
+
+    function insidePassThrough(target) {
+      return target instanceof Element && target.closest(passThrough) !== null;
+    }
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(() => {
+          animating = false;
+        }, 120);
+      },
+      { passive: true }
+    );
+
+    // A trackpad flick arrives as a long burst of wheel events. Only the first
+    // of a burst counts; the momentum tail keeps resetting the idle timer and
+    // is ignored until the fingers actually stop.
+    let wheelIdle = true;
+    let wheelIdleTimer = null;
+
+    window.addEventListener(
+      "wheel",
+      (event) => {
+        if (!enabled() || insidePassThrough(event.target)) return;
+        event.preventDefault();
+
+        clearTimeout(wheelIdleTimer);
+        wheelIdleTimer = setTimeout(() => {
+          wheelIdle = true;
+        }, 150);
+
+        if (!wheelIdle || animating || Math.abs(event.deltaY) < 4) return;
+        wheelIdle = false;
+        step(event.deltaY > 0 ? 1 : -1);
+      },
+      { passive: false }
+    );
+
+    let touchStartY = null;
+
+    document.addEventListener(
+      "touchstart",
+      (event) => {
+        if (!enabled() || event.touches.length !== 1 || insidePassThrough(event.target)) {
+          touchStartY = null;
+          return;
+        }
+        touchStartY = event.touches[0].clientY;
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      "touchmove",
+      (event) => {
+        if (touchStartY === null || !enabled()) return;
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+
+    document.addEventListener(
+      "touchend",
+      (event) => {
+        if (touchStartY === null || !enabled()) return;
+        const travelled = touchStartY - event.changedTouches[0].clientY;
+        touchStartY = null;
+        if (Math.abs(travelled) < 40) return;
+        step(travelled > 0 ? 1 : -1);
+      },
+      { passive: true }
+    );
+
+    document.addEventListener("keydown", (event) => {
+      if (!enabled() || event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target;
+      if (target instanceof Element && target.closest("input, textarea, select, [contenteditable]")) {
+        return;
+      }
+
+      const key = event.key;
+      if (key === "Home") {
+        event.preventDefault();
+        goToStop(0);
+        return;
+      }
+      if (key === "End") {
+        event.preventDefault();
+        goToStop(stops.length - 1);
+        return;
+      }
+
+      let direction = 0;
+      if (key === "ArrowDown" || key === "PageDown" || (key === " " && !event.shiftKey)) direction = 1;
+      else if (key === "ArrowUp" || key === "PageUp" || (key === " " && event.shiftKey)) direction = -1;
+      if (!direction) return;
+
+      event.preventDefault();
+      step(direction);
+    });
+
+    // Panel heights move with the viewport, the language, and images arriving.
+    let measureTimer = null;
+    const scheduleMeasure = () => {
+      clearTimeout(measureTimer);
+      measureTimer = setTimeout(measure, 120);
+    };
+
+    measure();
+    window.addEventListener("resize", scheduleMeasure);
+    window.addEventListener("load", scheduleMeasure);
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(scheduleMeasure).observe(document.body);
+    }
+
+    function syncSnapMode() {
+      document.documentElement.classList.toggle("js-snap", controllerActive());
+    }
+    syncSnapMode();
+    if (typeof reduceMotionQuery.addEventListener === "function") {
+      reduceMotionQuery.addEventListener("change", syncSnapMode);
+    }
+  })();
+
+  /* ── Info dialogs ──────────────────────────────────────────────────
+     Panels whose subject wants the whole screen keep their supporting text
+     here instead. */
+  (function initInfoModals() {
+    const modals = Array.from(document.querySelectorAll(".info-modal"));
+    if (!modals.length) return;
+
+    let lastTrigger = null;
+
+    function close() {
+      let closedAny = false;
+      modals.forEach((modal) => {
+        if (!modal.classList.contains("is-open")) return;
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        closedAny = true;
+      });
+      if (!closedAny) return;
+
+      document.body.classList.remove("is-modal-open");
+      if (lastTrigger) lastTrigger.focus();
+      lastTrigger = null;
+    }
+
+    document.querySelectorAll("[data-info-open]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        const modal = document.getElementById(trigger.getAttribute("data-info-open"));
+        if (!modal) return;
+        lastTrigger = trigger;
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("is-modal-open");
+        const closeBtn = modal.querySelector(".info-close");
+        if (closeBtn) closeBtn.focus();
+      });
+    });
+
+    document.querySelectorAll("[data-info-close]").forEach((el) => {
+      el.addEventListener("click", close);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") close();
+    });
   })();
 
   const translations = {
@@ -175,14 +427,6 @@ document.addEventListener("DOMContentLoaded", () => {
       home_names_line4: "Mata Negrette",
       home_date_location:
         "December 29th 2026 · Ancient Spanish Monastery · North Miami Beach, Florida",
-      home_ceremony_title: "Ceremony",
-      home_ceremony_time: "4:00 PM · Chapel of St. Bernard de Clairvaux",
-      home_cocktail_title: "Cocktail Hour",
-      home_cocktail_time: "5:00 PM · Cloister Garden",
-      home_reception_title: "Celebration",
-      home_reception_time: "6:00 PM · Refectory & Courtyard",
-      home_transport:
-        "Parking at the monastery is limited. We kindly recommend using Uber, Lyft, or shared rides when possible.",
       wedding_kicker: "Wedding Day",
       wedding_title: "Wedding Day Information",
       wedding_subtitle:
@@ -378,7 +622,6 @@ document.addEventListener("DOMContentLoaded", () => {
       faqs_a8: "Both the ceremony and reception will take place within the Ancient Spanish Monastery. While the event is indoors, please note that the historic facility does not have air conditioning. As we are celebrating in late December, the weather may be breezy or cool; we recommend keeping this in mind when choosing your formal attire.",
 
       // Panel headings
-      home_glance_title: "The Day at a Glance",
       wedding_attire_panel_title: "Attire & Etiquette",
       registry_other_ways_title: "Other Ways to Give",
       things_group_culture_title: "Art & Culture",
@@ -387,6 +630,23 @@ document.addEventListener("DOMContentLoaded", () => {
       things_group_beaches_title: "Beaches",
       things_map_unlock: "Tap to explore the map",
       faqs_more_title: "A Few More Answers",
+
+      // Info dialogs
+      info_close: "Close",
+      wedding_venue_info_title: "Finding Your Way",
+      wedding_venue_info_button: "Venue information",
+      things_info_title: "Getting Around Miami",
+      things_info_button: "Getting around Miami",
+
+      // Hub navigation
+      hotel_nav_cta: "Take a look",
+      hotel_nav_venue_title: "Near the Monastery",
+      hotel_nav_airbnb_note: "Rentals across the city, and help finding others to share with.",
+      hotel_nav_venue_note: "Aventura · closest to the ceremony, from ~$235 a night.",
+      hotel_nav_doral_note: "Close to the airport, from ~$159 a night.",
+      hotel_nav_miramar_note: "Toward Fort Lauderdale, from ~$136 a night.",
+      hotel_back_link: "All places to stay",
+      things_back_link: "Back to the map",
     },
     es: {
       brand_names: "Maria y Raynulfo",
@@ -405,14 +665,6 @@ document.addEventListener("DOMContentLoaded", () => {
       home_names_line4: "Mata Negrette",
       home_date_location:
         "29 de diciembre de 2026 · Ancient Spanish Monastery · North Miami Beach, Florida",
-      home_ceremony_title: "Ceremonia",
-      home_ceremony_time: "4:00 p. m. · Capilla de San Bernardo de Claraval",
-      home_cocktail_title: "Coctel",
-      home_cocktail_time: "5:00 p. m. · Jardines del claustro",
-      home_reception_title: "Celebración",
-      home_reception_time: "6:00 p. m. · Refectorio y patio",
-      home_transport:
-        "El estacionamiento en el monasterio es limitado. Les recomendamos usar Uber, Lyft o compartir carro siempre que sea posible.",
       wedding_kicker: "El Gran Día",
       wedding_title: "Información del día de la boda",
       wedding_subtitle:
@@ -610,7 +862,6 @@ document.addEventListener("DOMContentLoaded", () => {
       faqs_a8: "Tanto la ceremonia como la recepción se llevarán a cabo dentro del Ancient Spanish Monastery. Aunque el evento es en interiores, tenga en cuenta que la histórica instalación no tiene aire acondicionado. Como celebramos a finales de diciembre, el clima puede ser fresco o ventoso; recomendamos tenerlo en cuenta al elegir su atuendo formal.",
 
       // Encabezados de panel
-      home_glance_title: "El Día en Resumen",
       wedding_attire_panel_title: "Vestimenta y Etiqueta",
       registry_other_ways_title: "Otras Formas de Regalar",
       things_group_culture_title: "Arte y Cultura",
@@ -619,6 +870,24 @@ document.addEventListener("DOMContentLoaded", () => {
       things_group_beaches_title: "Playas",
       things_map_unlock: "Toca para explorar el mapa",
       faqs_more_title: "Algunas Respuestas Más",
+
+      // Diálogos de información
+      info_close: "Cerrar",
+      wedding_venue_info_title: "Cómo Ubicarte",
+      wedding_venue_info_button: "Información del lugar",
+      things_info_title: "Cómo Moverte por Miami",
+      things_info_button: "Cómo moverte por Miami",
+
+      // Navegación por secciones
+      hotel_nav_cta: "Ver opciones",
+      hotel_nav_venue_title: "Cerca del Monasterio",
+      hotel_nav_airbnb_note:
+        "Alquileres en toda la ciudad, y ayuda para encontrar con quién compartirlos.",
+      hotel_nav_venue_note: "Aventura · lo más cerca de la ceremonia, desde ~$235 por noche.",
+      hotel_nav_doral_note: "Cerca del aeropuerto, desde ~$159 por noche.",
+      hotel_nav_miramar_note: "Hacia Fort Lauderdale, desde ~$136 por noche.",
+      hotel_back_link: "Todos los hospedajes",
+      things_back_link: "Volver al mapa",
     },
   };
 
@@ -636,6 +905,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (typeof value === "string") {
         el.textContent = value;
       }
+    });
+
+    // Controls whose only label is an attribute (the icon buttons, the phone
+    // field's placeholder) need translating too.
+    const attributeKeys = [
+      ["data-i18n-aria", "aria-label"],
+      ["data-i18n-placeholder", "placeholder"]
+    ];
+    attributeKeys.forEach(([dataAttr, targetAttr]) => {
+      document.querySelectorAll("[" + dataAttr + "]").forEach((el) => {
+        const value = dict[el.getAttribute(dataAttr)];
+        if (typeof value === "string") el.setAttribute(targetAttr, value);
+      });
     });
 
     document.documentElement.lang = lang;
