@@ -15,6 +15,10 @@
   --max-width: 1040px;
   --radius-soft: 14px;
   --transition-fast: 160ms ease-out;
+
+  /* Height of the sticky header. Measured and overwritten by script.js. */
+  --header-h: 76px;
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 *,
@@ -25,6 +29,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* One panel at a time. Panels taller than the viewport still scroll freely. */
+  scroll-snap-type: y proximity;
 }
 
 body {
@@ -171,18 +177,149 @@ a {
   color: var(--color-muted);
 }
 
+/* ── Sections & panels ───────────────────────────────────
+   A section is one backdrop. Its panels scroll past that backdrop one at a
+   time: the photo holds still while the content cross-fades, so moving
+   between panels reads as "still here", and only a section change moves
+   the background. */
+
 .section {
-  padding: 4.5rem 0;
+  position: relative;
 }
 
-.section-alt {
-  background: radial-gradient(circle at top, #fbf7ee 0, #f4efe5 40%, #f1e7d8 100%);
-}
-
+/* admin.html is a single scrolling page rather than panels, so it keeps the
+   old section layout. index.html no longer uses .section-inner. */
 .section-inner {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
+  padding: 4.5rem 0;
+}
+
+/* Pinned for the section's whole scroll range. The negative margin pulls it
+   back out of the flow so it doesn't add height of its own. */
+.section-bg {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  margin-bottom: -100dvh;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.section-bg-wash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(252, 248, 239, 0.95), rgba(220, 208, 191, 0.9));
+  mix-blend-mode: multiply;
+}
+
+.section-bg-home {
+  background-image: linear-gradient(
+      to bottom,
+      rgba(244, 239, 229, 0.85),
+      rgba(244, 239, 229, 0.85)
+    ),
+    url("assets/monastery-exterior.png");
+}
+
+.section-bg-cloister {
+  background-image: linear-gradient(
+      to bottom,
+      rgba(244, 239, 229, 0.9),
+      rgba(244, 239, 229, 0.92)
+    ),
+    url("assets/monastery-cloister.png");
+}
+
+.section-bg-exterior {
+  background-image: linear-gradient(
+      to bottom,
+      rgba(244, 239, 229, 0.91),
+      rgba(244, 239, 229, 0.93)
+    ),
+    url("assets/monastery-exterior.png");
+}
+
+.section-bg-alt {
+  background: radial-gradient(circle at 50% 0%, #fbf7ee 0, #f4efe5 42%, #f1e7d8 100%);
+}
+
+.section-bg-sand {
+  background: radial-gradient(circle at 50% 100%, #fdf9f0 0, #f5efe3 45%, #ece0cd 100%);
+}
+
+/* A panel spans the full viewport and reserves the header band as top padding,
+   so its content is centred in the space actually visible below the header.
+   `safe center` means a panel whose content outgrows the viewport falls back to
+   top-aligned instead of overflowing upward behind the header. */
+.panel {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  align-items: safe center;
+  padding: calc(var(--header-h) + 1.5rem) 0 2.25rem;
+  scroll-snap-align: start;
+}
+
+.panel-inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vh, 2.5rem);
+}
+
+/* Each direct child fades and rises in turn once the panel takes the screen,
+   and fades back out as it leaves. Gated on .js-panels so the content is
+   never left invisible if script.js fails to run. */
+.js-panels .panel-inner > * {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 640ms var(--ease-out-soft), transform 640ms var(--ease-out-soft);
+}
+
+.panel.is-active .panel-inner > * {
+  opacity: 1;
+  transform: none;
+}
+
+.panel.is-active .panel-inner > *:nth-child(1) { transition-delay: 60ms; }
+.panel.is-active .panel-inner > *:nth-child(2) { transition-delay: 150ms; }
+.panel.is-active .panel-inner > *:nth-child(3) { transition-delay: 240ms; }
+.panel.is-active .panel-inner > *:nth-child(4) { transition-delay: 330ms; }
+
+/* Smaller heading used on a section's second and later panels — it repeats the
+   section name so you always know you have not left it. */
+.panel-heading {
+  text-align: center;
+}
+
+.panel-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin: 0 0 0.5rem;
+}
+
+.panel-kicker::after {
+  content: "";
+  display: block;
+  width: 34px;
+  height: 1px;
+  margin: 0.55rem auto 0;
+  background: var(--color-accent-soft);
+}
+
+.panel-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 .section-header {
@@ -222,34 +359,10 @@ a {
   margin: 0 0 0.75rem;
 }
 
-.hero {
-  position: relative;
-  min-height: 75vh;
-  display: flex;
-  align-items: center;
-  color: var(--color-text);
-  background-size: cover;
-  background-position: center;
-  background-image: linear-gradient(
-      to bottom,
-      rgba(244, 239, 229, 0.96),
-      rgba(244, 239, 229, 0.96)
-    ),
-    url("assets/monastery-exterior.png");
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top, rgba(252, 248, 239, 0.95), rgba(220, 208, 191, 0.9));
-  mix-blend-mode: multiply;
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  padding: 6rem 1.5rem 4.5rem;
+.panel-hero .panel-inner {
   text-align: center;
+  align-items: center;
+  gap: 0;
 }
 
 .hero-names {
@@ -283,15 +396,10 @@ a {
   margin: 1.75rem auto 1.5rem;
 }
 
-.hero-rsvp-button {
-  margin-bottom: 1.75rem;
-}
-
 .schedule-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.25rem;
-  margin-bottom: 1.75rem;
 }
 
 .schedule-card {
@@ -396,6 +504,33 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.6rem;
+  align-items: start;
+}
+
+.card-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.card-centered {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.card-centered .button {
+  margin-top: 1rem;
+}
+
+.callout-centered {
+  text-align: center;
+}
+
+.two-column-venue {
+  align-items: center;
+}
+
+.two-column-venue .callout-soft {
+  margin-top: 1.25rem;
 }
 
 .bullet-list {
@@ -459,9 +594,11 @@ a {
   margin-top: 1.5rem;
 }
 
-.hotel-card h4 {
+.hotel-card h3 {
   margin: 0 0 0.25rem;
   font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
 }
 
 .badge {
@@ -562,6 +699,10 @@ a {
 .admin-link:hover,
 .admin-link:focus-visible {
   color: var(--color-accent);
+}
+
+body.is-modal-open {
+  overflow: hidden;
 }
 
 .rsvp-modal {
@@ -758,26 +899,57 @@ a {
   flex: 1;
 }
 
+.things-map-wrap {
+  position: relative;
+}
+
 #things-map {
   width: 100%;
-  height: 420px;
+  height: clamp(220px, 42dvh, 420px);
   border-radius: 10px;
-  margin-bottom: 2.5rem;
   border: 1px solid rgba(209, 196, 178, 0.6);
+}
+
+/* Touch devices only: the map starts locked so a vertical swipe scrolls the
+   page. Tapping this hands dragging over to Leaflet. */
+.map-unlock {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: rgba(61, 50, 38, 0.28);
+  color: #fdf8ee;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.map-unlock[hidden] {
+  display: none;
+}
+
+/* Reset once per section so numbering runs 1–15 across all four panels. */
+#things-to-do {
+  counter-reset: things-counter;
 }
 
 .things-list-numbered {
   list-style: none;
   margin: 0;
   padding: 0;
-  counter-reset: things-counter;
 }
 
 .things-list-numbered > li {
   counter-increment: things-counter;
   position: relative;
   padding-left: 2.8rem;
-  margin-bottom: 1.8rem;
+  margin-bottom: clamp(0.75rem, 2.2vh, 1.8rem);
 }
 
 .things-list-numbered > li:last-child {
@@ -811,7 +983,7 @@ a {
 .things-list-numbered p {
   margin: 0 0 0.35rem;
   font-size: 0.95rem;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 .site-footer {
@@ -824,6 +996,110 @@ a {
 .site-footer p {
   margin: 0;
   color: var(--color-muted);
+}
+
+.venue-map-img {
+  max-height: 40dvh;
+  object-fit: contain;
+  background: #fbf7ee;
+}
+
+/* ── Panel progress rail ─────────────────────────────────
+   Shows where you are inside the current section, and disappears while
+   only one panel exists. Built by script.js. */
+
+.panel-rail {
+  position: fixed;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms var(--ease-out-soft);
+}
+
+.panel-rail.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.panel-rail-label {
+  writing-mode: vertical-rl;
+  font-size: 0.62rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.panel-rail-dots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.panel-rail-dot {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: 1px solid var(--color-accent);
+  background: transparent;
+  transition: background 260ms var(--ease-out-soft), transform 260ms var(--ease-out-soft);
+}
+
+.panel-rail-dot:hover {
+  transform: scale(1.35);
+}
+
+.panel-rail-dot.is-active {
+  background: var(--color-accent);
+  transform: scale(1.35);
+}
+
+/* ── Scroll cue ──────────────────────────────────────────
+   A single drawn line on the very first panel. */
+
+.scroll-cue {
+  position: fixed;
+  left: 50%;
+  bottom: 1.6rem;
+  transform: translateX(-50%);
+  z-index: 15;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms var(--ease-out-soft);
+}
+
+.scroll-cue.is-visible {
+  opacity: 1;
+}
+
+.scroll-cue-line {
+  display: block;
+  width: 1px;
+  height: 46px;
+  background: linear-gradient(to bottom, transparent, var(--color-accent));
+  transform-origin: top;
+  animation: scroll-cue-drop 2.1s var(--ease-out-soft) infinite;
+}
+
+@keyframes scroll-cue-drop {
+  0% { transform: scaleY(0); opacity: 0; }
+  35% { transform: scaleY(1); opacity: 1; }
+  75% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1) translateY(46px); opacity: 0; }
+}
+
+.nav-link.is-current::after {
+  width: 100%;
 }
 
 @media (max-width: 900px) {
@@ -900,14 +1176,6 @@ a {
     margin-top: 0.25rem;
   }
 
-  .hero {
-    min-height: 60vh;
-  }
-
-  .hero-content {
-    padding: 4rem 1rem 3rem;
-  }
-
   .hero-names {
     font-size: clamp(1.9rem, 7vw, 2.6rem);
   }
@@ -916,8 +1184,13 @@ a {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .schedule-card {
+  .schedule-card,
+  .card {
     padding: 1rem 1.1rem;
+  }
+
+  .card-grid {
+    gap: 1.1rem;
   }
 
   .callout {
@@ -949,12 +1222,46 @@ a {
     justify-content: center;
   }
 
-  .section {
-    padding: 3rem 0;
+  .panel {
+    padding: calc(var(--header-h) + 1rem) 0 1.5rem;
   }
 
-  #things-map {
-    height: 260px;
+  /* The rail moves to a horizontal row at the bottom, above the safe area. */
+  .panel-rail {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: max(0.9rem, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    flex-direction: row;
+    gap: 0.55rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(244, 239, 229, 0.82);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(209, 196, 178, 0.7);
+  }
+
+  .panel-rail-label {
+    display: none;
+  }
+
+  .panel-rail-dots {
+    flex-direction: row;
+    gap: 0.55rem;
+  }
+
+  .panel-rail-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scroll-cue {
+    bottom: 3.6rem;
+  }
+
+  .venue-map-img {
+    max-height: 34dvh;
   }
 
   .site-footer {
@@ -992,7 +1299,7 @@ a {
 
 .faq-item {
   border-bottom: 1px solid var(--color-border);
-  padding: 1.25rem 0;
+  padding: clamp(0.7rem, 1.8vh, 1.25rem) 0;
 }
 
 .faq-item:first-child {
@@ -1006,14 +1313,14 @@ a {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text);
-  margin: 0 0 0.75rem;
+  margin: 0 0 clamp(0.3rem, 1vh, 0.75rem);
 }
 
 .faq-answer {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 0.97rem;
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.6;
   color: var(--color-muted);
   margin: 0;
 }
@@ -1021,6 +1328,16 @@ a {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /* No cross-fade — panels are simply present. */
+  .js-panels .panel-inner > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  .scroll-cue {
+    display: none;
   }
 
   * {

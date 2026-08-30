@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Maria & Raynulfo · Wedding</title>
+    <title>Maria &amp; Raynulfo · Wedding</title>
     <meta
       name="description"
       content="Wedding website for Maria Alejandra and Raynulfo Jesus at the Ancient Spanish Monastery in North Miami Beach, Florida."
@@ -56,138 +56,162 @@
     </header>
 
     <main>
-      <!-- Home / Hero -->
-      <section id="home" class="section hero">
-        <div class="hero-overlay"></div>
-        <div class="container hero-content">
-          <h1 class="hero-names hero-names-multiline">
-            <span data-i18n="home_names_line1">Maria Alejandra</span>
-            <span data-i18n="home_names_line2">Corbeira Raventos</span>
-            <span data-i18n="home_names_amp">&</span>
-            <span data-i18n="home_names_line3">Raynulfo Jesus</span>
-            <span data-i18n="home_names_line4">Mata Negrette</span>
-          </h1>
-          <p class="hero-subtitle" data-i18n="home_date_location">
-            December 29ᵗʰ 2026 · Ancient Spanish Monastery · North Miami Beach, Florida
-          </p>
-          <div class="hero-divider"></div>
+      <!-- ══ 1 · Home ══════════════════════════════════════════════ -->
+      <section id="home" class="section" data-section-label="nav_home">
+        <div class="section-bg section-bg-home" aria-hidden="true">
+          <div class="section-bg-wash"></div>
+        </div>
 
-          <button class="button hero-rsvp-button" type="button" data-i18n="home_rsvp_button">
-            RSVP
-          </button>
-
-          <div class="schedule-grid">
-            <article class="schedule-card">
-              <h2 class="schedule-title" data-i18n="home_ceremony_title">Ceremony</h2>
-              <p class="schedule-time" data-i18n="home_ceremony_time">
-                4:00 PM · Chapel of St. Bernard de Clairvaux
-              </p>
-            </article>
-            <article class="schedule-card">
-              <h2 class="schedule-title" data-i18n="home_cocktail_title">Cocktail Hour</h2>
-              <p class="schedule-time" data-i18n="home_cocktail_time">
-                5:00 PM · Cloister Garden
-              </p>
-            </article>
-            <article class="schedule-card">
-              <h2 class="schedule-title" data-i18n="home_reception_title">Celebration</h2>
-              <p class="schedule-time" data-i18n="home_reception_time">
-                6:00 PM · Refectory &amp; Courtyard
-              </p>
-            </article>
-          </div>
-
-          <aside class="callout" aria-label="Transportation notice">
-            <p data-i18n="home_transport">
-              Parking at the monastery is limited. We kindly recommend using Uber, Lyft, or shared rides when
-              possible.
+        <!-- 1a · Title card -->
+        <div class="panel panel-hero" id="home-1">
+          <div class="container panel-inner">
+            <h1 class="hero-names hero-names-multiline">
+              <span data-i18n="home_names_line1">Maria Alejandra</span>
+              <span data-i18n="home_names_line2">Corbeira Raventos</span>
+              <span data-i18n="home_names_amp">&amp;</span>
+              <span data-i18n="home_names_line3">Raynulfo Jesus</span>
+              <span data-i18n="home_names_line4">Mata Negrette</span>
+            </h1>
+            <p class="hero-subtitle" data-i18n="home_date_location">
+              December 29ᵗʰ 2026 · Ancient Spanish Monastery · North Miami Beach, Florida
             </p>
-          </aside>
+            <div class="hero-divider"></div>
+            <button class="button hero-rsvp-button" type="button" data-i18n="home_rsvp_button">
+              RSVP
+            </button>
+          </div>
+        </div>
+
+        <!-- 1b · Day at a glance -->
+        <div class="panel" id="home-2">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="nav_home">Home</p>
+              <h2 class="panel-title" data-i18n="home_glance_title">The Day at a Glance</h2>
+            </header>
+
+            <div class="schedule-grid">
+              <article class="schedule-card">
+                <h3 class="schedule-title" data-i18n="home_ceremony_title">Ceremony</h3>
+                <p class="schedule-time" data-i18n="home_ceremony_time">
+                  4:00 PM · Chapel of St. Bernard de Clairvaux
+                </p>
+              </article>
+              <article class="schedule-card">
+                <h3 class="schedule-title" data-i18n="home_cocktail_title">Cocktail Hour</h3>
+                <p class="schedule-time" data-i18n="home_cocktail_time">
+                  5:00 PM · Cloister Garden
+                </p>
+              </article>
+              <article class="schedule-card">
+                <h3 class="schedule-title" data-i18n="home_reception_title">Celebration</h3>
+                <p class="schedule-time" data-i18n="home_reception_time">
+                  6:00 PM · Refectory &amp; Courtyard
+                </p>
+              </article>
+            </div>
+
+            <aside class="callout" aria-label="Transportation notice">
+              <p data-i18n="home_transport">
+                Parking at the monastery is limited. We kindly recommend using Uber, Lyft, or shared rides when
+                possible.
+              </p>
+            </aside>
+          </div>
         </div>
       </section>
 
-      <!-- Wedding Day Information -->
-      <section id="wedding-day" class="section">
-        <div class="container section-inner">
-          <header class="section-header">
-            <p class="section-kicker" data-i18n="wedding_kicker">Wedding Day</p>
-            <h2 class="section-title" data-i18n="wedding_title">Wedding Day Information</h2>
-            <p class="section-subtitle" data-i18n="wedding_subtitle">
-              Everything you need to know for our celebration at the Ancient Spanish Monastery.
-            </p>
-          </header>
+      <!-- ══ 2 · Wedding Day ═══════════════════════════════════════ -->
+      <section id="wedding-day" class="section" data-section-label="nav_wedding_day">
+        <div class="section-bg section-bg-cloister" aria-hidden="true">
+          <div class="section-bg-wash"></div>
+        </div>
 
-          <div class="two-column">
-            <div class="column">
-              <h3 class="subsection-title" data-i18n="wedding_timeline_title">
-                Schedule &amp; Flow
-              </h3>
-              <ol class="timeline">
-                <li class="timeline-item">
-                  <span class="timeline-time" data-i18n="wedding_timeline_ceremony_time">
-                    4:00 PM
-                  </span>
-                  <div class="timeline-body">
-                    <h4 data-i18n="wedding_timeline_ceremony_title">Catholic Ceremony</h4>
-                    <p data-i18n="wedding_timeline_ceremony_desc">
-                      Please arrive 20–30 minutes early to find your seat in the historic chapel.
-                    </p>
-                  </div>
-                </li>
-                <li class="timeline-item">
-                  <span class="timeline-time" data-i18n="wedding_timeline_cocktail_time">
-                    5:00 PM
-                  </span>
-                  <div class="timeline-body">
-                    <h4 data-i18n="wedding_timeline_cocktail_title">Cocktail Hour</h4>
-                    <p data-i18n="wedding_timeline_cocktail_desc">
-                      Join us in the cloister gardens for cocktails, music, and a first look at the monastery at
-                      sunset.
-                    </p>
-                  </div>
-                </li>
-                <li class="timeline-item">
-                  <span class="timeline-time" data-i18n="wedding_timeline_reception_time">
-                    6:00 PM
-                  </span>
-                  <div class="timeline-body">
-                    <h4 data-i18n="wedding_timeline_reception_title">Dinner &amp; Celebration</h4>
-                    <p data-i18n="wedding_timeline_reception_desc">
-                      Dinner, speeches, and dancing in the refectory and courtyard beneath the arches and oak trees.
-                    </p>
-                  </div>
-                </li>
-              </ol>
+        <!-- 2a · Schedule & flow -->
+        <div class="panel" id="wedding-day-1">
+          <div class="container panel-inner">
+            <header class="section-header">
+              <p class="section-kicker" data-i18n="wedding_kicker">Wedding Day</p>
+              <h2 class="section-title" data-i18n="wedding_title">Wedding Day Information</h2>
+              <p class="section-subtitle" data-i18n="wedding_subtitle">
+                Everything you need to know for our celebration at the Ancient Spanish Monastery.
+              </p>
+            </header>
 
-              <div class="card">
+            <ol class="timeline">
+              <li class="timeline-item">
+                <span class="timeline-time" data-i18n="wedding_timeline_ceremony_time">
+                  4:00 PM
+                </span>
+                <div class="timeline-body">
+                  <h4 data-i18n="wedding_timeline_ceremony_title">Catholic Ceremony</h4>
+                  <p data-i18n="wedding_timeline_ceremony_desc">
+                    Please arrive 20–30 minutes early to find your seat in the historic chapel.
+                  </p>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <span class="timeline-time" data-i18n="wedding_timeline_cocktail_time">
+                  5:00 PM
+                </span>
+                <div class="timeline-body">
+                  <h4 data-i18n="wedding_timeline_cocktail_title">Cocktail Hour</h4>
+                  <p data-i18n="wedding_timeline_cocktail_desc">
+                    Join us in the cloister gardens for cocktails, music, and a first look at the monastery at
+                    sunset.
+                  </p>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <span class="timeline-time" data-i18n="wedding_timeline_reception_time">
+                  6:00 PM
+                </span>
+                <div class="timeline-body">
+                  <h4 data-i18n="wedding_timeline_reception_title">Dinner &amp; Celebration</h4>
+                  <p data-i18n="wedding_timeline_reception_desc">
+                    Dinner, speeches, and dancing in the refectory and courtyard beneath the arches and oak trees.
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- 2b · Dress code & child-free -->
+        <div class="panel" id="wedding-day-2">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="wedding_kicker">Wedding Day</p>
+              <h2 class="panel-title" data-i18n="wedding_attire_panel_title">Attire &amp; Etiquette</h2>
+            </header>
+
+            <div class="card-grid card-grid-2">
+              <article class="card">
+                <h3 class="subsection-title" data-i18n="wedding_dress_code_title">Dress Code: Formal Evening Attire</h3>
+                <p><span data-i18n="wedding_dress_code_intro">We invite you to dress in your finest formal evening wear.</span> <strong data-i18n="wedding_dress_code_bold">To honor the bride's traditional attire, we kindly ask that guests refrain from wearing white, cream, or ivory.</strong></p>
+                <p><strong data-i18n="wedding_dress_code_venue_label">Note on the Venue:</strong> <span data-i18n="wedding_dress_code_venue_note">The monastery features historic stone floors and garden paths; we recommend block heels or comfortable shoes. December evenings in Miami can be breezy, so a light wrap or jacket is suggested.</span></p>
+              </article>
+
+              <article class="card">
                 <h3 class="subsection-title" data-i18n="wedding_child_free_title">Child Free Affair</h3>
                 <p data-i18n="wedding_child_free_body">
                   While we adore your little ones, our wedding is going to be an adults-only event so that everyone can relax and enjoy the evening. We appreciate you making arrangements ahead of time to celebrate with us!
                 </p>
-              </div>
-
-              <div class="card">
-                <h3 class="subsection-title" data-i18n="wedding_dress_code_title">Dress Code: Formal Evening Attire</h3>
-                <p><span data-i18n="wedding_dress_code_intro">We invite you to dress in your finest formal evening wear.</span> <strong data-i18n="wedding_dress_code_bold">To honor the bride's traditional attire, we kindly ask that guests refrain from wearing white, cream, or ivory.</strong></p>
-                <p><strong data-i18n="wedding_dress_code_venue_label">Note on the Venue:</strong> <span data-i18n="wedding_dress_code_venue_note">The monastery features historic stone floors and garden paths; we recommend block heels or comfortable shoes. December evenings in Miami can be breezy, so a light wrap or jacket is suggested.</span></p>
-              </div>
-
-              <aside class="callout callout-soft">
-                <h3 class="subsection-title" data-i18n="wedding_transport_title">
-                  Parking &amp; Transportation
-                </h3>
-                <p data-i18n="wedding_transport_body">
-                  Parking at the monastery is limited. If you are able, please consider taking Uber, Lyft, or
-                  carpooling. If you do drive, allow extra time to park and walk through the gardens to the chapel.
-                </p>
-              </aside>
+              </article>
             </div>
+          </div>
+        </div>
 
-            <div class="column">
-              <div class="card">
-                <h3 class="subsection-title" data-i18n="wedding_venue_title">
-                  Venue &amp; Directions
-                </h3>
+        <!-- 2c · Venue & directions -->
+        <div class="panel" id="wedding-day-3">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="wedding_kicker">Wedding Day</p>
+              <h2 class="panel-title" data-i18n="wedding_venue_title">Venue &amp; Directions</h2>
+            </header>
+
+            <div class="two-column two-column-venue">
+              <div class="column">
                 <p data-i18n="wedding_venue_body">
                   The Ancient Spanish Monastery is a historic cloister with several distinct spaces. The chapel,
                   gardens, and reception hall are a short walk from one another within the same grounds.
@@ -203,35 +227,51 @@
                     Reception: refectory hall and adjoining courtyard.
                   </li>
                 </ul>
+                <a href="https://www.spanishmonastery.com/" class="button button-monastery" target="_blank" rel="noopener noreferrer" data-i18n="wedding_monastery_button">
+                  Visit Monastery Website
+                </a>
+
+                <aside class="callout callout-soft">
+                  <h3 class="subsection-title" data-i18n="wedding_transport_title">
+                    Parking &amp; Transportation
+                  </h3>
+                  <p data-i18n="wedding_transport_body">
+                    Parking at the monastery is limited. If you are able, please consider taking Uber, Lyft, or
+                    carpooling. If you do drive, allow extra time to park and walk through the gardens to the chapel.
+                  </p>
+                </aside>
+              </div>
+
+              <div class="column">
                 <figure class="venue-map-figure">
-                  <img src="assets/monastery-map.png" alt="Map of the Ancient Spanish Monastery showing chapel, cocktail area, and reception locations" class="venue-map-img" />
+                  <img src="assets/monastery-map.png" alt="Map of the Ancient Spanish Monastery showing chapel, cocktail area, and reception locations" class="venue-map-img" loading="lazy" />
                   <figcaption class="muted small" data-i18n="wedding_venue_map_caption">
                     Monastery map: chapel, cocktail area, and reception.
                   </figcaption>
                 </figure>
-                <a href="https://www.spanishmonastery.com/" class="button button-monastery" target="_blank" rel="noopener noreferrer" data-i18n="wedding_monastery_button">
-                  Visit Monastery Website
-                </a>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Registry -->
-      <section id="registry" class="section section-alt">
-        <div class="container section-inner">
-          <header class="section-header">
-            <p class="section-kicker" data-i18n="registry_kicker">Registry</p>
-            <h2 class="section-title" data-i18n="registry_title">Gifts &amp; Registry</h2>
-            <p class="section-subtitle" data-i18n="registry_subtitle">
-              Your presence is the greatest gift. If you would also like to honor us with a present, we have gathered
-              a few ideas below.
-            </p>
-          </header>
+      <!-- ══ 3 · Registry ══════════════════════════════════════════ -->
+      <section id="registry" class="section" data-section-label="nav_registry">
+        <div class="section-bg section-bg-alt" aria-hidden="true"></div>
 
-          <div class="card-grid">
-            <article class="card">
+        <!-- 3a · Intro + Amazon -->
+        <div class="panel" id="registry-1">
+          <div class="container panel-inner">
+            <header class="section-header">
+              <p class="section-kicker" data-i18n="registry_kicker">Registry</p>
+              <h2 class="section-title" data-i18n="registry_title">Gifts &amp; Registry</h2>
+              <p class="section-subtitle" data-i18n="registry_subtitle">
+                Your presence is the greatest gift. If you would also like to honor us with a present, we have gathered
+                a few ideas below.
+              </p>
+            </header>
+
+            <article class="card card-centered">
               <h3 class="subsection-title" data-i18n="registry_amazon_title">
                 Amazon Registry
               </h3>
@@ -248,314 +288,434 @@
                 View Amazon Registry
               </a>
             </article>
+          </div>
+        </div>
 
-            <article class="card">
-              <h3 class="subsection-title" data-i18n="registry_fund_title">
-                Honeymoon &amp; Future Home Fund
-              </h3>
-              <p data-i18n="registry_fund_body">
-                For those who prefer, you may contribute to our honeymoon and future home fund. We are deeply grateful
-                for any gesture.
-              </p>
-              <p class="zelle-info">
-                <strong data-i18n="registry_zelle_label">Zelle:</strong>
-                <a href="tel:+19549188129" class="text-link">954-918-8129</a>
-              </p>
-              <p class="muted small" data-i18n="registry_zelle_note">
-                Send to this number via your bank&apos;s Zelle app.
-              </p>
-            </article>
+        <!-- 3b · Fund + other ideas -->
+        <div class="panel" id="registry-2">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="registry_kicker">Registry</p>
+              <h2 class="panel-title" data-i18n="registry_other_ways_title">Other Ways to Give</h2>
+            </header>
 
-            <article class="card">
-              <h3 class="subsection-title" data-i18n="registry_other_title">
-                Other Ideas
-              </h3>
-              <p data-i18n="registry_other_body">
-                If you prefer to share a gift in another way, please feel welcome to reach out to our families or to us
-                directly. We are simply honored to celebrate with you.
-              </p>
-            </article>
+            <div class="card-grid card-grid-2">
+              <article class="card">
+                <h3 class="subsection-title" data-i18n="registry_fund_title">
+                  Honeymoon &amp; Future Home Fund
+                </h3>
+                <p data-i18n="registry_fund_body">
+                  For those who prefer, you may contribute to our honeymoon and future home fund. We are deeply grateful
+                  for any gesture.
+                </p>
+                <p class="zelle-info">
+                  <strong data-i18n="registry_zelle_label">Zelle:</strong>
+                  <a href="tel:+19549188129" class="text-link">954-918-8129</a>
+                </p>
+                <p class="muted small" data-i18n="registry_zelle_note">
+                  Send to this number via your bank&apos;s Zelle app.
+                </p>
+              </article>
+
+              <article class="card">
+                <h3 class="subsection-title" data-i18n="registry_other_title">
+                  Other Ideas
+                </h3>
+                <p data-i18n="registry_other_body">
+                  If you prefer to share a gift in another way, please feel welcome to reach out to our families or to us
+                  directly. We are simply honored to celebrate with you.
+                </p>
+              </article>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Hotel -->
-      <section id="hotel" class="section">
-        <div class="container section-inner">
-          <header class="section-header">
-            <p class="section-kicker" data-i18n="hotel_kicker">Stay</p>
-            <h2 class="section-title" data-i18n="hotel_title">Where to stay?</h2>
-            <p class="section-subtitle" data-i18n="hotel_subtitle">
-              For our guests traveling from near and far, here are a few areas and hotels to consider during your stay
-              in Miami.
-            </p>
-          </header>
+      <!-- ══ 4 · Hotel ═════════════════════════════════════════════ -->
+      <section id="hotel" class="section" data-section-label="nav_hotel">
+        <div class="section-bg section-bg-sand" aria-hidden="true"></div>
 
-          <article class="card hotel-airbnb-card">
-            <h3 class="subsection-title" data-i18n="hotel_airbnb_title">Airbnb &amp; Vacation Rentals</h3>
-            <p data-i18n="hotel_airbnb_body">
-              Airbnb and other vacation rentals are widely available across Miami. If you'd like to share a rental with
-              other guests to split costs, please reach out to the bride or groom and we'll do our best to connect you
-              with other friends and family looking for a shared stay!
-            </p>
-          </article>
+        <!-- 4a · Intro + Airbnb -->
+        <div class="panel" id="hotel-1">
+          <div class="container panel-inner">
+            <header class="section-header">
+              <p class="section-kicker" data-i18n="hotel_kicker">Stay</p>
+              <h2 class="section-title" data-i18n="hotel_title">Where to stay?</h2>
+              <p class="section-subtitle" data-i18n="hotel_subtitle">
+                For our guests traveling from near and far, here are a few areas and hotels to consider during your stay
+                in Miami.
+              </p>
+            </header>
 
-          <div class="hotel-groups">
-            <section class="hotel-group">
-              <h3 class="subsection-title" data-i18n="hotel_group_venue_title">
+            <article class="card card-centered hotel-airbnb-card">
+              <h3 class="subsection-title" data-i18n="hotel_airbnb_title">Airbnb &amp; Vacation Rentals</h3>
+              <p data-i18n="hotel_airbnb_body">
+                Airbnb and other vacation rentals are widely available across Miami. If you'd like to share a rental with
+                other guests to split costs, please reach out to the bride or groom and we'll do our best to connect you
+                with other friends and family looking for a shared stay!
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <!-- 4b · Aventura -->
+        <div class="panel" id="hotel-2">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="hotel_kicker">Stay</p>
+              <h2 class="panel-title" data-i18n="hotel_group_venue_title">
                 Near the Ancient Spanish Monastery · Aventura Area
-              </h3>
-              <div class="card-grid hotel-card-grid">
-                <article class="card hotel-card">
-                  <h4>Courtyard by Marriott Miami Aventura Mall</h4>
-                  <p class="hotel-description" data-i18n="hotel_aventura1_desc">A reliable 3-star choice steps from Aventura Mall, with comfortable rooms and solid amenities for a wedding weekend.</p>
-                  <p class="small" data-i18n="hotel_aventura1_price">~$275 per night</p>
-                  <p class="hotel-highlights" data-i18n="hotel_aventura1_highlights">Heated outdoor pool · On-site restaurant &amp; bar · Bicycle rentals</p>
-                  <div class="hotel-links">
-                    <a href="https://www.marriott.com/en-us/hotels/miaav-courtyard-miami-aventura-mall/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
-                  </div>
-                </article>
-                <article class="card hotel-card">
-                  <h4>AC Hotel Miami Aventura</h4>
-                  <p class="hotel-description" data-i18n="hotel_aventura2_desc">A stylish 4-star European-inspired hotel with a rooftop pool and bar — a great option for guests who want a little extra luxury.</p>
-                  <p class="small" data-i18n="hotel_aventura2_price">~$245 per night</p>
-                  <p class="hotel-highlights" data-i18n="hotel_aventura2_highlights">Rooftop pool &amp; bar · AC Kitchen breakfast · Pet-friendly</p>
-                  <div class="hotel-links">
-                    <a href="https://www.marriott.com/en-us/hotels/miahv-ac-hotel-miami-aventura/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
-                  </div>
-                </article>
-                <article class="card hotel-card">
-                  <h4>Ramada Plaza by Wyndham Marco Polo Beach Resort</h4>
-                  <p class="hotel-description" data-i18n="hotel_aventura3_desc">A beachfront resort with direct ocean access — ideal for guests who want to combine the wedding with a beach getaway.</p>
-                  <p class="small" data-i18n="hotel_aventura3_price">~$235 per night</p>
-                  <p class="hotel-highlights" data-i18n="hotel_aventura3_highlights">Direct beach access · Oceanfront pool · Poolside bar &amp; restaurant</p>
-                  <div class="hotel-links">
-                    <a href="https://www.wyndhamhotels.com/ramada/miami-beach-florida/ramada-plaza-marco-polo-beach-resort/overview" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
-                  </div>
-                </article>
-              </div>
-            </section>
+              </h2>
+            </header>
 
-            <section class="hotel-group">
-              <h3 class="subsection-title" data-i18n="hotel_group_doral_title">
-                Near Doral
-              </h3>
-              <div class="card-grid hotel-card-grid">
-                <article class="card hotel-card">
-                  <h4>Element Miami Doral</h4>
-                  <p class="hotel-description" data-i18n="hotel_doral1_desc">An eco-conscious extended-stay hotel with fully equipped kitchens — great value for guests planning a longer trip.</p>
-                  <p class="small" data-i18n="hotel_doral1_price">~$159 per night</p>
-                  <p class="hotel-highlights" data-i18n="hotel_doral1_highlights">Fully equipped kitchens · Free healthy breakfast · Free airport shuttle · Pet-friendly</p>
-                  <div class="hotel-links">
-                    <a href="https://www.marriott.com/en-us/hotels/miade-element-miami-doral/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
-                  </div>
-                </article>
-                <article class="card hotel-card">
-                  <h4>Hyatt Place Miami Airport-West/Doral</h4>
-                  <p class="hotel-description" data-i18n="hotel_doral2_desc">A reliable and comfortable choice close to local dining and shopping, with generous breakfast included.</p>
-                  <p class="small" data-i18n="hotel_doral2_price">~$175 per night</p>
-                  <p class="hotel-highlights" data-i18n="hotel_doral2_highlights">Free breakfast buffet · 24/7 café &amp; bar · Outdoor pool · Pet-friendly</p>
-                  <div class="hotel-links">
-                    <a href="https://www.hyatt.com/hyatt-place/en-US/miazd-hyatt-place-miami-airport-west-doral" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
-                  </div>
-                </article>
-                <article class="card hotel-card">
-                  <h4>SpringHill Suites by Marriott Miami Doral</h4>
-                  <p class="hotel-description" data-i18n="hotel_doral3_desc">All-suite rooms with separate living areas — perfect for guests who want extra space to get ready for the big day.</p>
-                  <p class="small" data-i18n="hotel_doral3_price">~$193 per night</p>
-                  <p class="hotel-highlights" data-i18n="hotel_doral3_highlights">Free hot breakfast · Free parking · Outdoor pool</p>
-                  <div class="hotel-links">
-                    <a href="https://www.marriott.com/en-us/hotels/miadl-springhill-suites-miami-doral/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
-                  </div>
-                </article>
-              </div>
-            </section>
+            <div class="card-grid hotel-card-grid">
+              <article class="card hotel-card">
+                <h3>Courtyard by Marriott Miami Aventura Mall</h3>
+                <p class="hotel-description" data-i18n="hotel_aventura1_desc">A reliable 3-star choice steps from Aventura Mall, with comfortable rooms and solid amenities for a wedding weekend.</p>
+                <p class="small" data-i18n="hotel_aventura1_price">~$275 per night</p>
+                <p class="hotel-highlights" data-i18n="hotel_aventura1_highlights">Heated outdoor pool · On-site restaurant &amp; bar · Bicycle rentals</p>
+                <div class="hotel-links">
+                  <a href="https://www.marriott.com/en-us/hotels/miaav-courtyard-miami-aventura-mall/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
+                </div>
+              </article>
+              <article class="card hotel-card">
+                <h3>AC Hotel Miami Aventura</h3>
+                <p class="hotel-description" data-i18n="hotel_aventura2_desc">A stylish 4-star European-inspired hotel with a rooftop pool and bar — a great option for guests who want a little extra luxury.</p>
+                <p class="small" data-i18n="hotel_aventura2_price">~$245 per night</p>
+                <p class="hotel-highlights" data-i18n="hotel_aventura2_highlights">Rooftop pool &amp; bar · AC Kitchen breakfast · Pet-friendly</p>
+                <div class="hotel-links">
+                  <a href="https://www.marriott.com/en-us/hotels/miahv-ac-hotel-miami-aventura/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
+                </div>
+              </article>
+              <article class="card hotel-card">
+                <h3>Ramada Plaza by Wyndham Marco Polo Beach Resort</h3>
+                <p class="hotel-description" data-i18n="hotel_aventura3_desc">A beachfront resort with direct ocean access — ideal for guests who want to combine the wedding with a beach getaway.</p>
+                <p class="small" data-i18n="hotel_aventura3_price">~$235 per night</p>
+                <p class="hotel-highlights" data-i18n="hotel_aventura3_highlights">Direct beach access · Oceanfront pool · Poolside bar &amp; restaurant</p>
+                <div class="hotel-links">
+                  <a href="https://www.wyndhamhotels.com/ramada/miami-beach-florida/ramada-plaza-marco-polo-beach-resort/overview" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
 
-            <section class="hotel-group">
-              <h3 class="subsection-title" data-i18n="hotel_group_miramar_title">
-                Near Miramar
-              </h3>
-              <div class="card-grid hotel-card-grid">
-                <article class="card hotel-card">
-                  <h4>Hilton Garden Inn Ft. Lauderdale SW/Miramar</h4>
-                  <p class="hotel-description" data-i18n="hotel_miramar1_desc">A well-rounded option with on-site dining and free parking — one of the most affordable picks for the weekend.</p>
-                  <p class="small" data-i18n="hotel_miramar1_price">~$136 per night</p>
-                  <p class="hotel-highlights" data-i18n="hotel_miramar1_highlights">On-site restaurant &amp; bar · Outdoor pool · Free parking · Pet-friendly</p>
-                  <div class="hotel-links">
-                    <a href="https://www.hilton.com/en/hotels/fllmrgi-hilton-garden-inn-ft-lauderdale-sw-miramar/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
-                  </div>
-                </article>
-                <article class="card hotel-card">
-                  <h4>Holiday Inn Express &amp; Suites Miramar</h4>
-                  <p class="hotel-description" data-i18n="hotel_miramar2_desc">A straightforward and comfortable stay with free breakfast and parking included — great for budget-conscious guests.</p>
-                  <p class="small" data-i18n="hotel_miramar2_price">~$179 per night</p>
-                  <p class="hotel-highlights" data-i18n="hotel_miramar2_highlights">Free breakfast buffet · Outdoor pool · Free self-parking · Mini-fridges &amp; microwaves</p>
-                  <div class="hotel-links">
-                    <a href="https://www.ihg.com/holidayinnexpress/hotels/us/en/miramar/mirbr/hoteldetail" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
-                  </div>
-                </article>
-                <article class="card hotel-card">
-                  <h4>Home2 Suites by Hilton Miramar Ft. Lauderdale</h4>
-                  <p class="hotel-description" data-i18n="hotel_miramar3_desc">Spacious suites with full kitchens and a saline pool — ideal for families or guests who want a home-away-from-home feel.</p>
-                  <p class="small" data-i18n="hotel_miramar3_price">~$177 per night</p>
-                  <p class="hotel-highlights" data-i18n="hotel_miramar3_highlights">Full kitchen suites · Free hot breakfast · Saline pool · Pet-friendly</p>
-                  <div class="hotel-links">
-                    <a href="https://www.hilton.com/en/hotels/fllmrht-home2-suites-miramar-ft-lauderdale/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
-                  </div>
-                </article>
-              </div>
-            </section>
+        <!-- 4c · Doral -->
+        <div class="panel" id="hotel-3">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="hotel_kicker">Stay</p>
+              <h2 class="panel-title" data-i18n="hotel_group_doral_title">Near Doral</h2>
+            </header>
+
+            <div class="card-grid hotel-card-grid">
+              <article class="card hotel-card">
+                <h3>Element Miami Doral</h3>
+                <p class="hotel-description" data-i18n="hotel_doral1_desc">An eco-conscious extended-stay hotel with fully equipped kitchens — great value for guests planning a longer trip.</p>
+                <p class="small" data-i18n="hotel_doral1_price">~$159 per night</p>
+                <p class="hotel-highlights" data-i18n="hotel_doral1_highlights">Fully equipped kitchens · Free healthy breakfast · Free airport shuttle · Pet-friendly</p>
+                <div class="hotel-links">
+                  <a href="https://www.marriott.com/en-us/hotels/miade-element-miami-doral/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
+                </div>
+              </article>
+              <article class="card hotel-card">
+                <h3>Hyatt Place Miami Airport-West/Doral</h3>
+                <p class="hotel-description" data-i18n="hotel_doral2_desc">A reliable and comfortable choice close to local dining and shopping, with generous breakfast included.</p>
+                <p class="small" data-i18n="hotel_doral2_price">~$175 per night</p>
+                <p class="hotel-highlights" data-i18n="hotel_doral2_highlights">Free breakfast buffet · 24/7 café &amp; bar · Outdoor pool · Pet-friendly</p>
+                <div class="hotel-links">
+                  <a href="https://www.hyatt.com/hyatt-place/en-US/miazd-hyatt-place-miami-airport-west-doral" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
+                </div>
+              </article>
+              <article class="card hotel-card">
+                <h3>SpringHill Suites by Marriott Miami Doral</h3>
+                <p class="hotel-description" data-i18n="hotel_doral3_desc">All-suite rooms with separate living areas — perfect for guests who want extra space to get ready for the big day.</p>
+                <p class="small" data-i18n="hotel_doral3_price">~$193 per night</p>
+                <p class="hotel-highlights" data-i18n="hotel_doral3_highlights">Free hot breakfast · Free parking · Outdoor pool</p>
+                <div class="hotel-links">
+                  <a href="https://www.marriott.com/en-us/hotels/miadl-springhill-suites-miami-doral/overview/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4d · Miramar -->
+        <div class="panel" id="hotel-4">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="hotel_kicker">Stay</p>
+              <h2 class="panel-title" data-i18n="hotel_group_miramar_title">Near Miramar</h2>
+            </header>
+
+            <div class="card-grid hotel-card-grid">
+              <article class="card hotel-card">
+                <h3>Hilton Garden Inn Ft. Lauderdale SW/Miramar</h3>
+                <p class="hotel-description" data-i18n="hotel_miramar1_desc">A well-rounded option with on-site dining and free parking — one of the most affordable picks for the weekend.</p>
+                <p class="small" data-i18n="hotel_miramar1_price">~$136 per night</p>
+                <p class="hotel-highlights" data-i18n="hotel_miramar1_highlights">On-site restaurant &amp; bar · Outdoor pool · Free parking · Pet-friendly</p>
+                <div class="hotel-links">
+                  <a href="https://www.hilton.com/en/hotels/fllmrgi-hilton-garden-inn-ft-lauderdale-sw-miramar/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
+                </div>
+              </article>
+              <article class="card hotel-card">
+                <h3>Holiday Inn Express &amp; Suites Miramar</h3>
+                <p class="hotel-description" data-i18n="hotel_miramar2_desc">A straightforward and comfortable stay with free breakfast and parking included — great for budget-conscious guests.</p>
+                <p class="small" data-i18n="hotel_miramar2_price">~$179 per night</p>
+                <p class="hotel-highlights" data-i18n="hotel_miramar2_highlights">Free breakfast buffet · Outdoor pool · Free self-parking · Mini-fridges &amp; microwaves</p>
+                <div class="hotel-links">
+                  <a href="https://www.ihg.com/holidayinnexpress/hotels/us/en/miramar/mirbr/hoteldetail" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
+                </div>
+              </article>
+              <article class="card hotel-card">
+                <h3>Home2 Suites by Hilton Miramar Ft. Lauderdale</h3>
+                <p class="hotel-description" data-i18n="hotel_miramar3_desc">Spacious suites with full kitchens and a saline pool — ideal for families or guests who want a home-away-from-home feel.</p>
+                <p class="small" data-i18n="hotel_miramar3_price">~$177 per night</p>
+                <p class="hotel-highlights" data-i18n="hotel_miramar3_highlights">Full kitchen suites · Free hot breakfast · Saline pool · Pet-friendly</p>
+                <div class="hotel-links">
+                  <a href="https://www.hilton.com/en/hotels/fllmrht-home2-suites-miramar-ft-lauderdale/" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="hotel_link_website">View Hotel</a>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Things To Do -->
-      <section id="things-to-do" class="section section-alt">
-        <div class="container section-inner">
-          <header class="section-header">
-            <p class="section-kicker" data-i18n="things_kicker">Explore</p>
-            <h2 class="section-title" data-i18n="things_title">Things To Do</h2>
-            <p class="section-subtitle" data-i18n="things_subtitle">
-              Make a mini-vacation of your trip. Here are ideas to help you enjoy Miami before and after the wedding.
-            </p>
-          </header>
+      <!-- ══ 5 · Things To Do ══════════════════════════════════════ -->
+      <section id="things-to-do" class="section" data-section-label="nav_things_to_do">
+        <div class="section-bg section-bg-alt" aria-hidden="true"></div>
 
-          <div class="callout-soft" style="text-align:center;">
-            <p data-i18n="things_transport">
-              Miami has very limited to no public transportation. It is highly recommended to rent a car to fully explore the city and get around comfortably during your stay.
-            </p>
+        <!-- 5a · Intro + map -->
+        <div class="panel" id="things-to-do-1">
+          <div class="container panel-inner">
+            <header class="section-header">
+              <p class="section-kicker" data-i18n="things_kicker">Explore</p>
+              <h2 class="section-title" data-i18n="things_title">Things To Do</h2>
+              <p class="section-subtitle" data-i18n="things_subtitle">
+                Make a mini-vacation of your trip. Here are ideas to help you enjoy Miami before and after the wedding.
+              </p>
+            </header>
+
+            <div class="callout callout-soft callout-centered">
+              <p data-i18n="things_transport">
+                Miami has very limited to no public transportation. It is highly recommended to rent a car to fully explore the city and get around comfortably during your stay.
+              </p>
+            </div>
+
+            <div class="things-map-wrap">
+              <div id="things-map"></div>
+              <button class="map-unlock" type="button" hidden>
+                <span data-i18n="things_map_unlock">Tap to explore the map</span>
+              </button>
+            </div>
           </div>
+        </div>
 
-          <div id="things-map"></div>
+        <!-- 5b · Art & culture -->
+        <div class="panel" id="things-to-do-2">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="things_kicker">Explore</p>
+              <h2 class="panel-title" data-i18n="things_group_culture_title">Art &amp; Culture</h2>
+            </header>
 
-          <ol class="things-list-numbered">
-            <li>
-              <h4 data-i18n="things_item1_title">Wynwood Walls</h4>
-              <p data-i18n="things_item1_body">This is the heart of Miami's urban art scene and a must-see for anyone wanting to see the city's modern, creative side. Features massive, colorful murals by world-renowned street artists. The surrounding neighborhood is filled with trendy galleries and craft breweries.</p>
-              <a href="https://thewynwoodwalls.com" target="_blank" rel="noopener" class="text-link">thewynwoodwalls.com</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item2_title">Vizcaya Museum &amp; Gardens</h4>
-              <p data-i18n="things_item2_body">A stunning historic estate that feels like a European palace dropped into the middle of a tropical jungle. Showcases a 1914 Italian Renaissance-style mansion with elaborate formal gardens and breathtaking views overlooking Biscayne Bay.</p>
-              <a href="https://vizcaya.org" target="_blank" rel="noopener" class="text-link">vizcaya.org</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item3_title">Miami Design District</h4>
-              <p data-i18n="things_item3_body">This is where high fashion meets architectural innovation, perfect for those who appreciate luxury and design. Home to flagship stores for the world's most prestigious fashion brands, dotted with public art installations and sleek, modern architecture.</p>
-              <a href="https://miamidesigndistrict.com" target="_blank" rel="noopener" class="text-link">miamidesigndistrict.com</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item4_title">Little Havana &amp; Calle Ocho</h4>
-              <p data-i18n="things_item4_body">This is the soul of Miami's Cuban community and provides the most authentic international experience in the city. Known for the Walk of Fame honoring Latin stars and the famous Domino Park, filled with the scents of Cuban coffee (cafecitos) and hand-rolled cigars.</p>
-              <a href="https://www.miamiandbeaches.com/neighborhoods/little-havana" target="_blank" rel="noopener" class="text-link">miamiandbeaches.com</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item5_title">Fairchild Tropical Botanic Garden</h4>
-              <p data-i18n="things_item5_body">A lush, 83-acre paradise that showcases the unique flora of South Florida. Features rare tropical plants, a butterfly conservatory, and sunken gardens. Tram tours are available to explore the vast grounds comfortably.</p>
-              <a href="https://fairchildgarden.org" target="_blank" rel="noopener" class="text-link">fairchildgarden.org</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item6_title">Phillip &amp; Patricia Frost Museum of Science</h4>
-              <p data-i18n="things_item6_body">A world-class facility located in Downtown Miami that is both educational and visually spectacular. Features a three-level aquarium and a state-of-the-art planetarium, with interactive exhibits on the Everglades and space exploration.</p>
-              <a href="https://frostscience.org" target="_blank" rel="noopener" class="text-link">frostscience.org</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item7_title">Pérez Art Museum Miami (PAMM)</h4>
-              <p data-i18n="things_item7_body">Commonly known as PAMM, this museum focuses on international art from the 20th and 21st centuries. The building itself is an architectural marvel with hanging gardens, located directly on the water with beautiful outdoor seating areas.</p>
-              <a href="https://pamm.org" target="_blank" rel="noopener" class="text-link">pamm.org</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item8_title">Bayside Marketplace</h4>
-              <p data-i18n="things_item8_body">An energetic waterfront festival center that serves as the gateway to the bay. Offers a mix of shops, restaurants, and daily live music. The primary spot for catching boat tours and sightseeing cruises.</p>
-              <a href="https://baysidemarketplace.com" target="_blank" rel="noopener" class="text-link">baysidemarketplace.com</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item9_title">Aventura Mall</h4>
-              <p data-i18n="things_item9_body">One of the top-tier shopping destinations in the country, blending high-end retail with art. Includes a massive slide tower designed by artist Carsten Höller, with over 300 stores including luxury boutiques and major department stores.</p>
-              <a href="https://aventuramall.com" target="_blank" rel="noopener" class="text-link">aventuramall.com</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item10_title">Dolphin Mall</h4>
-              <p data-i18n="things_item10_body">Miami's largest outlet shopping center, perfect for visitors looking for great deals. Provides over 240 retail outlets and brand-name discounters, with an extensive entertainment zone with a cinema and bowling.</p>
-              <a href="https://dolphinmall.com" target="_blank" rel="noopener" class="text-link">dolphinmall.com</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item11_title">Sawgrass Mills</h4>
-              <p data-i18n="things_item11_body">Located slightly north in Sunrise, this is one of the largest outlet malls in the world. Known for The Colonnade Outlets, which features luxury brands at outlet prices — a true destination for serious shoppers coming from overseas.</p>
-              <a href="https://simon.com/mall/sawgrass-mills" target="_blank" rel="noopener" class="text-link">simon.com/mall/sawgrass-mills</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item12_title">Miami Beach</h4>
-              <p data-i18n="things_item12_body">Miami Beach offers a more relaxed vibe as you move further north. Beautiful white sand beaches with a lively atmosphere, great dining, and vibrant nightlife.</p>
-              <a href="https://miamibeachfl.gov" target="_blank" rel="noopener" class="text-link">miamibeachfl.gov</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item13_title">South Beach</h4>
-              <p data-i18n="things_item13_body">South Beach is the southern tip, famous for Ocean Drive and its neon lights. The iconic Art Deco architecture lines the streets just steps from the sand, and the energy here is unlike anywhere else in Miami.</p>
-              <a href="https://www.miamiandbeaches.com/neighborhoods/south-beach" target="_blank" rel="noopener" class="text-link">miamiandbeaches.com</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item14_title">Hollywood Beach Broadwalk</h4>
-              <p data-i18n="things_item14_body">A classic Florida boardwalk experience that is perfect for families and long walks. Features a 2.5-mile pedestrian promenade right on the Atlantic Ocean, lined with cozy cafes, ice cream shops, and oceanfront parks.</p>
-              <a href="https://hollywoodfl.org" target="_blank" rel="noopener" class="text-link">hollywoodfl.org</a>
-            </li>
-            <li>
-              <h4 data-i18n="things_item15_title">Dania Beach</h4>
-              <p data-i18n="things_item15_body">A quieter, more natural beach alternative located just south of Fort Lauderdale. Home to a popular fishing pier and beautiful dunes — perfect for those looking to escape the heavier crowds of Miami.</p>
-              <a href="https://daniabeachfl.gov" target="_blank" rel="noopener" class="text-link">daniabeachfl.gov</a>
-            </li>
-          </ol>
+            <ol class="things-list-numbered" start="1">
+              <li>
+                <h4 data-i18n="things_item1_title">Wynwood Walls</h4>
+                <p data-i18n="things_item1_body">This is the heart of Miami's urban art scene and a must-see for anyone wanting to see the city's modern, creative side. Features massive, colorful murals by world-renowned street artists. The surrounding neighborhood is filled with trendy galleries and craft breweries.</p>
+                <a href="https://thewynwoodwalls.com" target="_blank" rel="noopener" class="text-link">thewynwoodwalls.com</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item2_title">Vizcaya Museum &amp; Gardens</h4>
+                <p data-i18n="things_item2_body">A stunning historic estate that feels like a European palace dropped into the middle of a tropical jungle. Showcases a 1914 Italian Renaissance-style mansion with elaborate formal gardens and breathtaking views overlooking Biscayne Bay.</p>
+                <a href="https://vizcaya.org" target="_blank" rel="noopener" class="text-link">vizcaya.org</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item3_title">Miami Design District</h4>
+                <p data-i18n="things_item3_body">This is where high fashion meets architectural innovation, perfect for those who appreciate luxury and design. Home to flagship stores for the world's most prestigious fashion brands, dotted with public art installations and sleek, modern architecture.</p>
+                <a href="https://miamidesigndistrict.com" target="_blank" rel="noopener" class="text-link">miamidesigndistrict.com</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item4_title">Little Havana &amp; Calle Ocho</h4>
+                <p data-i18n="things_item4_body">This is the soul of Miami's Cuban community and provides the most authentic international experience in the city. Known for the Walk of Fame honoring Latin stars and the famous Domino Park, filled with the scents of Cuban coffee (cafecitos) and hand-rolled cigars.</p>
+                <a href="https://www.miamiandbeaches.com/neighborhoods/little-havana" target="_blank" rel="noopener" class="text-link">miamiandbeaches.com</a>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- 5c · Museums & gardens -->
+        <div class="panel" id="things-to-do-3">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="things_kicker">Explore</p>
+              <h2 class="panel-title" data-i18n="things_group_museums_title">Museums &amp; Gardens</h2>
+            </header>
+
+            <ol class="things-list-numbered" start="5">
+              <li>
+                <h4 data-i18n="things_item5_title">Fairchild Tropical Botanic Garden</h4>
+                <p data-i18n="things_item5_body">A lush, 83-acre paradise that showcases the unique flora of South Florida. Features rare tropical plants, a butterfly conservatory, and sunken gardens. Tram tours are available to explore the vast grounds comfortably.</p>
+                <a href="https://fairchildgarden.org" target="_blank" rel="noopener" class="text-link">fairchildgarden.org</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item6_title">Phillip &amp; Patricia Frost Museum of Science</h4>
+                <p data-i18n="things_item6_body">A world-class facility located in Downtown Miami that is both educational and visually spectacular. Features a three-level aquarium and a state-of-the-art planetarium, with interactive exhibits on the Everglades and space exploration.</p>
+                <a href="https://frostscience.org" target="_blank" rel="noopener" class="text-link">frostscience.org</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item7_title">Pérez Art Museum Miami (PAMM)</h4>
+                <p data-i18n="things_item7_body">Commonly known as PAMM, this museum focuses on international art from the 20th and 21st centuries. The building itself is an architectural marvel with hanging gardens, located directly on the water with beautiful outdoor seating areas.</p>
+                <a href="https://pamm.org" target="_blank" rel="noopener" class="text-link">pamm.org</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item8_title">Bayside Marketplace</h4>
+                <p data-i18n="things_item8_body">An energetic waterfront festival center that serves as the gateway to the bay. Offers a mix of shops, restaurants, and daily live music. The primary spot for catching boat tours and sightseeing cruises.</p>
+                <a href="https://baysidemarketplace.com" target="_blank" rel="noopener" class="text-link">baysidemarketplace.com</a>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- 5d · Shopping -->
+        <div class="panel" id="things-to-do-4">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="things_kicker">Explore</p>
+              <h2 class="panel-title" data-i18n="things_group_shopping_title">Shopping</h2>
+            </header>
+
+            <ol class="things-list-numbered" start="9">
+              <li>
+                <h4 data-i18n="things_item9_title">Aventura Mall</h4>
+                <p data-i18n="things_item9_body">One of the top-tier shopping destinations in the country, blending high-end retail with art. Includes a massive slide tower designed by artist Carsten Höller, with over 300 stores including luxury boutiques and major department stores.</p>
+                <a href="https://aventuramall.com" target="_blank" rel="noopener" class="text-link">aventuramall.com</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item10_title">Dolphin Mall</h4>
+                <p data-i18n="things_item10_body">Miami's largest outlet shopping center, perfect for visitors looking for great deals. Provides over 240 retail outlets and brand-name discounters, with an extensive entertainment zone with a cinema and bowling.</p>
+                <a href="https://dolphinmall.com" target="_blank" rel="noopener" class="text-link">dolphinmall.com</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item11_title">Sawgrass Mills</h4>
+                <p data-i18n="things_item11_body">Located slightly north in Sunrise, this is one of the largest outlet malls in the world. Known for The Colonnade Outlets, which features luxury brands at outlet prices — a true destination for serious shoppers coming from overseas.</p>
+                <a href="https://simon.com/mall/sawgrass-mills" target="_blank" rel="noopener" class="text-link">simon.com/mall/sawgrass-mills</a>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- 5e · Beaches -->
+        <div class="panel" id="things-to-do-5">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="things_kicker">Explore</p>
+              <h2 class="panel-title" data-i18n="things_group_beaches_title">Beaches</h2>
+            </header>
+
+            <ol class="things-list-numbered" start="12">
+              <li>
+                <h4 data-i18n="things_item12_title">Miami Beach</h4>
+                <p data-i18n="things_item12_body">Miami Beach offers a more relaxed vibe as you move further north. Beautiful white sand beaches with a lively atmosphere, great dining, and vibrant nightlife.</p>
+                <a href="https://miamibeachfl.gov" target="_blank" rel="noopener" class="text-link">miamibeachfl.gov</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item13_title">South Beach</h4>
+                <p data-i18n="things_item13_body">South Beach is the southern tip, famous for Ocean Drive and its neon lights. The iconic Art Deco architecture lines the streets just steps from the sand, and the energy here is unlike anywhere else in Miami.</p>
+                <a href="https://www.miamiandbeaches.com/neighborhoods/south-beach" target="_blank" rel="noopener" class="text-link">miamiandbeaches.com</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item14_title">Hollywood Beach Broadwalk</h4>
+                <p data-i18n="things_item14_body">A classic Florida boardwalk experience that is perfect for families and long walks. Features a 2.5-mile pedestrian promenade right on the Atlantic Ocean, lined with cozy cafes, ice cream shops, and oceanfront parks.</p>
+                <a href="https://hollywoodfl.org" target="_blank" rel="noopener" class="text-link">hollywoodfl.org</a>
+              </li>
+              <li>
+                <h4 data-i18n="things_item15_title">Dania Beach</h4>
+                <p data-i18n="things_item15_body">A quieter, more natural beach alternative located just south of Fort Lauderdale. Home to a popular fishing pier and beautiful dunes — perfect for those looking to escape the heavier crowds of Miami.</p>
+                <a href="https://daniabeachfl.gov" target="_blank" rel="noopener" class="text-link">daniabeachfl.gov</a>
+              </li>
+            </ol>
+          </div>
         </div>
       </section>
-      <!-- FAQs -->
-      <section id="faqs" class="section">
-        <div class="container section-inner">
-          <header class="section-header">
-            <p class="section-kicker" data-i18n="faqs_kicker">FAQs</p>
-            <h2 class="section-title" data-i18n="faqs_title">Frequently Asked Questions</h2>
-          </header>
 
-          <dl class="faq-list">
-            <div class="faq-item">
-              <dt class="faq-question" data-i18n="faqs_q1">MAY I BRING MY CHILDREN?</dt>
-              <dd class="faq-answer" data-i18n="faqs_a1">To give all our guests the opportunity to celebrate without having to worry about little eyes and ears, we respectfully request no children. This is an 18+ event. We appreciate your understanding and look forward to celebrating with you!</dd>
-            </div>
-            <div class="faq-item">
-              <dt class="faq-question" data-i18n="faqs_q2">IS THERE A DRESS CODE?</dt>
-              <dd class="faq-answer" data-i18n="faqs_a2">We ask that our guests dress in Formal Attire. We recommend suits or blazers for men and floor-length dresses for women. We kindly ask that you refrain from wearing white, ivory, cream, beige, or similar light colors. Please, no sneakers.</dd>
-            </div>
-            <div class="faq-item">
-              <dt class="faq-question" data-i18n="faqs_q3">WHEN SHOULD I RSVP BY?</dt>
-              <dd class="faq-answer" data-i18n="faqs_a3">We ask that all guests submit their RSVPs no later than October 31st, 2026, to ensure we have an accurate headcount for our vendors.</dd>
-            </div>
-            <div class="faq-item">
-              <dt class="faq-question" data-i18n="faqs_q4">ARE PLUS-ONES ALLOWED?</dt>
-              <dd class="faq-answer" data-i18n="faqs_a4">Due to space limitations and an intimate celebration with close family, we can only accommodate those listed on your formal invitation. Please refer to your invitation for the specific number of seats reserved in your honor. We can't wait to celebrate this special day with our closest family and friends!</dd>
-            </div>
-            <div class="faq-item">
-              <dt class="faq-question" data-i18n="faqs_q5">HOW CAN I SHARE THE PICTURES AND VIDEOS I TAKE?</dt>
-              <dd class="faq-answer">
-                <span data-i18n="faqs_a5_before">We would love to see the night through your eyes! Please use this link to add your photos and videos to our shared album: </span><a href="https://photos.google.com/share/AF1QipNPfm6NuOqbm5MfDBFo9pQpUh28Zq92OG_81obES3dkXSoKLPovuFsNENFSCvPLQA?pli=1&key=cnZPRktmb3lzVjRENWR1YjdoUFdtRWxNa2pRRHdR" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="faqs_a5_link">Google Photos Link</a>.
-              </dd>
-            </div>
-            <div class="faq-item">
-              <dt class="faq-question" data-i18n="faqs_q6">WHAT IS YOUR WEDDING HASHTAG?</dt>
-              <dd class="faq-answer" data-i18n="faqs_a6">Feel free to use #MataCorbeira when posting on social media!</dd>
-            </div>
-            <div class="faq-item">
-              <dt class="faq-question" data-i18n="faqs_q7">IS THERE A WEDDING REGISTRY?</dt>
-              <dd class="faq-answer">
-                <span data-i18n="faqs_a7_before">Your presence is the greatest gift of all. However, if you wish to honor us with a gift, you can find our registry here: </span><a href="https://www.amazon.com/wedding/share/MarialeyRaynulfo1229" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="faqs_a7_link1">Amazon Wedding Registry</a><span data-i18n="faqs_a7_middle">. For monetary gifts, we also accept Zelle at +1 (954) 918-8129. Please see the </span><a href="#registry" class="text-link" data-i18n="faqs_a7_link2">Gifts</a><span data-i18n="faqs_a7_after"> tab for more details.</span>
-              </dd>
-            </div>
-            <div class="faq-item">
-              <dt class="faq-question" data-i18n="faqs_q8">IS THE WEDDING INDOORS OR OUTDOORS?</dt>
-              <dd class="faq-answer" data-i18n="faqs_a8">Both the ceremony and reception will take place within the Ancient Spanish Monastery. While the event is indoors, please note that the historic facility does not have air conditioning. As we are celebrating in late December, the weather may be breezy or cool; we recommend keeping this in mind when choosing your formal attire.</dd>
-            </div>
-          </dl>
+      <!-- ══ 6 · FAQs ══════════════════════════════════════════════ -->
+      <section id="faqs" class="section" data-section-label="nav_faqs">
+        <div class="section-bg section-bg-exterior" aria-hidden="true">
+          <div class="section-bg-wash"></div>
+        </div>
+
+        <!-- 6a · Questions 1–4 -->
+        <div class="panel" id="faqs-1">
+          <div class="container panel-inner">
+            <header class="section-header">
+              <p class="section-kicker" data-i18n="faqs_kicker">FAQs</p>
+              <h2 class="section-title" data-i18n="faqs_title">Frequently Asked Questions</h2>
+            </header>
+
+            <dl class="faq-list">
+              <div class="faq-item">
+                <dt class="faq-question" data-i18n="faqs_q1">MAY I BRING MY CHILDREN?</dt>
+                <dd class="faq-answer" data-i18n="faqs_a1">To give all our guests the opportunity to celebrate without having to worry about little eyes and ears, we respectfully request no children. This is an 18+ event. We appreciate your understanding and look forward to celebrating with you!</dd>
+              </div>
+              <div class="faq-item">
+                <dt class="faq-question" data-i18n="faqs_q2">IS THERE A DRESS CODE?</dt>
+                <dd class="faq-answer" data-i18n="faqs_a2">We ask that our guests dress in Formal Attire. We recommend suits or blazers for men and floor-length dresses for women. We kindly ask that you refrain from wearing white, ivory, cream, beige, or similar light colors. Please, no sneakers.</dd>
+              </div>
+              <div class="faq-item">
+                <dt class="faq-question" data-i18n="faqs_q3">WHEN SHOULD I RSVP BY?</dt>
+                <dd class="faq-answer" data-i18n="faqs_a3">We ask that all guests submit their RSVPs no later than October 31st, 2026, to ensure we have an accurate headcount for our vendors.</dd>
+              </div>
+              <div class="faq-item">
+                <dt class="faq-question" data-i18n="faqs_q4">ARE PLUS-ONES ALLOWED?</dt>
+                <dd class="faq-answer" data-i18n="faqs_a4">Due to space limitations and an intimate celebration with close family, we can only accommodate those listed on your formal invitation. Please refer to your invitation for the specific number of seats reserved in your honor. We can't wait to celebrate this special day with our closest family and friends!</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- 6b · Questions 5–8 -->
+        <div class="panel" id="faqs-2">
+          <div class="container panel-inner">
+            <header class="panel-heading">
+              <p class="panel-kicker" data-i18n="faqs_kicker">FAQs</p>
+              <h2 class="panel-title" data-i18n="faqs_more_title">A Few More Answers</h2>
+            </header>
+
+            <dl class="faq-list">
+              <div class="faq-item">
+                <dt class="faq-question" data-i18n="faqs_q5">HOW CAN I SHARE THE PICTURES AND VIDEOS I TAKE?</dt>
+                <dd class="faq-answer">
+                  <span data-i18n="faqs_a5_before">We would love to see the night through your eyes! Please use this link to add your photos and videos to our shared album: </span><a href="https://photos.google.com/share/AF1QipNPfm6NuOqbm5MfDBFo9pQpUh28Zq92OG_81obES3dkXSoKLPovuFsNENFSCvPLQA?pli=1&key=cnZPRktmb3lzVjRENWR1YjdoUFdtRWxNa2pRRHdR" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="faqs_a5_link">Google Photos Link</a>.
+                </dd>
+              </div>
+              <div class="faq-item">
+                <dt class="faq-question" data-i18n="faqs_q6">WHAT IS YOUR WEDDING HASHTAG?</dt>
+                <dd class="faq-answer" data-i18n="faqs_a6">Feel free to use #MataCorbeira when posting on social media!</dd>
+              </div>
+              <div class="faq-item">
+                <dt class="faq-question" data-i18n="faqs_q7">IS THERE A WEDDING REGISTRY?</dt>
+                <dd class="faq-answer">
+                  <span data-i18n="faqs_a7_before">Your presence is the greatest gift of all. However, if you wish to honor us with a gift, you can find our registry here: </span><a href="https://www.amazon.com/wedding/share/MarialeyRaynulfo1229" class="text-link" target="_blank" rel="noopener noreferrer" data-i18n="faqs_a7_link1">Amazon Wedding Registry</a><span data-i18n="faqs_a7_middle">. For monetary gifts, we also accept Zelle at +1 (954) 918-8129. Please see the </span><a href="#registry" class="text-link" data-i18n="faqs_a7_link2">Gifts</a><span data-i18n="faqs_a7_after"> tab for more details.</span>
+                </dd>
+              </div>
+              <div class="faq-item">
+                <dt class="faq-question" data-i18n="faqs_q8">IS THE WEDDING INDOORS OR OUTDOORS?</dt>
+                <dd class="faq-answer" data-i18n="faqs_a8">Both the ceremony and reception will take place within the Ancient Spanish Monastery. While the event is indoors, please note that the historic facility does not have air conditioning. As we are celebrating in late December, the weather may be breezy or cool; we recommend keeping this in mind when choosing your formal attire.</dd>
+              </div>
+            </dl>
+          </div>
         </div>
       </section>
     </main>
+
+    <!-- Panel progress rail (populated by script.js) -->
+    <nav class="panel-rail" aria-hidden="true"></nav>
+
+    <!-- Scroll cue on the first panel -->
+    <div class="scroll-cue" aria-hidden="true">
+      <span class="scroll-cue-line"></span>
+    </div>
 
     <footer class="site-footer">
       <div class="container">
@@ -630,10 +790,20 @@
 
     <script>
       (function () {
-        var map = L.map('things-map', { scrollWheelZoom: false }).setView([25.84, -80.22], 10);
+        var mapEl = document.getElementById('things-map');
+        if (!mapEl || typeof L === 'undefined') return;
+
+        var isTouch = window.matchMedia('(hover: none)').matches;
+        var map = L.map('things-map', {
+          scrollWheelZoom: false,
+          dragging: !isTouch,
+          tap: false
+        }).setView([25.84, -80.22], 10);
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+
         var locations = [
           [1,  "Wynwood Walls",                          25.8010, -80.1994],
           [2,  "Vizcaya Museum & Gardens",               25.7444, -80.2103],
@@ -651,13 +821,33 @@
           [14, "Hollywood Beach Broadwalk",              26.0112, -80.1171],
           [15, "Dania Beach",                            26.0520, -80.1109]
         ];
-        locations.forEach(function(loc) {
+        locations.forEach(function (loc) {
           L.marker([loc[2], loc[3]])
             .addTo(map)
             .bindPopup('<strong>' + loc[0] + '. ' + loc[1] + '</strong>');
         });
+
+        // On touch devices the map starts locked so a vertical swipe scrolls the
+        // page instead of panning the map. Tapping the overlay hands control over.
+        var unlock = document.querySelector('.map-unlock');
+        if (isTouch && unlock) {
+          unlock.hidden = false;
+          unlock.addEventListener('click', function () {
+            map.dragging.enable();
+            unlock.remove();
+          });
+        }
+
+        // Leaflet needs a nudge when its panel first becomes visible.
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) map.invalidateSize();
+            });
+          });
+          io.observe(mapEl);
+        }
       })();
     </script>
   </body>
 </html>
-

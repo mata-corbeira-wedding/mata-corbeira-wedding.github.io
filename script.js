@@ -32,6 +32,131 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* ── Panels ────────────────────────────────────────────────────────
+     Each section is split into full-viewport panels. Within a section the
+     background is pinned (CSS), so only the content cross-fades as you move
+     between panels; the background changes only when the section does. */
+  (function initPanels() {
+    const panels = Array.from(document.querySelectorAll(".panel"));
+    if (!panels.length) return;
+
+    // Only now is it safe for CSS to start panels hidden.
+    document.documentElement.classList.add("js-panels");
+
+    // A panel is "the viewport minus the header", so --header-h has to track
+    // the real header — it grows when the nav wraps or the font scales.
+    const header = document.querySelector(".site-header");
+    if (header) {
+      const syncHeaderHeight = () => {
+        const h = Math.ceil(header.getBoundingClientRect().height);
+        document.documentElement.style.setProperty("--header-h", h + "px");
+      };
+      syncHeaderHeight();
+      if ("ResizeObserver" in window) {
+        new ResizeObserver(syncHeaderHeight).observe(header);
+      } else {
+        window.addEventListener("resize", syncHeaderHeight);
+      }
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      panels.forEach((panel) => panel.classList.add("is-active"));
+      return;
+    }
+
+    const rail = document.querySelector(".panel-rail");
+    const scrollCue = document.querySelector(".scroll-cue");
+    const navLinks = Array.from(document.querySelectorAll(".nav-link"));
+    let railSectionId = null;
+
+    // The rail lists the panels of the current section only, so it stays a
+    // "where am I in this section" indicator rather than a page-wide index.
+    function buildRail(section) {
+      if (!rail) return;
+      const sectionPanels = Array.from(section.querySelectorAll(".panel"));
+      if (sectionPanels.length < 2) {
+        rail.replaceChildren();
+        rail.classList.remove("is-visible");
+        return;
+      }
+
+      const labelKey = section.getAttribute("data-section-label") || "";
+      const navLink = labelKey
+        ? document.querySelector('.nav-link[data-i18n="' + labelKey + '"]')
+        : null;
+
+      const label = document.createElement("span");
+      label.className = "panel-rail-label";
+      if (labelKey) label.setAttribute("data-i18n", labelKey);
+      label.textContent = navLink ? navLink.textContent.trim() : "";
+
+      const dots = document.createElement("ul");
+      dots.className = "panel-rail-dots";
+      sectionPanels.forEach((panel, index) => {
+        const item = document.createElement("li");
+        const dot = document.createElement("a");
+        dot.className = "panel-rail-dot";
+        dot.href = "#" + panel.id;
+        dot.setAttribute("aria-label", String(index + 1));
+        item.appendChild(dot);
+        dots.appendChild(item);
+      });
+
+      rail.replaceChildren(label, dots);
+      rail.classList.add("is-visible");
+    }
+
+    function setActivePanel(panel) {
+      panels.forEach((p) => p.classList.toggle("is-active", p === panel));
+
+      const section = panel.closest(".section");
+      if (section && section.id !== railSectionId) {
+        railSectionId = section.id;
+        buildRail(section);
+        navLinks.forEach((link) =>
+          link.classList.toggle("is-current", link.getAttribute("href") === "#" + section.id)
+        );
+      }
+
+      if (rail) {
+        rail.querySelectorAll(".panel-rail-dot").forEach((dot) => {
+          dot.classList.toggle("is-active", dot.getAttribute("href") === "#" + panel.id);
+        });
+      }
+
+      if (scrollCue) {
+        scrollCue.classList.toggle("is-visible", panel === panels[0]);
+      }
+    }
+
+    // Whichever panel fills most of the middle of the viewport wins. The inset
+    // root margin keeps a panel from claiming focus while it is only peeking in
+    // at an edge.
+    const ratios = new Map();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => ratios.set(entry.target, entry.intersectionRatio));
+
+        let best = null;
+        let bestRatio = 0;
+        ratios.forEach((ratio, panel) => {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            best = panel;
+          }
+        });
+
+        if (best) setActivePanel(best);
+      },
+      {
+        threshold: [0, 0.2, 0.4, 0.6, 0.8, 1],
+        rootMargin: "-20% 0px -20% 0px"
+      }
+    );
+
+    panels.forEach((panel) => observer.observe(panel));
+  })();
+
   const translations = {
     en: {
       brand_names: "Maria & Raynulfo",
@@ -251,6 +376,17 @@ document.addEventListener("DOMContentLoaded", () => {
       faqs_a7_after: " tab for more details.",
       faqs_q8: "IS THE WEDDING INDOORS OR OUTDOORS?",
       faqs_a8: "Both the ceremony and reception will take place within the Ancient Spanish Monastery. While the event is indoors, please note that the historic facility does not have air conditioning. As we are celebrating in late December, the weather may be breezy or cool; we recommend keeping this in mind when choosing your formal attire.",
+
+      // Panel headings
+      home_glance_title: "The Day at a Glance",
+      wedding_attire_panel_title: "Attire & Etiquette",
+      registry_other_ways_title: "Other Ways to Give",
+      things_group_culture_title: "Art & Culture",
+      things_group_museums_title: "Museums & Gardens",
+      things_group_shopping_title: "Shopping",
+      things_group_beaches_title: "Beaches",
+      things_map_unlock: "Tap to explore the map",
+      faqs_more_title: "A Few More Answers",
     },
     es: {
       brand_names: "Maria y Raynulfo",
@@ -472,6 +608,17 @@ document.addEventListener("DOMContentLoaded", () => {
       faqs_a7_after: " para más detalles.",
       faqs_q8: "¿LA BODA ES EN INTERIORES O EXTERIORES?",
       faqs_a8: "Tanto la ceremonia como la recepción se llevarán a cabo dentro del Ancient Spanish Monastery. Aunque el evento es en interiores, tenga en cuenta que la histórica instalación no tiene aire acondicionado. Como celebramos a finales de diciembre, el clima puede ser fresco o ventoso; recomendamos tenerlo en cuenta al elegir su atuendo formal.",
+
+      // Encabezados de panel
+      home_glance_title: "El Día en Resumen",
+      wedding_attire_panel_title: "Vestimenta y Etiqueta",
+      registry_other_ways_title: "Otras Formas de Regalar",
+      things_group_culture_title: "Arte y Cultura",
+      things_group_museums_title: "Museos y Jardines",
+      things_group_shopping_title: "Compras",
+      things_group_beaches_title: "Playas",
+      things_map_unlock: "Toca para explorar el mapa",
+      faqs_more_title: "Algunas Respuestas Más",
     },
   };
 
@@ -558,6 +705,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!rsvpModal) return;
     rsvpModal.classList.add("is-open");
     rsvpModal.setAttribute("aria-hidden", "false");
+    // Freeze the page behind the dialog so snap scrolling doesn't run under it.
+    document.body.classList.add("is-modal-open");
     if (phoneInput) phoneInput.focus();
   }
 
@@ -575,6 +724,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!rsvpModal) return;
     rsvpModal.classList.remove("is-open");
     rsvpModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("is-modal-open");
     // Reset to Step 1
     if (step1El) step1El.hidden = false;
     if (step2El) step2El.hidden = true;
