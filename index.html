@@ -22,8 +22,11 @@
     <header class="site-header">
       <div class="container site-header-inner">
         <a href="#home" class="brand">
-          <span class="brand-names" data-i18n="brand_names">Maria &amp; Raynulfo</span>
-          <span class="brand-date" data-i18n="brand_date">December 29ᵗʰ, 2026</span>
+          <img class="brand-mark" src="assets/logo-monogram.png" alt="" aria-hidden="true" />
+          <span class="brand-text">
+            <span class="brand-names" data-i18n="brand_names">Maria &amp; Raynulfo</span>
+            <span class="brand-date" data-i18n="brand_date">December 29ᵗʰ, 2026</span>
+          </span>
         </a>
         <nav class="main-nav" aria-label="Primary">
           <button
@@ -95,7 +98,10 @@
           <div class="container panel-inner">
             <header class="section-header">
               <p class="section-kicker" data-i18n="wedding_kicker">Wedding Day</p>
-              <h2 class="section-title" data-i18n="wedding_title">Wedding Day Information</h2>
+              <h2 class="section-title section-title-marked">
+                <img class="section-mark" src="assets/logo-wedding-day.png" alt="" aria-hidden="true" />
+                <span data-i18n="wedding_title">Wedding Day Information</span>
+              </h2>
               <p class="section-subtitle" data-i18n="wedding_subtitle">
                 Everything you need to know for our celebration at the Ancient Spanish Monastery.
               </p>
@@ -215,14 +221,19 @@
 
       <!-- ══ 3 · Registry ══════════════════════════════════════════ -->
       <section id="registry" class="section" data-section-label="nav_registry">
-        <div class="section-bg section-bg-alt" aria-hidden="true"></div>
+        <div class="section-bg section-bg-registry" aria-hidden="true">
+          <div class="section-bg-wash"></div>
+        </div>
 
         <!-- 3a · Intro + Amazon -->
         <div class="panel" id="registry-1">
           <div class="container panel-inner">
             <header class="section-header">
               <p class="section-kicker" data-i18n="registry_kicker">Registry</p>
-              <h2 class="section-title" data-i18n="registry_title">Gifts &amp; Registry</h2>
+              <h2 class="section-title section-title-marked">
+                <img class="section-mark" src="assets/logo-registry.png" alt="" aria-hidden="true" />
+                <span data-i18n="registry_title">Gifts &amp; Registry</span>
+              </h2>
               <p class="section-subtitle" data-i18n="registry_subtitle">
                 Your presence is the greatest gift. If you would also like to honor us with a present, we have gathered
                 a few ideas below.
@@ -291,14 +302,19 @@
 
       <!-- ══ 4 · Hotel ═════════════════════════════════════════════ -->
       <section id="hotel" class="section" data-section-label="nav_hotel">
-        <div class="section-bg section-bg-sand" aria-hidden="true"></div>
+        <div class="section-bg section-bg-stay" aria-hidden="true">
+          <div class="section-bg-wash"></div>
+        </div>
 
         <!-- 4a · Hub — pick an area instead of scrolling through all of them -->
-        <div class="panel" id="hotel-1">
+        <div class="panel panel-hub" id="hotel-1">
           <div class="container panel-inner">
             <header class="section-header">
               <p class="section-kicker" data-i18n="hotel_kicker">Stay</p>
-              <h2 class="section-title" data-i18n="hotel_title">Where to stay?</h2>
+              <h2 class="section-title section-title-marked">
+                <img class="section-mark" src="assets/logo-stay.png" alt="" aria-hidden="true" />
+                <span data-i18n="hotel_title">Where to stay?</span>
+              </h2>
               <p class="section-subtitle" data-i18n="hotel_subtitle">
                 For our guests traveling from near and far, here are a few areas and hotels to consider during your stay
                 in Miami.
@@ -339,7 +355,7 @@
         </div>
 
         <!-- 4b · Airbnb & rentals -->
-        <div class="panel" id="hotel-2">
+        <div class="panel" id="hotel-2" data-panel-skip>
           <div class="container panel-inner">
             <header class="panel-heading">
               <p class="panel-kicker" data-i18n="hotel_kicker">Stay</p>
@@ -358,7 +374,7 @@
         </div>
 
         <!-- 4c · Aventura -->
-        <div class="panel" id="hotel-3">
+        <div class="panel" id="hotel-3" data-panel-skip>
           <div class="container panel-inner">
             <header class="panel-heading">
               <p class="panel-kicker" data-i18n="hotel_kicker">Stay</p>
@@ -401,7 +417,7 @@
         </div>
 
         <!-- 4d · Doral -->
-        <div class="panel" id="hotel-4">
+        <div class="panel" id="hotel-4" data-panel-skip>
           <div class="container panel-inner">
             <header class="panel-heading">
               <p class="panel-kicker" data-i18n="hotel_kicker">Stay</p>
@@ -442,7 +458,7 @@
         </div>
 
         <!-- 4e · Miramar -->
-        <div class="panel" id="hotel-5">
+        <div class="panel" id="hotel-5" data-panel-skip>
           <div class="container panel-inner">
             <header class="panel-heading">
               <p class="panel-kicker" data-i18n="hotel_kicker">Stay</p>
@@ -485,7 +501,9 @@
 
       <!-- ══ 5 · Things To Do ══════════════════════════════════════ -->
       <section id="things-to-do" class="section" data-section-label="nav_things_to_do">
-        <div class="section-bg section-bg-alt" aria-hidden="true"></div>
+        <div class="section-bg section-bg-explore" aria-hidden="true">
+          <div class="section-bg-wash"></div>
+        </div>
 
         <!-- 5a · Hub — the map leads, with jump links to each group beneath it -->
         <div class="panel panel-map" id="things-to-do-1">
@@ -502,7 +520,10 @@
           <div class="container panel-inner">
             <header class="section-header section-header-tight">
               <p class="section-kicker" data-i18n="things_kicker">Explore</p>
-              <h2 class="section-title" data-i18n="things_title">Things To Do</h2>
+              <h2 class="section-title section-title-marked">
+                <img class="section-mark" src="assets/logo-explore.png" alt="" aria-hidden="true" />
+                <span data-i18n="things_title">Things To Do</span>
+              </h2>
             </header>
 
             <div class="things-map-wrap">
@@ -534,7 +555,7 @@
         </div>
 
         <!-- 5b · Art & culture -->
-        <div class="panel" id="things-to-do-2">
+        <div class="panel" id="things-to-do-2" data-panel-skip>
           <div class="container panel-inner">
             <header class="panel-heading">
               <p class="panel-kicker" data-i18n="things_kicker">Explore</p>
@@ -568,7 +589,7 @@
         </div>
 
         <!-- 5c · Museums & gardens -->
-        <div class="panel" id="things-to-do-3">
+        <div class="panel" id="things-to-do-3" data-panel-skip>
           <div class="container panel-inner">
             <header class="panel-heading">
               <p class="panel-kicker" data-i18n="things_kicker">Explore</p>
@@ -602,7 +623,7 @@
         </div>
 
         <!-- 5d · Shopping -->
-        <div class="panel" id="things-to-do-4">
+        <div class="panel" id="things-to-do-4" data-panel-skip>
           <div class="container panel-inner">
             <header class="panel-heading">
               <p class="panel-kicker" data-i18n="things_kicker">Explore</p>
@@ -631,7 +652,7 @@
         </div>
 
         <!-- 5e · Beaches -->
-        <div class="panel" id="things-to-do-5">
+        <div class="panel" id="things-to-do-5" data-panel-skip>
           <div class="container panel-inner">
             <header class="panel-heading">
               <p class="panel-kicker" data-i18n="things_kicker">Explore</p>
@@ -676,7 +697,10 @@
           <div class="container panel-inner">
             <header class="section-header">
               <p class="section-kicker" data-i18n="faqs_kicker">FAQs</p>
-              <h2 class="section-title" data-i18n="faqs_title">Frequently Asked Questions</h2>
+              <h2 class="section-title section-title-marked">
+                <img class="section-mark" src="assets/logo-faqs.png" alt="" aria-hidden="true" />
+                <span data-i18n="faqs_title">Frequently Asked Questions</span>
+              </h2>
             </header>
 
             <dl class="faq-list">

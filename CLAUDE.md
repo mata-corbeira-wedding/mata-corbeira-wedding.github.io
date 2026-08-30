@@ -39,6 +39,22 @@ CSS variables defined in `styles.css`:
 - `--accent`: `#7f8d6a` (sage green)
 - Fonts: Cormorant Garamond (serif headings), Lato (sans body) — loaded via Google Fonts
 
+## Images
+
+Two kinds of image asset, both committed in a web-ready form. The originals live
+on disk outside the repo's tracked files; `assets/Photos/` is gitignored.
+
+- **Logos** (`assets/logo-*.png`) — the designer's line art, which arrives as
+  black-on-off-white JPEGs. They must be transparent PNGs, or they render as
+  white boxes on the beige. Convert with
+  `node tools/make-logo.js <input.jpg> <output.png> [maxEdge]`, which keys the
+  paper out into alpha, trims the margin, and downscales (260px long edge;
+  the header monogram is 320). One logo per section, none for Home.
+- **Section backdrops** (`assets/bg-*.jpg`) — photographs, resized to ~1500px
+  and heavily compressed with `sips`. Only about 10% of each survives the beige
+  wash over it, so compression is invisible and file weight is what matters.
+  Keep them near the ~150–300 KB of the existing backdrops.
+
 ## Admin Access
 
 There is no password in the repository and no client-side auth check. The passphrase lives only in Apps Script Script Properties as `ADMIN_PASSPHRASE` and is verified inside Apps Script when the dashboard calls `adminList`. Rotate it by editing that Script Property — nothing in the repo changes. The dashboard holds the passphrase in `sessionStorage` for the tab's lifetime only.

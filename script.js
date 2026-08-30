@@ -164,7 +164,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
        A "step" is usually a panel. A panel taller than the viewport gets a
        second stop at its bottom edge, so nothing becomes unreachable, and the
-       footer gets one at the end of the document. */
+       footer gets one at the end of the document.
+
+       Panels marked data-panel-skip are the exception: they belong to a
+       section that opens on a hub, and they are reached from that hub's cards
+       rather than by scrolling. Their stops exist only while you are already
+       inside them — so scrolling past the hub lands on the next section, while
+       a card that put you in one still lets you scroll through it. */
 
     const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let stops = [];
@@ -186,28 +192,53 @@ document.addEventListener("DOMContentLoaded", () => {
     function measure() {
       const viewport = window.innerHeight;
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewport);
+      const clamp = (value) => Math.min(Math.max(value, 0), maxScroll);
       const next = [];
 
       panels.forEach((panel) => {
         const rect = panel.getBoundingClientRect();
         const top = Math.round(rect.top + window.scrollY);
-        next.push(Math.min(Math.max(top, 0), maxScroll));
+        // A skipped panel's stops are its own: reachable from within it, and
+        // invisible to a gesture made anywhere else.
+        const own = panel.hasAttribute("data-panel-skip") ? panel : null;
+
+        next.push({ y: clamp(top), own: own });
 
         const overflow = Math.round(rect.height - viewport);
-        if (overflow > 8) next.push(Math.min(top + overflow, maxScroll));
+        if (overflow > 8) next.push({ y: clamp(top + overflow), own: own });
       });
 
-      if (next.length && maxScroll > next[next.length - 1] + 8) next.push(maxScroll);
+      const last = next.length ? next[next.length - 1].y : 0;
+      if (next.length && maxScroll > last + 8) next.push({ y: maxScroll, own: null });
 
-      stops = Array.from(new Set(next)).sort((a, b) => a - b);
+      next.sort((a, b) => a.y - b.y);
+
+      // Collapse coincident stops, keeping the unconditional one.
+      stops = next.filter((stop, i) => {
+        if (i && next[i - 1].y === stop.y) return false;
+        if (i + 1 < next.length && next[i + 1].y === stop.y && stop.own) return false;
+        return true;
+      });
     }
 
-    function nearestStop() {
+    // A skipped panel's stops count only while that panel holds the top of the
+    // screen — that is what "you are inside it" means here.
+    function reachable(stop) {
+      if (!stop.own) return true;
+      const rect = stop.own.getBoundingClientRect();
+      return rect.top <= 6 && rect.bottom > 6;
+    }
+
+    function activeStops() {
+      return stops.filter(reachable);
+    }
+
+    function nearestStop(list) {
       const y = window.scrollY;
       let best = 0;
       let bestGap = Infinity;
-      stops.forEach((stop, index) => {
-        const gap = Math.abs(stop - y);
+      list.forEach((stop, index) => {
+        const gap = Math.abs(stop.y - y);
         if (gap < bestGap) {
           bestGap = gap;
           best = index;
@@ -216,9 +247,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return best;
     }
 
-    function goToStop(index) {
-      if (!stops.length) return;
-      const target = stops[Math.min(Math.max(index, 0), stops.length - 1)];
+    function goToStop(index, list) {
+      const from = list || activeStops();
+      if (!from.length) return;
+      const target = from[Math.min(Math.max(index, 0), from.length - 1)].y;
       if (Math.abs(window.scrollY - target) < 2) return;
 
       animating = true;
@@ -232,7 +264,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function step(direction) {
       if (animating) return;
-      goToStop(nearestStop() + direction);
+      const list = activeStops();
+      if (!list.length) return;
+
+      // Normally we are parked on a stop and a step moves to the neighbouring
+      // one. A hash link can also land us between stops, and there a step is
+      // simply the next stop in that direction.
+      const y = window.scrollY;
+      const index = nearestStop(list);
+      if (Math.abs(list[index].y - y) < 6) {
+        goToStop(index + direction, list);
+        return;
+      }
+
+      if (direction > 0) {
+        const ahead = list.findIndex((stop) => stop.y > y + 6);
+        goToStop(ahead === -1 ? list.length - 1 : ahead, list);
+      } else {
+        let behind = 0;
+        list.forEach((stop, i) => {
+          if (stop.y < y - 6) behind = i;
+        });
+        goToStop(behind, list);
+      }
     }
 
     // Regions that do their own scrolling and must keep the gesture.
@@ -327,7 +381,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (key === "End") {
         event.preventDefault();
-        goToStop(stops.length - 1);
+        const list = activeStops();
+        goToStop(list.length - 1, list);
         return;
       }
 

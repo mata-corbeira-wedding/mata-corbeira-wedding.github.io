@@ -20,6 +20,9 @@ node_modules/
 /WhatsApp Image*.jpeg
 /Images of Monastery/
 /Images of sample website/
+# Full-resolution originals, ~8 MB each. The site serves the resized
+# assets/bg-*.jpg built from them.
+/assets/Photos/
 
 # Debug artifacts
 /rsvp-*-state.png
