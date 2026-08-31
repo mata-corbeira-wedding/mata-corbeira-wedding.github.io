@@ -15,6 +15,10 @@
   --max-width: 1040px;
   --radius-soft: 14px;
   --transition-fast: 160ms ease-out;
+
+  /* Height of the sticky header. Measured and overwritten by script.js. */
+  --header-h: 76px;
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 *,
@@ -25,6 +29,15 @@
 
 html {
   scroll-behavior: smooth;
+  /* Fallback for when the JS snap controller is not running (no JS, or the
+     visitor prefers reduced motion). When it is running it sets .js-snap and
+     drives the scrolling itself, so native snapping is turned off to stop the
+     two from fighting over where a gesture ends. */
+  scroll-snap-type: y proximity;
+}
+
+html.js-snap {
+  scroll-snap-type: none;
 }
 
 body {
@@ -71,6 +84,21 @@ a {
 }
 
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+/* The monogram. It also buys the names a little breathing room from the
+   screen edge on a phone, where the header is tightest. */
+.brand-mark {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.brand-text {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
@@ -171,24 +199,433 @@ a {
   color: var(--color-muted);
 }
 
+/* ── Sections & panels ───────────────────────────────────
+   A section is one backdrop. Its panels scroll past that backdrop one at a
+   time: the photo holds still while the content cross-fades, so moving
+   between panels reads as "still here", and only a section change moves
+   the background. */
+
 .section {
-  padding: 4.5rem 0;
+  position: relative;
 }
 
-.section-alt {
-  background: radial-gradient(circle at top, #fbf7ee 0, #f4efe5 40%, #f1e7d8 100%);
-}
-
+/* admin.html is a single scrolling page rather than panels, so it keeps the
+   old section layout. index.html no longer uses .section-inner. */
 .section-inner {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
+  padding: 4.5rem 0;
+}
+
+/* Pinned for the section's whole scroll range. The negative margin pulls it
+   back out of the flow so it doesn't add height of its own. */
+.section-bg {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  margin-bottom: -100dvh;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.section-bg-wash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(252, 248, 239, 0.95), rgba(220, 208, 191, 0.9));
+  mix-blend-mode: multiply;
+}
+
+.section-bg-home {
+  background-image: linear-gradient(
+      to bottom,
+      rgba(244, 239, 229, 0.85),
+      rgba(244, 239, 229, 0.85)
+    ),
+    url("assets/monastery-exterior.png");
+}
+
+.section-bg-cloister {
+  background-image: linear-gradient(
+      to bottom,
+      rgba(244, 239, 229, 0.9),
+      rgba(244, 239, 229, 0.92)
+    ),
+    url("assets/monastery-cloister.png");
+}
+
+.section-bg-exterior {
+  background-image: linear-gradient(
+      to bottom,
+      rgba(244, 239, 229, 0.91),
+      rgba(244, 239, 229, 0.93)
+    ),
+    url("assets/monastery-exterior.png");
+}
+
+.section-bg-registry {
+  background-image: linear-gradient(
+      to bottom,
+      rgba(244, 239, 229, 0.9),
+      rgba(244, 239, 229, 0.92)
+    ),
+    url("assets/bg-registry.jpg");
+}
+
+.section-bg-stay {
+  background-image: linear-gradient(
+      to bottom,
+      rgba(244, 239, 229, 0.9),
+      rgba(244, 239, 229, 0.92)
+    ),
+    url("assets/bg-stay.jpg");
+}
+
+/* The chapel interior is far darker than the other backdrops, so it takes a
+   heavier wash to land at the same weight behind the text. */
+.section-bg-explore {
+  background-image: linear-gradient(
+      to bottom,
+      rgba(246, 241, 231, 0.93),
+      rgba(246, 241, 231, 0.95)
+    ),
+    url("assets/bg-explore.jpg");
+}
+
+/* A panel spans the full viewport and reserves the header band as top padding,
+   so its content is centred in the space actually visible below the header.
+   `safe center` means a panel whose content outgrows the viewport falls back to
+   top-aligned instead of overflowing upward behind the header. */
+.panel {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  align-items: safe center;
+  padding: calc(var(--header-h) + 1.5rem) 0 2.25rem;
+  scroll-snap-align: start;
+}
+
+/* Panels you reach only from their section's hub, never by scrolling into
+   them. While the snap controller is driving they are out of the layout
+   entirely, so a hub's neighbour really is the next section: there is no
+   flight past content nobody asked for, and nothing to land in by accident.
+   The controller reveals one when a card, a rail dot or a deep link asks for
+   it. Without the controller — no JS, or reduced motion — every panel stays
+   in the page and is scrolled through normally, so nothing is unreachable. */
+.panel[data-panel-skip] {
+  scroll-snap-align: none;
+}
+
+.js-hide-skipped .panel[data-panel-skip]:not(.is-revealed) {
+  display: none;
+}
+
+.panel-inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vh, 2.5rem);
+}
+
+/* Each direct child fades and rises in turn once the panel takes the screen,
+   and fades back out as it leaves. Gated on .js-panels so the content is
+   never left invisible if script.js fails to run. */
+.js-panels .panel-inner > * {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 640ms var(--ease-out-soft), transform 640ms var(--ease-out-soft);
+}
+
+.panel.is-active .panel-inner > * {
+  opacity: 1;
+  transform: none;
+}
+
+.panel.is-active .panel-inner > *:nth-child(1) { transition-delay: 60ms; }
+.panel.is-active .panel-inner > *:nth-child(2) { transition-delay: 150ms; }
+.panel.is-active .panel-inner > *:nth-child(3) { transition-delay: 240ms; }
+.panel.is-active .panel-inner > *:nth-child(4) { transition-delay: 330ms; }
+
+/* Smaller heading used on a section's second and later panels — it repeats the
+   section name so you always know you have not left it. */
+.panel-heading {
+  text-align: center;
+}
+
+.panel-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin: 0 0 0.5rem;
+}
+
+.panel-kicker::after {
+  content: "";
+  display: block;
+  width: 34px;
+  height: 1px;
+  margin: 0.55rem auto 0;
+  background: var(--color-accent-soft);
+}
+
+.panel-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* A quiet way back to the panel that indexes this one. */
+.panel-back {
+  display: inline-block;
+  margin-top: 0.7rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  transition: color var(--transition-fast);
+}
+
+.panel-back::before {
+  content: "←";
+  margin-right: 0.5rem;
+  letter-spacing: 0;
+}
+
+.panel-back:hover,
+.panel-back:focus-visible {
+  color: var(--color-accent);
+}
+
+/* ── Map panels ──────────────────────────────────────────
+   On these the map is the panel. Its frame gets out of the way and it takes
+   every pixel the rest of the content does not need, so the rest is kept to a
+   heading, one note, and one action. */
+
+/* A definite height, not just a minimum: the maps size themselves against it,
+   and without one an image would resolve `height: 100%` to its own aspect
+   ratio and push the panel past the viewport. */
+.panel-map {
+  height: 100dvh;
+}
+
+.panel-map .panel-inner {
+  align-self: stretch;
+  justify-content: center;
+  min-height: 0;
+  gap: clamp(0.7rem, 2vh, 1.4rem);
+}
+
+.panel-map .things-map-wrap {
+  flex: 1 1 auto;
+  min-height: 200px;
+  display: flex;
+}
+
+/* The monastery plan is a portrait image. Given a full-width row it would be
+   pinched down to a sliver, so it gets a full-height column and the notes sit
+   beside it. */
+.venue-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* Wide enough that the plan is limited by the panel's height rather than by
+   its column, which is what makes it read as the subject. */
+.venue-layout .venue-map-figure {
+  flex: 1 1 60%;
+  align-self: stretch;
+  min-width: 0;
+  display: flex;
+}
+
+.venue-aside {
+  flex: 0 1 40%;
+  min-width: 0;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.panel-map .venue-map-img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Narrow enough that two columns would leave neither any room. */
+@media (max-width: 820px) {
+  .venue-layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: clamp(0.8rem, 2.5vh, 1.4rem);
+  }
+
+  .venue-layout .venue-map-figure {
+    flex: 1 1 auto;
+    min-height: 150px;
+  }
+
+  .venue-aside {
+    flex: 0 0 auto;
+    gap: 0.9rem;
+  }
+}
+
+.panel-map #things-map {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+}
+
+/* The "i" in the panel's top corner. Opens the detail that used to sit
+   alongside the map and crowd it. */
+.panel-info {
+  position: absolute;
+  top: calc(var(--header-h) + 0.9rem);
+  right: clamp(1rem, 4vw, 2.75rem);
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--color-accent);
+  background: rgba(251, 247, 238, 0.9);
+  color: var(--color-accent);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-style: italic;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.panel-info:hover,
+.panel-info:focus-visible {
+  background: var(--color-accent);
+  color: #fdf8ee;
+  transform: scale(1.08);
+}
+
+/* ── Hub navigation ──────────────────────────────────────
+   Sections with many panels open on an index instead of making you scroll
+   through all of them in order. */
+
+.nav-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.1rem;
+}
+
+.nav-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.15rem 1.3rem;
+  border-radius: var(--radius-soft);
+  border: 1px solid rgba(209, 196, 178, 0.95);
+  background: rgba(249, 244, 236, 0.97);
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--transition-fast), border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.nav-card:hover,
+.nav-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--color-accent);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.1);
+}
+
+.nav-card-title {
+  font-family: var(--font-serif);
+  font-size: 1.08rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.nav-card-note {
+  flex: 1;
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.nav-card-cta {
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.nav-card-cta::after {
+  content: "→";
+  margin-left: 0.45rem;
+  letter-spacing: 0;
+  transition: margin var(--transition-fast);
+}
+
+.nav-card:hover .nav-card-cta::after {
+  margin-left: 0.75rem;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.chip-card {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(209, 196, 178, 0.95);
+  background: rgba(249, 244, 236, 0.94);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.chip-card:hover,
+.chip-card:focus-visible {
+  border-color: var(--color-accent);
+  background: rgba(199, 207, 179, 0.35);
+}
+
+.chip-card-count {
+  font-size: 0.65rem;
+  color: var(--color-muted);
+  letter-spacing: 0.1em;
 }
 
 .section-header {
   text-align: center;
   max-width: 640px;
   margin: 0 auto;
+}
+
+.section-header-tight .section-title {
+  font-size: clamp(1.7rem, 3.4vw, 2.2rem);
 }
 
 .section-kicker {
@@ -207,6 +644,26 @@ a {
   margin: 0;
 }
 
+/* Each section is introduced by its own drawing. The set runs from portrait to
+   landscape, so they are matched on height and left to take the width they
+   need — matching them on width instead leaves the wide ones looking shrunken
+   next to the title. */
+.section-title-marked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.7rem, 2vw, 1.15rem);
+  text-align: left;
+}
+
+.section-mark {
+  flex: none;
+  width: auto;
+  height: clamp(54px, 6vw, 76px);
+  max-width: clamp(84px, 9vw, 120px);
+  object-fit: contain;
+}
+
 .section-subtitle {
   margin: 0.75rem auto 0;
   font-size: 0.98rem;
@@ -222,34 +679,10 @@ a {
   margin: 0 0 0.75rem;
 }
 
-.hero {
-  position: relative;
-  min-height: 75vh;
-  display: flex;
-  align-items: center;
-  color: var(--color-text);
-  background-size: cover;
-  background-position: center;
-  background-image: linear-gradient(
-      to bottom,
-      rgba(244, 239, 229, 0.96),
-      rgba(244, 239, 229, 0.96)
-    ),
-    url("assets/monastery-exterior.png");
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top, rgba(252, 248, 239, 0.95), rgba(220, 208, 191, 0.9));
-  mix-blend-mode: multiply;
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  padding: 6rem 1.5rem 4.5rem;
+.panel-hero .panel-inner {
   text-align: center;
+  align-items: center;
+  gap: 0;
 }
 
 .hero-names {
@@ -283,39 +716,6 @@ a {
   margin: 1.75rem auto 1.5rem;
 }
 
-.hero-rsvp-button {
-  margin-bottom: 1.75rem;
-}
-
-.schedule-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 1.75rem;
-}
-
-.schedule-card {
-  padding: 1.25rem 1.4rem;
-  border-radius: var(--radius-soft);
-  border: 1px solid rgba(209, 196, 178, 0.9);
-  background: linear-gradient(to bottom, rgba(249, 244, 234, 0.97), rgba(243, 236, 224, 0.98));
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.04);
-}
-
-.schedule-title {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  margin: 0 0 0.4rem;
-}
-
-.schedule-time {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--color-muted);
-}
-
 .callout {
   max-width: 640px;
   margin: 0 auto;
@@ -329,13 +729,6 @@ a {
 .callout-soft {
   border-radius: var(--radius-soft);
   background: rgba(244, 237, 225, 0.95);
-}
-
-.two-column {
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  gap: 2.5rem;
-  align-items: flex-start;
 }
 
 .timeline {
@@ -396,6 +789,54 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.6rem;
+  align-items: start;
+}
+
+.card-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.card-centered {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.card-centered .button {
+  margin-top: 1rem;
+}
+
+.callout-centered {
+  text-align: center;
+}
+
+/* A compact callout that has to share a panel with something bigger. */
+.callout-inline {
+  max-width: 720px;
+  padding: 0.75rem 1.15rem;
+  text-align: center;
+}
+
+.callout-title {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin: 0 0 0.3rem;
+}
+
+.callout-inline p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+/* Buttons in a stretch-aligned panel column would otherwise span its width. */
+.panel-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .bullet-list {
@@ -452,16 +893,11 @@ a {
   box-shadow: none;
 }
 
-.hotel-groups {
-  display: flex;
-  flex-direction: column;
-  gap: 2.2rem;
-  margin-top: 1.5rem;
-}
-
-.hotel-card h4 {
+.hotel-card h3 {
   margin: 0 0 0.25rem;
   font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
 }
 
 .badge {
@@ -476,11 +912,10 @@ a {
   color: var(--color-muted);
 }
 
+/* No frame — the plan itself is the artwork, and any border around it just
+   eats space the map could be using. */
 .venue-map-figure {
-  margin: 1rem 0;
-  border-radius: var(--radius-soft);
-  overflow: hidden;
-  border: 1px solid rgba(209, 196, 178, 0.9);
+  margin: 0;
 }
 
 .venue-map-img {
@@ -489,13 +924,27 @@ a {
   display: block;
 }
 
-.venue-map-figure figcaption {
-  padding: 0.5rem 0.75rem;
+/* The registry is a single screen, so its two cards are held to a centred pair
+   and stretched to a common height — left to their natural sizes they read as
+   two leftovers rather than one composed panel. */
+.registry-card-grid {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  align-items: stretch;
   text-align: center;
 }
 
-.button-monastery {
-  margin-top: 0.75rem;
+.registry-card-grid .card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The shorter card's slack is split above and below its button rather than
+   dumped in one gap, so the pair reads as balanced instead of half-empty. */
+.registry-card-grid .button {
+  margin-block: auto;
+  align-self: center;
 }
 
 .zelle-info {
@@ -520,15 +969,6 @@ a {
   font-size: 0.82rem;
   color: var(--color-muted);
   font-style: italic;
-}
-
-.hotel-airbnb-card {
-  margin-bottom: 2rem;
-}
-
-
-.hotel-airbnb-card p + p {
-  margin-top: 0.75rem;
 }
 
 .hotel-card-grid {
@@ -562,6 +1002,77 @@ a {
 .admin-link:hover,
 .admin-link:focus-visible {
   color: var(--color-accent);
+}
+
+body.is-modal-open {
+  overflow: hidden;
+}
+
+/* ── Info dialog ─────────────────────────────────────────
+   Detail pulled off a panel so the panel's main subject can have the room. */
+
+.info-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.info-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.info-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.info-dialog {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  width: 100%;
+  margin: 0 1.5rem;
+  padding: 1.75rem 1.75rem 1.5rem;
+  background: #fbf7ee;
+  border-radius: var(--radius-soft);
+  border: 1px solid rgba(209, 196, 178, 0.96);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.25);
+  max-height: 85dvh;
+  overflow-y: auto;
+}
+
+.info-dialog p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.info-title {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0 0 0.9rem;
+  text-align: center;
+}
+
+.info-close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.8rem;
+  border: none;
+  background: transparent;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-muted);
 }
 
 .rsvp-modal {
@@ -758,26 +1269,57 @@ a {
   flex: 1;
 }
 
+.things-map-wrap {
+  position: relative;
+}
+
 #things-map {
   width: 100%;
-  height: 420px;
+  height: clamp(220px, 42dvh, 420px);
   border-radius: 10px;
-  margin-bottom: 2.5rem;
   border: 1px solid rgba(209, 196, 178, 0.6);
+}
+
+/* Touch devices only: the map starts locked so a vertical swipe scrolls the
+   page. Tapping this hands dragging over to Leaflet. */
+.map-unlock {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: rgba(61, 50, 38, 0.28);
+  color: #fdf8ee;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.map-unlock[hidden] {
+  display: none;
+}
+
+/* Reset once per section so numbering runs 1–15 across all four panels. */
+#things-to-do {
+  counter-reset: things-counter;
 }
 
 .things-list-numbered {
   list-style: none;
   margin: 0;
   padding: 0;
-  counter-reset: things-counter;
 }
 
 .things-list-numbered > li {
   counter-increment: things-counter;
   position: relative;
   padding-left: 2.8rem;
-  margin-bottom: 1.8rem;
+  margin-bottom: clamp(0.75rem, 2.2vh, 1.8rem);
 }
 
 .things-list-numbered > li:last-child {
@@ -811,7 +1353,7 @@ a {
 .things-list-numbered p {
   margin: 0 0 0.35rem;
   font-size: 0.95rem;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 .site-footer {
@@ -826,19 +1368,171 @@ a {
   color: var(--color-muted);
 }
 
-@media (max-width: 900px) {
-  .schedule-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+/* ── Sign-off ────────────────────────────────────────────
+   The last screen. Deliberately sparse: after eight panels of detail it is a
+   send-off, not another thing to read. */
 
-  .two-column {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.panel-closing .panel-inner {
+  align-items: center;
+  text-align: center;
+  gap: clamp(1rem, 3vh, 1.75rem);
+}
+
+.closing-mark {
+  width: clamp(72px, 9vw, 104px);
+  height: auto;
+}
+
+.closing-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3.6vw, 2.3rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.closing-body {
+  max-width: 30rem;
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--color-muted);
+}
+
+/* ── Panel transition veil ───────────────────────────────
+   A jump far enough to blur several sections past the eye goes behind this
+   instead: the page washes to its own background, moves while nothing is
+   visible, and washes back. Sits under the header and the rail so those stay
+   put and the move reads as deliberate. Created by script.js. */
+
+.panel-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 14;
+  background: var(--color-bg);
+  opacity: 0;
+  pointer-events: none;
+  /* Out is slower than in: the arrival should feel like it settles. */
+  transition: opacity 220ms var(--ease-out-soft);
+}
+
+.panel-veil.is-visible {
+  opacity: 1;
+  /* Opaque means opaque: nothing behind it should be clickable either. */
+  pointer-events: auto;
+  transition-duration: 180ms;
+}
+
+/* ── Panel progress rail ─────────────────────────────────
+   Shows where you are inside the current section, and disappears while
+   only one panel exists. Built by script.js. */
+
+.panel-rail {
+  position: fixed;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms var(--ease-out-soft);
+}
+
+.panel-rail.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.panel-rail-label {
+  writing-mode: vertical-rl;
+  font-size: 0.62rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.panel-rail-dots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.panel-rail-dot {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: 1px solid var(--color-accent);
+  background: transparent;
+  transition: background 260ms var(--ease-out-soft), transform 260ms var(--ease-out-soft);
+}
+
+.panel-rail-dot:hover {
+  transform: scale(1.35);
+}
+
+.panel-rail-dot.is-active {
+  background: var(--color-accent);
+  transform: scale(1.35);
+}
+
+/* ── Scroll cue ──────────────────────────────────────────
+   A single drawn line on the very first panel. */
+
+.scroll-cue {
+  position: fixed;
+  left: 50%;
+  bottom: 1.6rem;
+  transform: translateX(-50%);
+  z-index: 15;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms var(--ease-out-soft);
+}
+
+.scroll-cue.is-visible {
+  opacity: 1;
+}
+
+.scroll-cue-line {
+  display: block;
+  width: 1px;
+  height: 46px;
+  background: linear-gradient(to bottom, transparent, var(--color-accent));
+  transform-origin: top;
+  animation: scroll-cue-drop 2.1s var(--ease-out-soft) infinite;
+}
+
+@keyframes scroll-cue-drop {
+  0% { transform: scaleY(0); opacity: 0; }
+  35% { transform: scaleY(1); opacity: 1; }
+  75% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1) translateY(46px); opacity: 0; }
+}
+
+.nav-link.is-current::after {
+  width: 100%;
 }
 
 @media (max-width: 720px) {
   .site-header-inner {
     align-items: flex-start;
+  }
+
+  .brand {
+    gap: 0.55rem;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
   }
 
   .brand-names {
@@ -849,7 +1543,30 @@ a {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 60vw;
+    max-width: 48vw;
+  }
+
+  /* Titles wrap to two or three lines here, so the drawing sits above them
+     rather than stealing a third of an already narrow line. The header's own
+     spacing tightens to pay for the height it adds. */
+  .section-title-marked {
+    flex-direction: column;
+    gap: 0.35rem;
+    text-align: center;
+  }
+
+  .section-mark {
+    height: 44px;
+    max-width: 72px;
+  }
+
+  .section-kicker {
+    margin-bottom: 0.15rem;
+  }
+
+  .section-subtitle {
+    margin-top: 0.5rem;
+    font-size: 0.92rem;
   }
 
   .nav-toggle {
@@ -900,24 +1617,99 @@ a {
     margin-top: 0.25rem;
   }
 
-  .hero {
-    min-height: 60vh;
-  }
-
-  .hero-content {
-    padding: 4rem 1rem 3rem;
-  }
-
   .hero-names {
     font-size: clamp(1.9rem, 7vw, 2.6rem);
   }
 
-  .schedule-grid {
-    grid-template-columns: minmax(0, 1fr);
+  .card {
+    padding: 1rem 1.1rem;
   }
 
-  .schedule-card {
-    padding: 1rem 1.1rem;
+  .card-grid {
+    gap: 1.1rem;
+  }
+
+  /* All four cards have to be on screen at once — a hub you have to scroll is
+     not a hub — so they stay tight enough to fit the smallest phone, with room
+     to spare for Spanish, which runs longer than English throughout. */
+  .panel-hub .panel-inner {
+    gap: 0.85rem;
+  }
+
+  /* The registry is the whole section on one screen, and stacked on a phone its
+     two cards plus the heading run past the viewport — three lines of title in
+     Spanish alone. Everything in the panel steps down a size so it still fits
+     the smallest phone we support. */
+  .panel-registry .panel-inner {
+    gap: 0.9rem;
+  }
+
+  .panel-registry .section-title {
+    font-size: clamp(1.5rem, 6.4vw, 2.1rem);
+  }
+
+  .panel-registry .section-subtitle {
+    margin-top: 0.35rem;
+    font-size: 0.86rem;
+  }
+
+  .registry-card-grid {
+    gap: 0.75rem;
+  }
+
+  .registry-card-grid .card {
+    padding: 0.85rem 1rem;
+  }
+
+  .registry-card-grid .subsection-title {
+    font-size: 1.05rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .registry-card-grid p {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .registry-card-grid .small {
+    font-size: 0.78rem;
+  }
+
+  .registry-card-grid .zelle-info {
+    margin: 0.5rem 0 0.2rem;
+    font-size: 1rem;
+  }
+
+  .nav-card {
+    padding: 0.65rem 1rem;
+    gap: 0.15rem;
+  }
+
+  .nav-card-grid {
+    gap: 0.55rem;
+  }
+
+  .nav-card-title {
+    font-size: 1rem;
+  }
+
+  .nav-card-note {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .panel-info {
+    top: calc(var(--header-h) + 0.6rem);
+    right: 0.9rem;
+  }
+
+  .panel-map .things-map-wrap {
+    min-height: 160px;
+  }
+
+  .info-dialog {
+    margin: 0 1rem;
+    padding: 1.4rem 1.25rem 1.25rem;
   }
 
   .callout {
@@ -949,12 +1741,43 @@ a {
     justify-content: center;
   }
 
-  .section {
-    padding: 3rem 0;
+  /* Bottom padding clears the rail pill, which sits over the panel here. */
+  .panel {
+    padding: calc(var(--header-h) + 1rem) 0 3.1rem;
   }
 
-  #things-map {
-    height: 260px;
+  /* The rail moves to a horizontal row at the bottom, above the safe area. */
+  .panel-rail {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: max(0.9rem, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    flex-direction: row;
+    gap: 0.55rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(244, 239, 229, 0.82);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(209, 196, 178, 0.7);
+  }
+
+  .panel-rail-label {
+    display: none;
+  }
+
+  .panel-rail-dots {
+    flex-direction: row;
+    gap: 0.55rem;
+  }
+
+  .panel-rail-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scroll-cue {
+    bottom: 3.6rem;
   }
 
   .site-footer {
@@ -992,7 +1815,7 @@ a {
 
 .faq-item {
   border-bottom: 1px solid var(--color-border);
-  padding: 1.25rem 0;
+  padding: clamp(0.7rem, 1.8vh, 1.25rem) 0;
 }
 
 .faq-item:first-child {
@@ -1006,14 +1829,14 @@ a {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text);
-  margin: 0 0 0.75rem;
+  margin: 0 0 clamp(0.3rem, 1vh, 0.75rem);
 }
 
 .faq-answer {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 0.97rem;
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.6;
   color: var(--color-muted);
   margin: 0;
 }
@@ -1021,6 +1844,16 @@ a {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  /* No cross-fade — panels are simply present. */
+  .js-panels .panel-inner > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  .scroll-cue {
+    display: none;
   }
 
   * {

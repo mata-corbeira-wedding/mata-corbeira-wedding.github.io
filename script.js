@@ -32,6 +32,685 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* ── Panels ────────────────────────────────────────────────────────
+     Each section is split into full-viewport panels. Within a section the
+     background is pinned (CSS), so only the content cross-fades as you move
+     between panels; the background changes only when the section does. */
+  (function initPanels() {
+    const panels = Array.from(document.querySelectorAll(".panel"));
+    if (!panels.length) return;
+
+    // Only now is it safe for CSS to start panels hidden.
+    document.documentElement.classList.add("js-panels");
+
+    // A panel is "the viewport minus the header", so --header-h has to track
+    // the real header — it grows when the nav wraps or the font scales.
+    const header = document.querySelector(".site-header");
+    if (header) {
+      const syncHeaderHeight = () => {
+        const h = Math.ceil(header.getBoundingClientRect().height);
+        document.documentElement.style.setProperty("--header-h", h + "px");
+      };
+      syncHeaderHeight();
+      if ("ResizeObserver" in window) {
+        new ResizeObserver(syncHeaderHeight).observe(header);
+      } else {
+        window.addEventListener("resize", syncHeaderHeight);
+      }
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      panels.forEach((panel) => panel.classList.add("is-active"));
+      return;
+    }
+
+    const rail = document.querySelector(".panel-rail");
+    const scrollCue = document.querySelector(".scroll-cue");
+    const navLinks = Array.from(document.querySelectorAll(".nav-link"));
+    let railSectionId = null;
+
+    // The rail lists the panels of the current section only, so it stays a
+    // "where am I in this section" indicator rather than a page-wide index.
+    function buildRail(section) {
+      if (!rail) return;
+      const sectionPanels = Array.from(section.querySelectorAll(".panel"));
+      if (sectionPanels.length < 2) {
+        rail.replaceChildren();
+        rail.classList.remove("is-visible");
+        return;
+      }
+
+      const labelKey = section.getAttribute("data-section-label") || "";
+      const navLink = labelKey
+        ? document.querySelector('.nav-link[data-i18n="' + labelKey + '"]')
+        : null;
+
+      const label = document.createElement("span");
+      label.className = "panel-rail-label";
+      if (labelKey) label.setAttribute("data-i18n", labelKey);
+      label.textContent = navLink ? navLink.textContent.trim() : "";
+
+      const dots = document.createElement("ul");
+      dots.className = "panel-rail-dots";
+      sectionPanels.forEach((panel, index) => {
+        const item = document.createElement("li");
+        const dot = document.createElement("a");
+        dot.className = "panel-rail-dot";
+        dot.href = "#" + panel.id;
+        dot.setAttribute("aria-label", String(index + 1));
+        item.appendChild(dot);
+        dots.appendChild(item);
+      });
+
+      rail.replaceChildren(label, dots);
+      rail.classList.add("is-visible");
+    }
+
+    function setActivePanel(panel) {
+      panels.forEach((p) => p.classList.toggle("is-active", p === panel));
+
+      const section = panel.closest(".section");
+      if (section && section.id !== railSectionId) {
+        railSectionId = section.id;
+        buildRail(section);
+        navLinks.forEach((link) =>
+          link.classList.toggle("is-current", link.getAttribute("href") === "#" + section.id)
+        );
+      }
+
+      if (rail) {
+        rail.querySelectorAll(".panel-rail-dot").forEach((dot) => {
+          dot.classList.toggle("is-active", dot.getAttribute("href") === "#" + panel.id);
+        });
+      }
+
+      if (scrollCue) {
+        scrollCue.classList.toggle("is-visible", panel === panels[0]);
+      }
+    }
+
+    // Whichever panel fills most of the middle of the viewport wins. The inset
+    // root margin keeps a panel from claiming focus while it is only peeking in
+    // at an edge.
+    const ratios = new Map();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => ratios.set(entry.target, entry.intersectionRatio));
+
+        let best = null;
+        let bestRatio = 0;
+        ratios.forEach((ratio, panel) => {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            best = panel;
+          }
+        });
+
+        if (best) setActivePanel(best);
+      },
+      {
+        threshold: [0, 0.2, 0.4, 0.6, 0.8, 1],
+        rootMargin: "-20% 0px -20% 0px"
+      }
+    );
+
+    panels.forEach((panel) => observer.observe(panel));
+
+    /* ── Snap controller ───────────────────────────────────────────
+       One gesture moves exactly one step, however hard it was. Native scroll
+       snapping cannot promise that — a hard flick still coasts past several
+       panels before it settles — so the page takes the gesture itself and
+       decides where it lands.
+
+       A "step" is usually a panel. A panel taller than the viewport gets a
+       second stop at its bottom edge, so nothing becomes unreachable, and the
+       footer gets one at the end of the document.
+
+       Panels marked data-panel-skip are the exception: they belong to a
+       section that opens on a hub, and they are reached from that hub's cards
+       rather than by scrolling. Rather than being stepped over they are taken
+       out of the layout altogether (CSS, gated on .js-hide-skipped), so the
+       hub's neighbour really is the next section. One is revealed when a link
+       asks for it and retired again once the visitor has left it. */
+
+    const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let stops = [];
+    let animating = false;
+    let settleTimer = null;
+    let releaseTimer = null;
+    // The revealed panel a flight is heading for. It has to survive the trip
+    // even though it is off-screen for most of it.
+    let pending = null;
+
+    // Veil timings in milliseconds. VEIL_IN and VEIL_OUT mirror the fades in
+    // styles.css; the slack covers the frame a timer can beat the compositor
+    // to, so the wash is genuinely opaque before the page moves under it. The
+    // hold lets the arriving panel start its own fade-in behind the veil.
+    const VEIL_IN = 180;
+    const VEIL_SLACK = 50;
+    const VEIL_HOLD = 90;
+    const VEIL_OUT = 220;
+
+    // In viewport heights: any jump longer than this wears the veil. A step
+    // between neighbouring stops never is; a nav link crossing whole sections
+    // always is, and that is the flight worth covering.
+    const VEIL_DISTANCE = 1.5;
+
+    let veil = null;
+    let veiling = false;
+    let veilTimer = null;
+
+    // Reduced motion gets plain native scrolling with the CSS proximity snap:
+    // taking the gesture away implies animating the page for them.
+    function controllerActive() {
+      return !reduceMotionQuery.matches;
+    }
+
+    // Nothing is jacked while a dialog owns the screen.
+    function enabled() {
+      return controllerActive() && !document.body.classList.contains("is-modal-open");
+    }
+
+    // A skipped panel may only leave the layout while the controller is
+    // driving: a visitor scrolling natively has to be able to reach it.
+    function skipHidden(panel) {
+      return (
+        document.documentElement.classList.contains("js-hide-skipped") &&
+        panel.hasAttribute("data-panel-skip") &&
+        !panel.classList.contains("is-revealed")
+      );
+    }
+
+    // The same few pixels of slack the stops are compared with. A smooth
+    // scroll lands on a stop a fraction of a pixel short of it as often as not,
+    // and a panel left with 0.4px on screen would never be retired.
+    function onScreen(panel) {
+      const rect = panel.getBoundingClientRect();
+      return rect.bottom > 6 && rect.top < window.innerHeight - 6;
+    }
+
+    /* Showing or hiding a panel changes the height of the document, and when
+       it happens above the visitor it drags the page out from under them by
+       that height. So a panel already on screen is picked as an anchor, and
+       the scroll is put back where it has to be for that anchor to hold its
+       place. Working from the anchor's measured position rather than from the
+       toggled panel's height is what makes this survive the browser's own
+       scroll anchoring, which has often already moved the page by the time the
+       class has landed: re-stating the position we want is right whether or
+       not the browser got there first.
+
+       Both halves have to happen in one synchronous block so the browser lays
+       them out before it paints and nothing appears to move. "instant" is
+       essential — the stylesheet's smooth scroll-behavior would otherwise
+       animate the correction, which is exactly the jump being avoided. */
+    function setRevealed(panel, revealed) {
+      const from = window.scrollY;
+      const anchor = panels.find((p) => p !== panel && !skipHidden(p) && onScreen(p));
+      const before = anchor ? anchor.getBoundingClientRect().top + from : 0;
+
+      panel.classList.toggle("is-revealed", revealed);
+
+      if (anchor) {
+        const after = anchor.getBoundingClientRect().top + window.scrollY;
+        const target = Math.max(0, Math.round(from + after - before));
+        if (target !== Math.round(window.scrollY)) {
+          window.scrollTo({ top: target, behavior: "instant" });
+        }
+      }
+      measure();
+    }
+
+    // A revealed panel is retired the moment no part of it is on screen any
+    // more — the visitor scrolled back to the hub, or on into the next section
+    // — so the next gesture sees the short layout again.
+    function retireRevealed() {
+      panels.forEach((panel) => {
+        if (panel === pending || !panel.classList.contains("is-revealed")) return;
+        if (!onScreen(panel)) setRevealed(panel, false);
+      });
+    }
+
+    function measure() {
+      const viewport = window.innerHeight;
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewport);
+      const clamp = (value) => Math.min(Math.max(value, 0), maxScroll);
+      const next = [];
+
+      panels.forEach((panel) => {
+        // A hidden panel has no box at all, so its rect is all zeros and would
+        // put a stop wherever the visitor happens to be standing.
+        if (skipHidden(panel)) return;
+
+        const rect = panel.getBoundingClientRect();
+        const top = Math.round(rect.top + window.scrollY);
+        next.push(clamp(top));
+
+        const overflow = Math.round(rect.height - viewport);
+        if (overflow > 8) next.push(clamp(top + overflow));
+      });
+
+      const last = next.length ? next[next.length - 1] : 0;
+      if (next.length && maxScroll > last + 8) next.push(maxScroll);
+
+      next.sort((a, b) => a - b);
+      stops = next.filter((y, i) => !i || next[i - 1] !== y);
+    }
+
+    function nearestStop() {
+      const y = window.scrollY;
+      let best = 0;
+      let bestGap = Infinity;
+      stops.forEach((stop, index) => {
+        const gap = Math.abs(stop - y);
+        if (gap < bestGap) {
+          bestGap = gap;
+          best = index;
+        }
+      });
+      return best;
+    }
+
+    function veilElement() {
+      if (veil) return veil;
+      veil = document.createElement("div");
+      veil.className = "panel-veil";
+      veil.setAttribute("aria-hidden", "true");
+      document.body.appendChild(veil);
+      // Settle the transparent state before anyone asks for the opaque one,
+      // or the first veil of the page jumps straight to opaque.
+      void veil.offsetHeight;
+      return veil;
+    }
+
+    function veilTo(target) {
+      const sheet = veilElement();
+      veiling = true;
+      sheet.classList.add("is-visible");
+
+      veilTimer = setTimeout(() => {
+        // "instant" beats the smooth scroll-behavior the stylesheet sets, so
+        // the move costs no time at all while the screen is covered.
+        window.scrollTo({ top: target, behavior: "instant" });
+        veilTimer = setTimeout(() => {
+          // A smooth scroll already in flight when the jump landed — the
+          // browser bringing a freshly focused link into view, say — would
+          // still be dragging the page off the stop. Say it again while
+          // nothing can be seen.
+          window.scrollTo({ top: target, behavior: "instant" });
+          sheet.classList.remove("is-visible");
+          veilTimer = setTimeout(() => {
+            veiling = false;
+            animating = false;
+            settleVisibility();
+          }, VEIL_OUT);
+        }, VEIL_HOLD);
+      }, VEIL_IN + VEIL_SLACK);
+    }
+
+    function scrollToY(target) {
+      if (Math.abs(window.scrollY - target) < 2) return;
+
+      animating = true;
+      clearTimeout(releaseTimer);
+      clearTimeout(veilTimer);
+
+      if (Math.abs(window.scrollY - target) > window.innerHeight * VEIL_DISTANCE) {
+        veilTo(target);
+        return;
+      }
+
+      veiling = false;
+      if (veil) veil.classList.remove("is-visible");
+      releaseTimer = setTimeout(() => {
+        animating = false;
+      }, 1000);
+
+      window.scrollTo({ top: target, behavior: "smooth" });
+    }
+
+    function goToStop(index) {
+      if (!stops.length) return;
+      scrollToY(stops[Math.min(Math.max(index, 0), stops.length - 1)]);
+    }
+
+    function step(direction) {
+      if (animating || !stops.length) return;
+
+      // Normally we are parked on a stop and a step moves to the neighbouring
+      // one. A hash link can also land us between stops, and there a step is
+      // simply the next stop in that direction.
+      const y = window.scrollY;
+      const index = nearestStop();
+      if (Math.abs(stops[index] - y) < 6) {
+        goToStop(index + direction);
+        return;
+      }
+
+      if (direction > 0) {
+        const ahead = stops.findIndex((stop) => stop > y + 6);
+        goToStop(ahead === -1 ? stops.length - 1 : ahead);
+      } else {
+        let behind = 0;
+        stops.forEach((stop, i) => {
+          if (stop < y - 6) behind = i;
+        });
+        goToStop(behind);
+      }
+    }
+
+    /* Hub cards, back links, rail dots and the nav all point at a panel with a
+       plain hash href, so the browser would fly them itself with the
+       stylesheet's smooth scroll-behavior. That flight happens outside the
+       controller: `animating` is false throughout, so a wheel or swipe halfway
+       down would step from wherever the page happened to be and park there.
+       Owning the flight closes that window, and lets a long one wear the veil
+       like any other jump. */
+    function panelFor(hash) {
+      if (!hash || hash === "#" || hash.indexOf("#") !== 0) return null;
+      let target = null;
+      try {
+        target = document.querySelector(hash);
+      } catch (error) {
+        return null;
+      }
+      if (!target) return null;
+      return target.classList.contains("panel") ? target : target.querySelector(".panel");
+    }
+
+    function panelLink(target) {
+      if (!(target instanceof Element)) return null;
+      const link = target.closest('a[href^="#"]');
+      return link && panelFor(link.getAttribute("href")) ? link : null;
+    }
+
+    // Pressing a link focuses it, and the browser scrolls a focused element it
+    // judges off-screen into view — smoothly, per the stylesheet. That
+    // animation would still be running underneath the flight below and nudge
+    // the landing a few pixels off its stop. Taking the focus first, without
+    // the scroll, leaves the default focus with nothing left to do.
+    document.addEventListener("mousedown", (event) => {
+      if (!enabled()) return;
+      const link = panelLink(event.target);
+      if (link) link.focus({ preventScroll: true });
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!enabled() || event.defaultPrevented) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+
+      const link = panelLink(event.target);
+      if (!link) return;
+      const href = link.getAttribute("href");
+      const panel = panelFor(href);
+
+      event.preventDefault();
+      // A second destination mid-transition would fight the first one.
+      if (animating) return;
+
+      history.pushState(null, "", href);
+      goToPanel(panel);
+    });
+
+    // Hub cards, back links, rail dots, the nav and the FAQ answer's registry
+    // link all arrive here, so revealing a hidden destination belongs on this
+    // one path rather than on any particular kind of link.
+    function goToPanel(panel) {
+      if (skipHidden(panel)) {
+        setRevealed(panel, true);
+        pending = panel;
+      }
+      const viewport = window.innerHeight;
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewport);
+      const top = Math.round(panel.getBoundingClientRect().top + window.scrollY);
+      scrollToY(Math.min(Math.max(top, 0), maxScroll));
+    }
+
+    // A hash typed into the address bar, or the browser walking back through
+    // history, is the one way to a panel that never passes through a click.
+    // Same path, so a hidden destination is revealed rather than ignored.
+    window.addEventListener("hashchange", () => {
+      if (!enabled() || animating) return;
+      const panel = panelFor(window.location.hash);
+      if (panel) goToPanel(panel);
+    });
+
+    /* Regions that do their own scrolling and must keep the gesture. The map
+       is listed for touch only: it is built with scrollWheelZoom off, so a
+       wheel gesture over it is one it will never use, and handing it over
+       anyway let the browser scroll by the raw delta and park the page
+       between stops — on the panel where the map fills most of the screen.
+       Even for touch it only qualifies once it can actually be panned, which
+       on a phone means after the visitor has tapped to unlock it. */
+    const passThrough = ".rsvp-dialog, .info-dialog, select, textarea";
+    const touchPassThrough = passThrough + ", .leaflet-container.is-pannable";
+
+    function insidePassThrough(target, selector) {
+      return target instanceof Element && target.closest(selector || passThrough) !== null;
+    }
+
+    // The destination of a flight counts as reached once it is actually on
+    // screen; only then may anything else be retired around it.
+    function settleVisibility() {
+      if (pending && onScreen(pending)) pending = null;
+      retireRevealed();
+    }
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(() => {
+          // The veil's own jump fires a scroll event long before the veil has
+          // lifted; only it may decide when input is welcome again.
+          if (veiling) return;
+          animating = false;
+          settleVisibility();
+        }, 120);
+      },
+      { passive: true }
+    );
+
+    // A trackpad flick arrives as a long burst of wheel events. Only the first
+    // of a burst counts; the momentum tail keeps resetting the idle timer and
+    // is ignored until the fingers actually stop.
+    let wheelIdle = true;
+    let wheelIdleTimer = null;
+
+    window.addEventListener(
+      "wheel",
+      (event) => {
+        if (!enabled() || insidePassThrough(event.target)) return;
+        event.preventDefault();
+
+        clearTimeout(wheelIdleTimer);
+        wheelIdleTimer = setTimeout(() => {
+          wheelIdle = true;
+        }, 150);
+
+        if (!wheelIdle || animating || Math.abs(event.deltaY) < 4) return;
+        wheelIdle = false;
+        step(event.deltaY > 0 ? 1 : -1);
+      },
+      { passive: false }
+    );
+
+    let touchStartY = null;
+
+    document.addEventListener(
+      "touchstart",
+      (event) => {
+        if (
+          !enabled() ||
+          event.touches.length !== 1 ||
+          insidePassThrough(event.target, touchPassThrough)
+        ) {
+          touchStartY = null;
+          return;
+        }
+        touchStartY = event.touches[0].clientY;
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      "touchmove",
+      (event) => {
+        if (touchStartY === null || !enabled()) return;
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+
+    document.addEventListener(
+      "touchend",
+      (event) => {
+        if (touchStartY === null || !enabled()) return;
+        const travelled = touchStartY - event.changedTouches[0].clientY;
+        touchStartY = null;
+        if (Math.abs(travelled) < 40) return;
+        step(travelled > 0 ? 1 : -1);
+      },
+      { passive: true }
+    );
+
+    document.addEventListener("keydown", (event) => {
+      if (!enabled() || event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target;
+      if (target instanceof Element && target.closest("input, textarea, select, [contenteditable]")) {
+        return;
+      }
+
+      const key = event.key;
+      if (key === "Home") {
+        event.preventDefault();
+        goToStop(0);
+        return;
+      }
+      if (key === "End") {
+        event.preventDefault();
+        goToStop(stops.length - 1);
+        return;
+      }
+
+      let direction = 0;
+      if (key === "ArrowDown" || key === "PageDown" || (key === " " && !event.shiftKey)) direction = 1;
+      else if (key === "ArrowUp" || key === "PageUp" || (key === " " && event.shiftKey)) direction = -1;
+      if (!direction) return;
+
+      event.preventDefault();
+      step(direction);
+    });
+
+    // Panel heights move with the viewport, the language, and images arriving.
+    let measureTimer = null;
+    const scheduleMeasure = () => {
+      clearTimeout(measureTimer);
+      measureTimer = setTimeout(measure, 120);
+    };
+
+    // The browser resolves the hash while it parses and again at load; a
+    // target that had already left the layout by then would be unreachable, so
+    // it is revealed before the class that hides its neighbours lands.
+    const initialPanel = panelFor(window.location.hash);
+    if (initialPanel && initialPanel.hasAttribute("data-panel-skip")) {
+      initialPanel.classList.add("is-revealed");
+      pending = initialPanel;
+    }
+
+    // Panels only leave the layout while the controller is driving, so the two
+    // switch together.
+    function syncSnapMode() {
+      const active = controllerActive();
+      document.documentElement.classList.toggle("js-snap", active);
+      document.documentElement.classList.toggle("js-hide-skipped", active);
+      measure();
+    }
+    syncSnapMode();
+    if (typeof reduceMotionQuery.addEventListener === "function") {
+      reduceMotionQuery.addEventListener("change", syncSnapMode);
+    }
+
+    // Whatever the page was showing when the skipped panels left the layout —
+    // a deep link the browser had already resolved, a scroll it restored on
+    // reload — the ground moved under it, so start on a real stop. Nothing
+    // left the layout for a reduced-motion visitor, so nothing needs saying.
+    if (controllerActive() && stops.length) {
+      const anchor = initialPanel
+        ? Math.round(initialPanel.getBoundingClientRect().top + window.scrollY)
+        : stops[nearestStop()];
+      window.scrollTo({ top: anchor, behavior: "instant" });
+    }
+
+    window.addEventListener("resize", scheduleMeasure);
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(scheduleMeasure).observe(document.body);
+    }
+
+    // The browser flies to the fragment once more at load, smoothly, and
+    // settles a few pixels short of the panel top — leaving the page between
+    // stops for the controller to recover from. Say the position again, once
+    // at load and once after that flight can have finished; the guard means a
+    // gesture made during a slow load is never undone.
+    function restateInitial() {
+      if (!initialPanel || !controllerActive()) return;
+      const top = initialPanel.getBoundingClientRect().top;
+      if (Math.abs(top) > window.innerHeight / 2) return;
+      window.scrollTo({ top: Math.round(top + window.scrollY), behavior: "instant" });
+    }
+
+    window.addEventListener("load", () => {
+      scheduleMeasure();
+      restateInitial();
+      setTimeout(restateInitial, 500);
+    });
+  })();
+
+  /* ── Info dialogs ──────────────────────────────────────────────────
+     Panels whose subject wants the whole screen keep their supporting text
+     here instead. */
+  (function initInfoModals() {
+    const modals = Array.from(document.querySelectorAll(".info-modal"));
+    if (!modals.length) return;
+
+    let lastTrigger = null;
+
+    function close() {
+      let closedAny = false;
+      modals.forEach((modal) => {
+        if (!modal.classList.contains("is-open")) return;
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        closedAny = true;
+      });
+      if (!closedAny) return;
+
+      document.body.classList.remove("is-modal-open");
+      if (lastTrigger) lastTrigger.focus();
+      lastTrigger = null;
+    }
+
+    document.querySelectorAll("[data-info-open]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        const modal = document.getElementById(trigger.getAttribute("data-info-open"));
+        if (!modal) return;
+        lastTrigger = trigger;
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("is-modal-open");
+        const closeBtn = modal.querySelector(".info-close");
+        if (closeBtn) closeBtn.focus();
+      });
+    });
+
+    document.querySelectorAll("[data-info-close]").forEach((el) => {
+      el.addEventListener("click", close);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") close();
+    });
+  })();
+
   const translations = {
     en: {
       brand_names: "Maria & Raynulfo",
@@ -50,14 +729,6 @@ document.addEventListener("DOMContentLoaded", () => {
       home_names_line4: "Mata Negrette",
       home_date_location:
         "December 29th 2026 · Ancient Spanish Monastery · North Miami Beach, Florida",
-      home_ceremony_title: "Ceremony",
-      home_ceremony_time: "4:00 PM · Chapel of St. Bernard de Clairvaux",
-      home_cocktail_title: "Cocktail Hour",
-      home_cocktail_time: "5:00 PM · Cloister Garden",
-      home_reception_title: "Celebration",
-      home_reception_time: "6:00 PM · Refectory & Courtyard",
-      home_transport:
-        "Parking at the monastery is limited. We kindly recommend using Uber, Lyft, or shared rides when possible.",
       wedding_kicker: "Wedding Day",
       wedding_title: "Wedding Day Information",
       wedding_subtitle:
@@ -111,9 +782,6 @@ document.addEventListener("DOMContentLoaded", () => {
       registry_zelle_label: "Zelle:",
       registry_zelle_note:
         "Send to this number via your bank's Zelle app.",
-      registry_other_title: "Other Ideas",
-      registry_other_body:
-        "If you prefer to share a gift in another way, please feel welcome to reach out to our families or to us directly. We are simply honored to celebrate with you.",
       hotel_kicker: "Stay",
       hotel_title: "Where to stay?",
       hotel_subtitle:
@@ -251,6 +919,38 @@ document.addEventListener("DOMContentLoaded", () => {
       faqs_a7_after: " tab for more details.",
       faqs_q8: "IS THE WEDDING INDOORS OR OUTDOORS?",
       faqs_a8: "Both the ceremony and reception will take place within the Ancient Spanish Monastery. While the event is indoors, please note that the historic facility does not have air conditioning. As we are celebrating in late December, the weather may be breezy or cool; we recommend keeping this in mind when choosing your formal attire.",
+
+      // Sign-off
+      closing_title: "Have you RSVP'd yet?",
+      closing_body_before: "Go to the",
+      closing_body_link: "home page",
+      closing_body_after: " to do so. We hope to see you there!",
+
+      // Panel headings
+      wedding_attire_panel_title: "Attire & Etiquette",
+      things_group_culture_title: "Art & Culture",
+      things_group_museums_title: "Museums & Gardens",
+      things_group_shopping_title: "Shopping",
+      things_group_beaches_title: "Beaches",
+      things_map_unlock: "Tap to explore the map",
+      faqs_more_title: "A Few More Answers",
+
+      // Info dialogs
+      info_close: "Close",
+      wedding_venue_info_title: "Finding Your Way",
+      wedding_venue_info_button: "Venue information",
+      things_info_title: "Getting Around Miami",
+      things_info_button: "Getting around Miami",
+
+      // Hub navigation
+      hotel_nav_cta: "Take a look",
+      hotel_nav_venue_title: "Near the Monastery",
+      hotel_nav_airbnb_note: "Rentals across the city, and help finding others to share with.",
+      hotel_nav_venue_note: "Aventura · closest to the ceremony, from ~$235 a night.",
+      hotel_nav_doral_note: "Close to the airport, from ~$159 a night.",
+      hotel_nav_miramar_note: "Toward Fort Lauderdale, from ~$136 a night.",
+      hotel_back_link: "All places to stay",
+      things_back_link: "Back to the map",
     },
     es: {
       brand_names: "Maria y Raynulfo",
@@ -269,14 +969,6 @@ document.addEventListener("DOMContentLoaded", () => {
       home_names_line4: "Mata Negrette",
       home_date_location:
         "29 de diciembre de 2026 · Ancient Spanish Monastery · North Miami Beach, Florida",
-      home_ceremony_title: "Ceremonia",
-      home_ceremony_time: "4:00 p. m. · Capilla de San Bernardo de Claraval",
-      home_cocktail_title: "Coctel",
-      home_cocktail_time: "5:00 p. m. · Jardines del claustro",
-      home_reception_title: "Celebración",
-      home_reception_time: "6:00 p. m. · Refectorio y patio",
-      home_transport:
-        "El estacionamiento en el monasterio es limitado. Les recomendamos usar Uber, Lyft o compartir carro siempre que sea posible.",
       wedding_kicker: "El Gran Día",
       wedding_title: "Información del día de la boda",
       wedding_subtitle:
@@ -332,9 +1024,6 @@ document.addEventListener("DOMContentLoaded", () => {
       registry_zelle_label: "Zelle:",
       registry_zelle_note:
         "Envía a este número desde la app Zelle de tu banco.",
-      registry_other_title: "Otras ideas",
-      registry_other_body:
-        "Si prefieres compartir un regalo de otra forma, siéntete libre de hablar con nuestras familias o con nosotros directamente. Lo más importante para nosotros es celebrar contigo.",
       hotel_kicker: "Hospedaje",
       hotel_title: "¿Dónde hospedarse?",
       hotel_subtitle:
@@ -472,6 +1161,39 @@ document.addEventListener("DOMContentLoaded", () => {
       faqs_a7_after: " para más detalles.",
       faqs_q8: "¿LA BODA ES EN INTERIORES O EXTERIORES?",
       faqs_a8: "Tanto la ceremonia como la recepción se llevarán a cabo dentro del Ancient Spanish Monastery. Aunque el evento es en interiores, tenga en cuenta que la histórica instalación no tiene aire acondicionado. Como celebramos a finales de diciembre, el clima puede ser fresco o ventoso; recomendamos tenerlo en cuenta al elegir su atuendo formal.",
+
+      // Despedida
+      closing_title: "¿Ya confirmaste tu asistencia?",
+      closing_body_before: "Ve a la",
+      closing_body_link: "página de inicio",
+      closing_body_after: " para hacerlo. ¡Esperamos verte allí!",
+
+      // Encabezados de panel
+      wedding_attire_panel_title: "Vestimenta y Etiqueta",
+      things_group_culture_title: "Arte y Cultura",
+      things_group_museums_title: "Museos y Jardines",
+      things_group_shopping_title: "Compras",
+      things_group_beaches_title: "Playas",
+      things_map_unlock: "Toca para explorar el mapa",
+      faqs_more_title: "Algunas Respuestas Más",
+
+      // Diálogos de información
+      info_close: "Cerrar",
+      wedding_venue_info_title: "Cómo Ubicarte",
+      wedding_venue_info_button: "Información del lugar",
+      things_info_title: "Cómo Moverte por Miami",
+      things_info_button: "Cómo moverte por Miami",
+
+      // Navegación por secciones
+      hotel_nav_cta: "Ver opciones",
+      hotel_nav_venue_title: "Cerca del Monasterio",
+      hotel_nav_airbnb_note:
+        "Alquileres en toda la ciudad, y ayuda para encontrar con quién compartirlos.",
+      hotel_nav_venue_note: "Aventura · lo más cerca de la ceremonia, desde ~$235 por noche.",
+      hotel_nav_doral_note: "Cerca del aeropuerto, desde ~$159 por noche.",
+      hotel_nav_miramar_note: "Hacia Fort Lauderdale, desde ~$136 por noche.",
+      hotel_back_link: "Todos los hospedajes",
+      things_back_link: "Volver al mapa",
     },
   };
 
@@ -489,6 +1211,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (typeof value === "string") {
         el.textContent = value;
       }
+    });
+
+    // Controls whose only label is an attribute (the icon buttons, the phone
+    // field's placeholder) need translating too.
+    const attributeKeys = [
+      ["data-i18n-aria", "aria-label"],
+      ["data-i18n-placeholder", "placeholder"]
+    ];
+    attributeKeys.forEach(([dataAttr, targetAttr]) => {
+      document.querySelectorAll("[" + dataAttr + "]").forEach((el) => {
+        const value = dict[el.getAttribute(dataAttr)];
+        if (typeof value === "string") el.setAttribute(targetAttr, value);
+      });
     });
 
     document.documentElement.lang = lang;
@@ -558,6 +1293,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!rsvpModal) return;
     rsvpModal.classList.add("is-open");
     rsvpModal.setAttribute("aria-hidden", "false");
+    // Freeze the page behind the dialog so snap scrolling doesn't run under it.
+    document.body.classList.add("is-modal-open");
     if (phoneInput) phoneInput.focus();
   }
 
@@ -575,6 +1312,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!rsvpModal) return;
     rsvpModal.classList.remove("is-open");
     rsvpModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("is-modal-open");
     // Reset to Step 1
     if (step1El) step1El.hidden = false;
     if (step2El) step2El.hidden = true;
