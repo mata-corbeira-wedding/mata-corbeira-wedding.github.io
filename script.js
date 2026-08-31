@@ -178,6 +178,19 @@ document.addEventListener("DOMContentLoaded", () => {
     let settleTimer = null;
     let releaseTimer = null;
 
+    // Veil timings in milliseconds. VEIL_IN and VEIL_OUT mirror the fades in
+    // styles.css; the slack covers the frame a timer can beat the compositor
+    // to, so the wash is genuinely opaque before the page moves under it. The
+    // hold lets the arriving panel start its own fade-in behind the veil.
+    const VEIL_IN = 180;
+    const VEIL_SLACK = 50;
+    const VEIL_HOLD = 90;
+    const VEIL_OUT = 220;
+
+    let veil = null;
+    let veiling = false;
+    let veilTimer = null;
+
     // Reduced motion gets plain native scrolling with the CSS proximity snap:
     // taking the gesture away implies animating the page for them.
     function controllerActive() {
@@ -247,19 +260,86 @@ document.addEventListener("DOMContentLoaded", () => {
       return best;
     }
 
-    function goToStop(index, list) {
-      const from = list || activeStops();
-      if (!from.length) return;
-      const target = from[Math.min(Math.max(index, 0), from.length - 1)].y;
+    // True when a flight between two scroll positions would sweep a skipped
+    // panel's content across the screen. The panels holding the start and the
+    // end never count: one is where the visitor already is, the other is where
+    // they asked to go, and a panel taller than the viewport is scrolled
+    // through on purpose.
+    function crossesSkipped(from, to) {
+      const low = Math.min(from, to);
+      const high = Math.max(from, to);
+      return panels.some((panel) => {
+        if (!panel.hasAttribute("data-panel-skip")) return false;
+        const rect = panel.getBoundingClientRect();
+        const top = rect.top + window.scrollY;
+        const bottom = top + rect.height;
+        const holds = (y) => top <= y + 8 && bottom > y + 8;
+        if (holds(from) || holds(to)) return false;
+        return bottom > low + 8 && top < high - 8;
+      });
+    }
+
+    function veilElement() {
+      if (veil) return veil;
+      veil = document.createElement("div");
+      veil.className = "panel-veil";
+      veil.setAttribute("aria-hidden", "true");
+      document.body.appendChild(veil);
+      // Settle the transparent state before anyone asks for the opaque one,
+      // or the first veil of the page jumps straight to opaque.
+      void veil.offsetHeight;
+      return veil;
+    }
+
+    function veilTo(target) {
+      const sheet = veilElement();
+      veiling = true;
+      sheet.classList.add("is-visible");
+
+      veilTimer = setTimeout(() => {
+        // "instant" beats the smooth scroll-behavior the stylesheet sets, so
+        // the move costs no time at all while the screen is covered.
+        window.scrollTo({ top: target, behavior: "instant" });
+        veilTimer = setTimeout(() => {
+          // A smooth scroll already in flight when the jump landed — the
+          // browser bringing a freshly focused link into view, say — would
+          // still be dragging the page off the stop. Say it again while
+          // nothing can be seen.
+          window.scrollTo({ top: target, behavior: "instant" });
+          sheet.classList.remove("is-visible");
+          veilTimer = setTimeout(() => {
+            veiling = false;
+            animating = false;
+          }, VEIL_OUT);
+        }, VEIL_HOLD);
+      }, VEIL_IN + VEIL_SLACK);
+    }
+
+    function scrollToY(target) {
       if (Math.abs(window.scrollY - target) < 2) return;
 
       animating = true;
       clearTimeout(releaseTimer);
+      clearTimeout(veilTimer);
+
+      if (crossesSkipped(window.scrollY, target)) {
+        veilTo(target);
+        return;
+      }
+
+      veiling = false;
+      if (veil) veil.classList.remove("is-visible");
       releaseTimer = setTimeout(() => {
         animating = false;
       }, 1000);
 
       window.scrollTo({ top: target, behavior: "smooth" });
+    }
+
+    function goToStop(index, list) {
+      const from = list || activeStops();
+      if (!from.length) return;
+      scrollToY(from[Math.min(Math.max(index, 0), from.length - 1)].y);
     }
 
     function step(direction) {
@@ -289,6 +369,62 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    /* Hub cards, back links, rail dots and the nav all point at a panel with a
+       plain hash href, so the browser would fly them itself with the
+       stylesheet's smooth scroll-behavior. That flight happens outside the
+       controller: `animating` is false throughout, so a wheel or swipe halfway
+       down would step from wherever the page happened to be — which is inside
+       a skipped panel — and park there. Owning the flight closes that window,
+       and lets a long one wear the veil like any other jump. */
+    function panelFor(hash) {
+      if (!hash || hash === "#" || hash.indexOf("#") !== 0) return null;
+      let target = null;
+      try {
+        target = document.querySelector(hash);
+      } catch (error) {
+        return null;
+      }
+      if (!target) return null;
+      return target.classList.contains("panel") ? target : target.querySelector(".panel");
+    }
+
+    function panelLink(target) {
+      if (!(target instanceof Element)) return null;
+      const link = target.closest('a[href^="#"]');
+      return link && panelFor(link.getAttribute("href")) ? link : null;
+    }
+
+    // Pressing a link focuses it, and the browser scrolls a focused element it
+    // judges off-screen into view — smoothly, per the stylesheet. That
+    // animation would still be running underneath the flight below and nudge
+    // the landing a few pixels off its stop. Taking the focus first, without
+    // the scroll, leaves the default focus with nothing left to do.
+    document.addEventListener("mousedown", (event) => {
+      if (!enabled()) return;
+      const link = panelLink(event.target);
+      if (link) link.focus({ preventScroll: true });
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!enabled() || event.defaultPrevented) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+
+      const link = panelLink(event.target);
+      if (!link) return;
+      const href = link.getAttribute("href");
+      const panel = panelFor(href);
+
+      event.preventDefault();
+      // A second destination mid-transition would fight the first one.
+      if (animating) return;
+
+      history.pushState(null, "", href);
+      const viewport = window.innerHeight;
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewport);
+      const top = Math.round(panel.getBoundingClientRect().top + window.scrollY);
+      scrollToY(Math.min(Math.max(top, 0), maxScroll));
+    });
+
     // Regions that do their own scrolling and must keep the gesture.
     const passThrough = ".rsvp-dialog, .info-dialog, .leaflet-container, select, textarea";
 
@@ -301,7 +437,9 @@ document.addEventListener("DOMContentLoaded", () => {
       () => {
         clearTimeout(settleTimer);
         settleTimer = setTimeout(() => {
-          animating = false;
+          // The veil's own jump fires a scroll event long before the veil has
+          // lifted; only it may decide when input is welcome again.
+          if (!veiling) animating = false;
         }, 120);
       },
       { passive: true }
@@ -535,9 +673,6 @@ document.addEventListener("DOMContentLoaded", () => {
       registry_zelle_label: "Zelle:",
       registry_zelle_note:
         "Send to this number via your bank's Zelle app.",
-      registry_other_title: "Other Ideas",
-      registry_other_body:
-        "If you prefer to share a gift in another way, please feel welcome to reach out to our families or to us directly. We are simply honored to celebrate with you.",
       hotel_kicker: "Stay",
       hotel_title: "Where to stay?",
       hotel_subtitle:
@@ -678,7 +813,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Panel headings
       wedding_attire_panel_title: "Attire & Etiquette",
-      registry_other_ways_title: "Other Ways to Give",
       things_group_culture_title: "Art & Culture",
       things_group_museums_title: "Museums & Gardens",
       things_group_shopping_title: "Shopping",
@@ -775,9 +909,6 @@ document.addEventListener("DOMContentLoaded", () => {
       registry_zelle_label: "Zelle:",
       registry_zelle_note:
         "Envía a este número desde la app Zelle de tu banco.",
-      registry_other_title: "Otras ideas",
-      registry_other_body:
-        "Si prefieres compartir un regalo de otra forma, siéntete libre de hablar con nuestras familias o con nosotros directamente. Lo más importante para nosotros es celebrar contigo.",
       hotel_kicker: "Hospedaje",
       hotel_title: "¿Dónde hospedarse?",
       hotel_subtitle:
@@ -918,7 +1049,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Encabezados de panel
       wedding_attire_panel_title: "Vestimenta y Etiqueta",
-      registry_other_ways_title: "Otras Formas de Regalar",
       things_group_culture_title: "Arte y Cultura",
       things_group_museums_title: "Museos y Jardines",
       things_group_shopping_title: "Compras",

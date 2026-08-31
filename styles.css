@@ -916,6 +916,29 @@ a {
   display: block;
 }
 
+/* The registry is a single screen, so its two cards are held to a centred pair
+   and stretched to a common height — left to their natural sizes they read as
+   two leftovers rather than one composed panel. */
+.registry-card-grid {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  align-items: stretch;
+  text-align: center;
+}
+
+.registry-card-grid .card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The shorter card's slack is split above and below its button rather than
+   dumped in one gap, so the pair reads as balanced instead of half-empty. */
+.registry-card-grid .button {
+  margin-block: auto;
+  align-self: center;
+}
+
 .zelle-info {
   margin: 0.75rem 0 0.35rem;
   font-size: 1.1rem;
@@ -1337,6 +1360,30 @@ body.is-modal-open {
   color: var(--color-muted);
 }
 
+/* ── Panel transition veil ───────────────────────────────
+   A jump that would fly past panels the visitor never asked to see goes
+   behind this instead: the page washes to its own background, moves while
+   nothing is visible, and washes back. Sits under the header and the rail so
+   those stay put and the move reads as deliberate. Created by script.js. */
+
+.panel-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 14;
+  background: var(--color-bg);
+  opacity: 0;
+  pointer-events: none;
+  /* Out is slower than in: the arrival should feel like it settles. */
+  transition: opacity 220ms var(--ease-out-soft);
+}
+
+.panel-veil.is-visible {
+  opacity: 1;
+  /* Opaque means opaque: nothing behind it should be clickable either. */
+  pointer-events: auto;
+  transition-duration: 180ms;
+}
+
 /* ── Panel progress rail ─────────────────────────────────
    Shows where you are inside the current section, and disappears while
    only one panel exists. Built by script.js. */
@@ -1548,6 +1595,50 @@ body.is-modal-open {
      to spare for Spanish, which runs longer than English throughout. */
   .panel-hub .panel-inner {
     gap: 0.85rem;
+  }
+
+  /* The registry is the whole section on one screen, and stacked on a phone its
+     two cards plus the heading run past the viewport — three lines of title in
+     Spanish alone. Everything in the panel steps down a size so it still fits
+     the smallest phone we support. */
+  .panel-registry .panel-inner {
+    gap: 0.9rem;
+  }
+
+  .panel-registry .section-title {
+    font-size: clamp(1.5rem, 6.4vw, 2.1rem);
+  }
+
+  .panel-registry .section-subtitle {
+    margin-top: 0.35rem;
+    font-size: 0.86rem;
+  }
+
+  .registry-card-grid {
+    gap: 0.75rem;
+  }
+
+  .registry-card-grid .card {
+    padding: 0.85rem 1rem;
+  }
+
+  .registry-card-grid .subsection-title {
+    font-size: 1.05rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .registry-card-grid p {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .registry-card-grid .small {
+    font-size: 0.78rem;
+  }
+
+  .registry-card-grid .zelle-info {
+    margin: 0.5rem 0 0.2rem;
+    font-size: 1rem;
   }
 
   .nav-card {
