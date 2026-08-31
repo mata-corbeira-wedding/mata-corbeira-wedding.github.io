@@ -736,6 +736,18 @@
             </dl>
           </div>
         </div>
+
+        <!-- 6c · Sign-off — the last screen before the footer -->
+        <div class="panel panel-closing" id="faqs-3">
+          <div class="container panel-inner">
+            <img class="closing-mark" src="assets/logo-monogram.png" alt="" aria-hidden="true" />
+            <h2 class="closing-title" data-i18n="closing_title">Have you RSVP&apos;d yet?</h2>
+            <p class="closing-body">
+              <span data-i18n="closing_body_before">Go to the</span>
+              <a href="#home" class="text-link" data-i18n="closing_body_link">home page</a><span data-i18n="closing_body_after"> to do so. We hope to see you there!</span>
+            </p>
+          </div>
+        </div>
       </section>
     </main>
 
@@ -906,6 +918,13 @@
             .bindPopup('<strong>' + loc[0] + '. ' + loc[1] + '</strong>');
         });
 
+        // The snap controller hands a touch gesture to the map only while this
+        // class is set, so it has to track whether the map can be panned at all.
+        function markPannable() {
+          mapEl.classList.toggle('is-pannable', map.dragging.enabled());
+        }
+        markPannable();
+
         // On touch devices the map starts locked so a vertical swipe scrolls the
         // page instead of panning the map. Tapping the overlay hands control over.
         var unlock = document.querySelector('.map-unlock');
@@ -913,6 +932,7 @@
           unlock.hidden = false;
           unlock.addEventListener('click', function () {
             map.dragging.enable();
+            markPannable();
             unlock.remove();
           });
         }

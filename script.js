@@ -168,15 +168,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
        Panels marked data-panel-skip are the exception: they belong to a
        section that opens on a hub, and they are reached from that hub's cards
-       rather than by scrolling. Their stops exist only while you are already
-       inside them — so scrolling past the hub lands on the next section, while
-       a card that put you in one still lets you scroll through it. */
+       rather than by scrolling. Rather than being stepped over they are taken
+       out of the layout altogether (CSS, gated on .js-hide-skipped), so the
+       hub's neighbour really is the next section. One is revealed when a link
+       asks for it and retired again once the visitor has left it. */
 
     const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let stops = [];
     let animating = false;
     let settleTimer = null;
     let releaseTimer = null;
+    // The revealed panel a flight is heading for. It has to survive the trip
+    // even though it is off-screen for most of it.
+    let pending = null;
 
     // Veil timings in milliseconds. VEIL_IN and VEIL_OUT mirror the fades in
     // styles.css; the slack covers the frame a timer can beat the compositor
@@ -186,6 +190,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const VEIL_SLACK = 50;
     const VEIL_HOLD = 90;
     const VEIL_OUT = 220;
+
+    // In viewport heights: any jump longer than this wears the veil. A step
+    // between neighbouring stops never is; a nav link crossing whole sections
+    // always is, and that is the flight worth covering.
+    const VEIL_DISTANCE = 1.5;
 
     let veil = null;
     let veiling = false;
@@ -202,6 +211,65 @@ document.addEventListener("DOMContentLoaded", () => {
       return controllerActive() && !document.body.classList.contains("is-modal-open");
     }
 
+    // A skipped panel may only leave the layout while the controller is
+    // driving: a visitor scrolling natively has to be able to reach it.
+    function skipHidden(panel) {
+      return (
+        document.documentElement.classList.contains("js-hide-skipped") &&
+        panel.hasAttribute("data-panel-skip") &&
+        !panel.classList.contains("is-revealed")
+      );
+    }
+
+    // The same few pixels of slack the stops are compared with. A smooth
+    // scroll lands on a stop a fraction of a pixel short of it as often as not,
+    // and a panel left with 0.4px on screen would never be retired.
+    function onScreen(panel) {
+      const rect = panel.getBoundingClientRect();
+      return rect.bottom > 6 && rect.top < window.innerHeight - 6;
+    }
+
+    /* Showing or hiding a panel changes the height of the document, and when
+       it happens above the visitor it drags the page out from under them by
+       that height. So a panel already on screen is picked as an anchor, and
+       the scroll is put back where it has to be for that anchor to hold its
+       place. Working from the anchor's measured position rather than from the
+       toggled panel's height is what makes this survive the browser's own
+       scroll anchoring, which has often already moved the page by the time the
+       class has landed: re-stating the position we want is right whether or
+       not the browser got there first.
+
+       Both halves have to happen in one synchronous block so the browser lays
+       them out before it paints and nothing appears to move. "instant" is
+       essential — the stylesheet's smooth scroll-behavior would otherwise
+       animate the correction, which is exactly the jump being avoided. */
+    function setRevealed(panel, revealed) {
+      const from = window.scrollY;
+      const anchor = panels.find((p) => p !== panel && !skipHidden(p) && onScreen(p));
+      const before = anchor ? anchor.getBoundingClientRect().top + from : 0;
+
+      panel.classList.toggle("is-revealed", revealed);
+
+      if (anchor) {
+        const after = anchor.getBoundingClientRect().top + window.scrollY;
+        const target = Math.max(0, Math.round(from + after - before));
+        if (target !== Math.round(window.scrollY)) {
+          window.scrollTo({ top: target, behavior: "instant" });
+        }
+      }
+      measure();
+    }
+
+    // A revealed panel is retired the moment no part of it is on screen any
+    // more — the visitor scrolled back to the hub, or on into the next section
+    // — so the next gesture sees the short layout again.
+    function retireRevealed() {
+      panels.forEach((panel) => {
+        if (panel === pending || !panel.classList.contains("is-revealed")) return;
+        if (!onScreen(panel)) setRevealed(panel, false);
+      });
+    }
+
     function measure() {
       const viewport = window.innerHeight;
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewport);
@@ -209,74 +277,37 @@ document.addEventListener("DOMContentLoaded", () => {
       const next = [];
 
       panels.forEach((panel) => {
+        // A hidden panel has no box at all, so its rect is all zeros and would
+        // put a stop wherever the visitor happens to be standing.
+        if (skipHidden(panel)) return;
+
         const rect = panel.getBoundingClientRect();
         const top = Math.round(rect.top + window.scrollY);
-        // A skipped panel's stops are its own: reachable from within it, and
-        // invisible to a gesture made anywhere else.
-        const own = panel.hasAttribute("data-panel-skip") ? panel : null;
-
-        next.push({ y: clamp(top), own: own });
+        next.push(clamp(top));
 
         const overflow = Math.round(rect.height - viewport);
-        if (overflow > 8) next.push({ y: clamp(top + overflow), own: own });
+        if (overflow > 8) next.push(clamp(top + overflow));
       });
 
-      const last = next.length ? next[next.length - 1].y : 0;
-      if (next.length && maxScroll > last + 8) next.push({ y: maxScroll, own: null });
+      const last = next.length ? next[next.length - 1] : 0;
+      if (next.length && maxScroll > last + 8) next.push(maxScroll);
 
-      next.sort((a, b) => a.y - b.y);
-
-      // Collapse coincident stops, keeping the unconditional one.
-      stops = next.filter((stop, i) => {
-        if (i && next[i - 1].y === stop.y) return false;
-        if (i + 1 < next.length && next[i + 1].y === stop.y && stop.own) return false;
-        return true;
-      });
+      next.sort((a, b) => a - b);
+      stops = next.filter((y, i) => !i || next[i - 1] !== y);
     }
 
-    // A skipped panel's stops count only while that panel holds the top of the
-    // screen — that is what "you are inside it" means here.
-    function reachable(stop) {
-      if (!stop.own) return true;
-      const rect = stop.own.getBoundingClientRect();
-      return rect.top <= 6 && rect.bottom > 6;
-    }
-
-    function activeStops() {
-      return stops.filter(reachable);
-    }
-
-    function nearestStop(list) {
+    function nearestStop() {
       const y = window.scrollY;
       let best = 0;
       let bestGap = Infinity;
-      list.forEach((stop, index) => {
-        const gap = Math.abs(stop.y - y);
+      stops.forEach((stop, index) => {
+        const gap = Math.abs(stop - y);
         if (gap < bestGap) {
           bestGap = gap;
           best = index;
         }
       });
       return best;
-    }
-
-    // True when a flight between two scroll positions would sweep a skipped
-    // panel's content across the screen. The panels holding the start and the
-    // end never count: one is where the visitor already is, the other is where
-    // they asked to go, and a panel taller than the viewport is scrolled
-    // through on purpose.
-    function crossesSkipped(from, to) {
-      const low = Math.min(from, to);
-      const high = Math.max(from, to);
-      return panels.some((panel) => {
-        if (!panel.hasAttribute("data-panel-skip")) return false;
-        const rect = panel.getBoundingClientRect();
-        const top = rect.top + window.scrollY;
-        const bottom = top + rect.height;
-        const holds = (y) => top <= y + 8 && bottom > y + 8;
-        if (holds(from) || holds(to)) return false;
-        return bottom > low + 8 && top < high - 8;
-      });
     }
 
     function veilElement() {
@@ -310,6 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
           veilTimer = setTimeout(() => {
             veiling = false;
             animating = false;
+            settleVisibility();
           }, VEIL_OUT);
         }, VEIL_HOLD);
       }, VEIL_IN + VEIL_SLACK);
@@ -322,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
       clearTimeout(releaseTimer);
       clearTimeout(veilTimer);
 
-      if (crossesSkipped(window.scrollY, target)) {
+      if (Math.abs(window.scrollY - target) > window.innerHeight * VEIL_DISTANCE) {
         veilTo(target);
         return;
       }
@@ -336,36 +368,33 @@ document.addEventListener("DOMContentLoaded", () => {
       window.scrollTo({ top: target, behavior: "smooth" });
     }
 
-    function goToStop(index, list) {
-      const from = list || activeStops();
-      if (!from.length) return;
-      scrollToY(from[Math.min(Math.max(index, 0), from.length - 1)].y);
+    function goToStop(index) {
+      if (!stops.length) return;
+      scrollToY(stops[Math.min(Math.max(index, 0), stops.length - 1)]);
     }
 
     function step(direction) {
-      if (animating) return;
-      const list = activeStops();
-      if (!list.length) return;
+      if (animating || !stops.length) return;
 
       // Normally we are parked on a stop and a step moves to the neighbouring
       // one. A hash link can also land us between stops, and there a step is
       // simply the next stop in that direction.
       const y = window.scrollY;
-      const index = nearestStop(list);
-      if (Math.abs(list[index].y - y) < 6) {
-        goToStop(index + direction, list);
+      const index = nearestStop();
+      if (Math.abs(stops[index] - y) < 6) {
+        goToStop(index + direction);
         return;
       }
 
       if (direction > 0) {
-        const ahead = list.findIndex((stop) => stop.y > y + 6);
-        goToStop(ahead === -1 ? list.length - 1 : ahead, list);
+        const ahead = stops.findIndex((stop) => stop > y + 6);
+        goToStop(ahead === -1 ? stops.length - 1 : ahead);
       } else {
         let behind = 0;
-        list.forEach((stop, i) => {
-          if (stop.y < y - 6) behind = i;
+        stops.forEach((stop, i) => {
+          if (stop < y - 6) behind = i;
         });
-        goToStop(behind, list);
+        goToStop(behind);
       }
     }
 
@@ -373,9 +402,9 @@ document.addEventListener("DOMContentLoaded", () => {
        plain hash href, so the browser would fly them itself with the
        stylesheet's smooth scroll-behavior. That flight happens outside the
        controller: `animating` is false throughout, so a wheel or swipe halfway
-       down would step from wherever the page happened to be — which is inside
-       a skipped panel — and park there. Owning the flight closes that window,
-       and lets a long one wear the veil like any other jump. */
+       down would step from wherever the page happened to be and park there.
+       Owning the flight closes that window, and lets a long one wear the veil
+       like any other jump. */
     function panelFor(hash) {
       if (!hash || hash === "#" || hash.indexOf("#") !== 0) return null;
       let target = null;
@@ -419,17 +448,51 @@ document.addEventListener("DOMContentLoaded", () => {
       if (animating) return;
 
       history.pushState(null, "", href);
+      goToPanel(panel);
+    });
+
+    // Hub cards, back links, rail dots, the nav and the FAQ answer's registry
+    // link all arrive here, so revealing a hidden destination belongs on this
+    // one path rather than on any particular kind of link.
+    function goToPanel(panel) {
+      if (skipHidden(panel)) {
+        setRevealed(panel, true);
+        pending = panel;
+      }
       const viewport = window.innerHeight;
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewport);
       const top = Math.round(panel.getBoundingClientRect().top + window.scrollY);
       scrollToY(Math.min(Math.max(top, 0), maxScroll));
+    }
+
+    // A hash typed into the address bar, or the browser walking back through
+    // history, is the one way to a panel that never passes through a click.
+    // Same path, so a hidden destination is revealed rather than ignored.
+    window.addEventListener("hashchange", () => {
+      if (!enabled() || animating) return;
+      const panel = panelFor(window.location.hash);
+      if (panel) goToPanel(panel);
     });
 
-    // Regions that do their own scrolling and must keep the gesture.
-    const passThrough = ".rsvp-dialog, .info-dialog, .leaflet-container, select, textarea";
+    /* Regions that do their own scrolling and must keep the gesture. The map
+       is listed for touch only: it is built with scrollWheelZoom off, so a
+       wheel gesture over it is one it will never use, and handing it over
+       anyway let the browser scroll by the raw delta and park the page
+       between stops — on the panel where the map fills most of the screen.
+       Even for touch it only qualifies once it can actually be panned, which
+       on a phone means after the visitor has tapped to unlock it. */
+    const passThrough = ".rsvp-dialog, .info-dialog, select, textarea";
+    const touchPassThrough = passThrough + ", .leaflet-container.is-pannable";
 
-    function insidePassThrough(target) {
-      return target instanceof Element && target.closest(passThrough) !== null;
+    function insidePassThrough(target, selector) {
+      return target instanceof Element && target.closest(selector || passThrough) !== null;
+    }
+
+    // The destination of a flight counts as reached once it is actually on
+    // screen; only then may anything else be retired around it.
+    function settleVisibility() {
+      if (pending && onScreen(pending)) pending = null;
+      retireRevealed();
     }
 
     window.addEventListener(
@@ -439,7 +502,9 @@ document.addEventListener("DOMContentLoaded", () => {
         settleTimer = setTimeout(() => {
           // The veil's own jump fires a scroll event long before the veil has
           // lifted; only it may decide when input is welcome again.
-          if (!veiling) animating = false;
+          if (veiling) return;
+          animating = false;
+          settleVisibility();
         }, 120);
       },
       { passive: true }
@@ -474,7 +539,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener(
       "touchstart",
       (event) => {
-        if (!enabled() || event.touches.length !== 1 || insidePassThrough(event.target)) {
+        if (
+          !enabled() ||
+          event.touches.length !== 1 ||
+          insidePassThrough(event.target, touchPassThrough)
+        ) {
           touchStartY = null;
           return;
         }
@@ -519,8 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (key === "End") {
         event.preventDefault();
-        const list = activeStops();
-        goToStop(list.length - 1, list);
+        goToStop(stops.length - 1);
         return;
       }
 
@@ -540,20 +608,61 @@ document.addEventListener("DOMContentLoaded", () => {
       measureTimer = setTimeout(measure, 120);
     };
 
-    measure();
-    window.addEventListener("resize", scheduleMeasure);
-    window.addEventListener("load", scheduleMeasure);
-    if ("ResizeObserver" in window) {
-      new ResizeObserver(scheduleMeasure).observe(document.body);
+    // The browser resolves the hash while it parses and again at load; a
+    // target that had already left the layout by then would be unreachable, so
+    // it is revealed before the class that hides its neighbours lands.
+    const initialPanel = panelFor(window.location.hash);
+    if (initialPanel && initialPanel.hasAttribute("data-panel-skip")) {
+      initialPanel.classList.add("is-revealed");
+      pending = initialPanel;
     }
 
+    // Panels only leave the layout while the controller is driving, so the two
+    // switch together.
     function syncSnapMode() {
-      document.documentElement.classList.toggle("js-snap", controllerActive());
+      const active = controllerActive();
+      document.documentElement.classList.toggle("js-snap", active);
+      document.documentElement.classList.toggle("js-hide-skipped", active);
+      measure();
     }
     syncSnapMode();
     if (typeof reduceMotionQuery.addEventListener === "function") {
       reduceMotionQuery.addEventListener("change", syncSnapMode);
     }
+
+    // Whatever the page was showing when the skipped panels left the layout —
+    // a deep link the browser had already resolved, a scroll it restored on
+    // reload — the ground moved under it, so start on a real stop. Nothing
+    // left the layout for a reduced-motion visitor, so nothing needs saying.
+    if (controllerActive() && stops.length) {
+      const anchor = initialPanel
+        ? Math.round(initialPanel.getBoundingClientRect().top + window.scrollY)
+        : stops[nearestStop()];
+      window.scrollTo({ top: anchor, behavior: "instant" });
+    }
+
+    window.addEventListener("resize", scheduleMeasure);
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(scheduleMeasure).observe(document.body);
+    }
+
+    // The browser flies to the fragment once more at load, smoothly, and
+    // settles a few pixels short of the panel top — leaving the page between
+    // stops for the controller to recover from. Say the position again, once
+    // at load and once after that flight can have finished; the guard means a
+    // gesture made during a slow load is never undone.
+    function restateInitial() {
+      if (!initialPanel || !controllerActive()) return;
+      const top = initialPanel.getBoundingClientRect().top;
+      if (Math.abs(top) > window.innerHeight / 2) return;
+      window.scrollTo({ top: Math.round(top + window.scrollY), behavior: "instant" });
+    }
+
+    window.addEventListener("load", () => {
+      scheduleMeasure();
+      restateInitial();
+      setTimeout(restateInitial, 500);
+    });
   })();
 
   /* ── Info dialogs ──────────────────────────────────────────────────
@@ -811,6 +920,12 @@ document.addEventListener("DOMContentLoaded", () => {
       faqs_q8: "IS THE WEDDING INDOORS OR OUTDOORS?",
       faqs_a8: "Both the ceremony and reception will take place within the Ancient Spanish Monastery. While the event is indoors, please note that the historic facility does not have air conditioning. As we are celebrating in late December, the weather may be breezy or cool; we recommend keeping this in mind when choosing your formal attire.",
 
+      // Sign-off
+      closing_title: "Have you RSVP'd yet?",
+      closing_body_before: "Go to the",
+      closing_body_link: "home page",
+      closing_body_after: " to do so. We hope to see you there!",
+
       // Panel headings
       wedding_attire_panel_title: "Attire & Etiquette",
       things_group_culture_title: "Art & Culture",
@@ -1046,6 +1161,12 @@ document.addEventListener("DOMContentLoaded", () => {
       faqs_a7_after: " para más detalles.",
       faqs_q8: "¿LA BODA ES EN INTERIORES O EXTERIORES?",
       faqs_a8: "Tanto la ceremonia como la recepción se llevarán a cabo dentro del Ancient Spanish Monastery. Aunque el evento es en interiores, tenga en cuenta que la histórica instalación no tiene aire acondicionado. Como celebramos a finales de diciembre, el clima puede ser fresco o ventoso; recomendamos tenerlo en cuenta al elegir su atuendo formal.",
+
+      // Despedida
+      closing_title: "¿Ya confirmaste tu asistencia?",
+      closing_body_before: "Ve a la",
+      closing_body_link: "página de inicio",
+      closing_body_after: " para hacerlo. ¡Esperamos verte allí!",
 
       // Encabezados de panel
       wedding_attire_panel_title: "Vestimenta y Etiqueta",

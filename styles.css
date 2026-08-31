@@ -310,10 +310,18 @@ a {
 }
 
 /* Panels you reach only from their section's hub, never by scrolling into
-   them. The snap controller leaves them out of its stops; this keeps the
-   no-JS / reduced-motion fallback from catching on them either. */
+   them. While the snap controller is driving they are out of the layout
+   entirely, so a hub's neighbour really is the next section: there is no
+   flight past content nobody asked for, and nothing to land in by accident.
+   The controller reveals one when a card, a rail dot or a deep link asks for
+   it. Without the controller — no JS, or reduced motion — every panel stays
+   in the page and is scrolled through normally, so nothing is unreachable. */
 .panel[data-panel-skip] {
   scroll-snap-align: none;
+}
+
+.js-hide-skipped .panel[data-panel-skip]:not(.is-revealed) {
+  display: none;
 }
 
 .panel-inner {
@@ -1360,11 +1368,42 @@ body.is-modal-open {
   color: var(--color-muted);
 }
 
+/* ── Sign-off ────────────────────────────────────────────
+   The last screen. Deliberately sparse: after eight panels of detail it is a
+   send-off, not another thing to read. */
+
+.panel-closing .panel-inner {
+  align-items: center;
+  text-align: center;
+  gap: clamp(1rem, 3vh, 1.75rem);
+}
+
+.closing-mark {
+  width: clamp(72px, 9vw, 104px);
+  height: auto;
+}
+
+.closing-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3.6vw, 2.3rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.closing-body {
+  max-width: 30rem;
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--color-muted);
+}
+
 /* ── Panel transition veil ───────────────────────────────
-   A jump that would fly past panels the visitor never asked to see goes
-   behind this instead: the page washes to its own background, moves while
-   nothing is visible, and washes back. Sits under the header and the rail so
-   those stay put and the move reads as deliberate. Created by script.js. */
+   A jump far enough to blur several sections past the eye goes behind this
+   instead: the page washes to its own background, moves while nothing is
+   visible, and washes back. Sits under the header and the rail so those stay
+   put and the move reads as deliberate. Created by script.js. */
 
 .panel-veil {
   position: fixed;
