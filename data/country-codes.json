@@ -23,6 +23,31 @@
     "code": "+52",
     "country": "Mexico / México",
     "flag": "🇲🇽"
+  },
+  {
+    "code": "+31",
+    "country": "Netherlands / Países Bajos",
+    "flag": "🇳🇱"
+  },
+  {
+    "code": "+49",
+    "country": "Germany / Alemania",
+    "flag": "🇩🇪"
+  },
+  {
+    "code": "+33",
+    "country": "France / Francia",
+    "flag": "🇫🇷"
+  },
+  {
+    "code": "+39",
+    "country": "Italy / Italia",
+    "flag": "🇮🇹"
+  },
+  {
+    "code": "+56",
+    "country": "Chile",
+    "flag": "🇨🇱"
   }
 ]
 
