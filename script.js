@@ -1254,6 +1254,11 @@ document.addEventListener("DOMContentLoaded", () => {
     { code: "+58", country: "Venezuela",                      flag: "🇻🇪" },
     { code: "+57", country: "Colombia",                       flag: "🇨🇴" },
     { code: "+52", country: "Mexico / México",                flag: "🇲🇽" },
+    { code: "+31", country: "Netherlands / Países Bajos",     flag: "🇳🇱" },
+    { code: "+49", country: "Germany / Alemania",             flag: "🇩🇪" },
+    { code: "+33", country: "France / Francia",               flag: "🇫🇷" },
+    { code: "+39", country: "Italy / Italia",                 flag: "🇮🇹" },
+    { code: "+56", country: "Chile",                          flag: "🇨🇱" },
   ];
 
   function normalizePhone(raw) {
