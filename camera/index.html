@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f4efe5">
+<title>Cocktail Hour BINGO</title>
+<link rel="icon" href="../assets/logo-monogram.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4efe5;--bg-alt:#f9f6f0;--text:#3d3226;--muted:#6f604e;--accent:#5f6b4e;--border:#d1c4b2;--hl:#efe2c6;--gold:#b08a3e;--danger:#9a3412}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Lato,system-ui,-apple-system,sans-serif;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit}
+.app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;position:relative;padding-bottom:env(safe-area-inset-bottom)}
+.serif{font-family:"Cormorant Garamond","Times New Roman",serif}
+.muted{color:var(--muted)}
+.lang{position:absolute;top:12px;right:12px;z-index:5;display:flex;border:1px solid var(--border);border-radius:999px;overflow:hidden;background:var(--bg-alt)}
+.lang button{min-width:40px;min-height:32px;border:0;background:transparent;font-weight:700;font-size:12px;cursor:pointer}
+.lang button.on{background:var(--accent);color:#fff}
+.pad{padding:24px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.center{align-items:center;text-align:center}
+h1{margin:0;font-family:"Cormorant Garamond",serif;font-weight:600;font-size:32px;line-height:1.1}
+p{margin:0;line-height:1.45}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:999px;border:0;font-weight:700;font-size:16px;cursor:pointer;width:100%;padding:0 18px;text-decoration:none}
+.btn[disabled]{opacity:.55}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--border)}
+.btn-list{justify-content:flex-start;border-radius:14px;background:var(--bg-alt);border:1px solid var(--border);font-size:17px}
+.btn-danger{background:var(--danger);color:#fff}
+.link{background:none;border:0;padding:6px 0;font-weight:700;font-size:14px;color:#4f5a3f;text-decoration:underline;cursor:pointer;text-align:left}
+.field{width:100%;min-height:50px;border:1px solid var(--border);border-radius:12px;background:var(--bg-alt);padding:0 14px;font-size:16px;color:var(--text)}
+label{font-size:13px;font-weight:700}
+.banner{background:var(--hl);border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.4}
+.err{color:var(--danger);font-size:14px}
+.grid5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.cell{position:relative;aspect-ratio:1/1;border:1px solid var(--border);border-radius:8px;background:var(--bg-alt);padding:3px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(9px,2.5vw,11px);line-height:1.15;cursor:pointer;overflow:hidden}
+.cell.filled{border-color:var(--accent)}
+.cell.win{box-shadow:0 0 0 2px var(--gold)}
+.cell.free{background:var(--hl);border-color:#c9b48a}
+.cell .mono{width:70%;opacity:.75}
+.cell .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.check{position:absolute;right:3px;bottom:3px;width:16px;height:16px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center}
+.pill{padding:2px 8px;border-radius:999px;font-weight:700;background:var(--hl)}
+.pill.gone{background:var(--border);color:var(--muted);text-decoration:line-through}
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(61,50,38,.45);display:flex;justify-content:center}
+.sheet{width:100%;max-width:480px;margin-top:auto;background:var(--bg-alt);border-radius:20px 20px 0 0;padding:22px 22px calc(28px + env(safe-area-inset-bottom))}
+.dialog{margin:auto 24px;width:100%;max-width:420px;background:var(--bg-alt);border-radius:18px;padding:22px}
+.full{position:fixed;inset:0;z-index:22;background:var(--bg);overflow:auto}
+.full>div{max-width:480px;margin:0 auto}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
+.key{min-height:62px;border-radius:16px;border:1px solid var(--border);background:var(--bg-alt);font:400 28px "Cormorant Garamond",serif;cursor:pointer}
+.dots{display:flex;gap:14px}
+.dots span{width:14px;height:14px;border-radius:50%;border:2px solid var(--accent)}
+.dots span.on{background:var(--accent)}
+.card{background:var(--bg-alt);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.hdr{display:flex;align-items:center;gap:10px;padding:14px 16px 0;padding-right:100px}
+.hdr img{width:36px;height:36px}
+.code{font-family:"Cormorant Garamond",serif;font-size:48px;font-weight:700;letter-spacing:.08em}
+input[type=file]{display:none}
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+<input id="cam" type="file" accept="image/*" capture="environment">
+<input id="gal" type="file" accept="image/*">
+<script src="../api.js"></script>
+<script>
+/* Real-life test of Wedding Camera's cocktail-hour bingo.
+   Guest names come from the RSVP sheet through WeddingApi.lookup (read-only).
+   Photos and the card stay on the guest's phone; prizes stay on the host's phone. */
+const P = [
+  ["no has visto en 5 años","you haven’t seen in 5 years"],["conociste hoy","you met today"],["tenga bigote","has a moustache"],
+  ["viste botando un trago","you saw spill a drink"],["mida más de 1,80 m","is taller than 1.80 m"],
+  ["se haya comido muchos pasapalos o persiga al mesonero","has eaten lots of appetizers or chases the waiter"],
+  ["esté vestido/a del mismo color que tú","is dressed in your colour"],["lleve lentes (de ver)","wears glasses"],
+  ["tenga los ojos claros","has light eyes"],["tenga un tatuaje visible","has a visible tattoo"],
+  ["esté en una llamada en pleno cóctel","is on a call mid-cocktail"],["haya viajado desde otro país para la boda","travelled from another country"],
+  ["sea familia del novio","is the groom’s family"],["sea familia de la novia","is the bride’s family"],["haya venido solo/a","came alone"],
+  ["tenga barba","has a beard"],["tenga dos tragos en la mano","has two drinks in hand"],["tenga un café en la mano","has a coffee in hand"],
+  ["haya llegado tarde a la ceremonia","was late to the ceremony"],["lleve lentes de sol","wears sunglasses"],
+  ["esté echando un cuento con las manos","tells a story with their hands"],["esté sentado/a mientras todos están de pie","sits while everyone stands"],
+  ["esté mirando el celular","is looking at their phone"],["esté buscando dónde dejar el vaso vacío","is looking for where to leave an empty glass"]
+];
+const LINES = [[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],[0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],[0,6,12,18,24],[4,8,12,16,20]];
+const COUNTRIES = [["+1","Estados Unidos","United States"],["+34","España","Spain"],["+58","Venezuela","Venezuela"],["+56","Chile","Chile"],["+39","Italia","Italy"],["+31","Países Bajos","Netherlands"],["+507","Panamá","Panama"],["+49","Alemania","Germany"],["+1","República Dominicana","Dominican Republic"]];
+const PRIZE = {es:["1º","2º","3º"],en:["1st","2nd","3rd"]};
+const HOST_PIN = "2912";
+const MONO = "../assets/logo-monogram.png";
+const T = {
+ es:{ourWedding:"Nuestra boda",homeBingo:"Llena tu tarjeta con fotos durante el cóctel. ¡Los tres primeros en completar una línea ganan un premio!",start:"Empezar",
+  phoneTitle:"Tu número de teléfono",phoneHelp:"Lo usamos solo para saber quién eres.",country:"País",number:"Número",cont:"Continuar",searching:"Buscando…",
+  phoneErr:"Revisa el número, parece incompleto.",netErr:"No pudimos buscarte ahora. Revisa tu señal e intenta de nuevo.",retry:"Intentar de nuevo",useName:"Seguir con mi nombre",
+  pickTitle:"¿Quién eres?",pickHelp:"Este número es de varias personas.",noneMe:"Ninguno soy yo",fix:"Corregir número",
+  nameTitle:"¿Cómo te llamas?",nameNo:"No encontramos tu número en la lista. No pasa nada: dinos tu nombre.",nameLbl:"Nombre",namePh:"Nombre y apellido",
+  hello:"Hola,",notYou:"¿No eres {n}? Cambiar",header:"Tómate una foto con alguien que…",ask:"Pide permiso antes de la foto",
+  cardHelp:"Toca un cuadro para tomar o subir su foto.",seeCode:"¡Bingo! · ver mi código",prizes:"Premios",
+  take:"Tomar foto",replace:"Cambiar foto",upload:"Subir de mi galería",remove:"Quitar foto",close:"Cerrar",saving:"Guardando foto…",
+  bingoText:"Busca al anfitrión y muéstrale tu tarjeta y este código.",code:"Tu código",back:"Volver a mi tarjeta",keep:"Puedes seguir jugando.",
+  reset:"Borrar mi tarjeta (prueba)",resetQ:"¿Borrar tu tarjeta y tus fotos de este teléfono?",cancel:"Cancelar",del:"Borrar",
+  testNote:"Prueba: las fotos se quedan en tu teléfono.",photoErr:"No pudimos usar esa foto. Prueba con otra."},
+ en:{ourWedding:"Our wedding",homeBingo:"Fill your card with photos during cocktail hour. The first three to complete a line win a prize!",start:"Start",
+  phoneTitle:"Your phone number",phoneHelp:"We only use it to know who you are.",country:"Country",number:"Number",cont:"Continue",searching:"Searching…",
+  phoneErr:"Check the number — it looks incomplete.",netErr:"We couldn’t look you up right now. Check your signal and try again.",retry:"Try again",useName:"Continue with my name",
+  pickTitle:"Which one are you?",pickHelp:"Several people share this number.",noneMe:"None of these is me",fix:"Fix my number",
+  nameTitle:"What’s your name?",nameNo:"We couldn’t find your number on the list. No problem — tell us your name.",nameLbl:"Name",namePh:"First and last name",
+  hello:"Hi,",notYou:"Not {n}? Switch",header:"Take a photo with someone who…",ask:"Ask permission before the photo",
+  cardHelp:"Tap a square to take or upload its photo.",seeCode:"Bingo! · see my code",prizes:"Prizes",
+  take:"Take photo",replace:"Replace photo",upload:"Upload from gallery",remove:"Remove photo",close:"Close",saving:"Saving photo…",
+  bingoText:"Find the host and show them your card and this code.",code:"Your code",back:"Back to my card",keep:"You can keep playing.",
+  reset:"Clear my card (test)",resetQ:"Clear your card and photos from this phone?",cancel:"Cancel",del:"Clear",
+  testNote:"Test: photos stay on your phone.",photoErr:"We couldn’t use that photo. Try another one."}
+};
+
+/* ---------- storage (per phone; app still works if it is blocked) ---------- */
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(_){return false}}
+
+const G = load("wc_guest", null);           // {name, card:[...25], filled:{i:dataURL}, code, bingoSeen}
+const S = {
+  lang: load("wc_lang","es"), host: location.hash.replace("#","")==="anfitrion",
+  screen: G?"card":"home", country:0, phone:"", busy:false, error:null, group:[], nameInput:"",
+  guest: G, sheet:-1, saving:false, showBingo:false, confirmReset:false,
+  h:{screen:"pin",pin:"",tries:0,error:null,code:"",codeError:null,lock:false},
+  given: load("wc_prizes", [])               // host phone: [{code, place}]
+};
+const t = k => T[S.lang][k];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ICON = {
+  check:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>',
+  cam:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  img:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 16l5-5 4 4 3-3 4 4"/></svg>'
+};
+
+/* ---------- card + code ---------- */
+function hash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function rng(seed){return()=>{seed=(seed+0x6D2B79F5)|0;let x=Math.imul(seed^seed>>>15,1|seed);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296}}
+function makeCard(name){const r=rng(hash(name+Date.now()));const a=P.map((_,i)=>i);for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}a.splice(12,0,-1);return a}
+// Code = two initials + three digits + a check digit, so the host can tell a typo from a real code.
+function initials(name){const w=name.normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z ]/g,"").split(/\s+/).filter(Boolean);return ((w[0]||"X")[0]+((w[1]||w[0]||"X")[0]))}
+function checkDigit(body){let s=0;for(let i=0;i<body.length;i++)s+=body.charCodeAt(i)*(i+3);return s%10}
+function makeCode(name){const body=initials(name)+String(Math.floor(Math.random()*1000)).padStart(3,"0");return body.slice(0,2)+"-"+body.slice(2)+checkDigit(body)}
+function codeValid(code){const m=/^([A-Z]{2})-?(\d{3})(\d)$/.exec(code.toUpperCase().replace(/\s/g,""));return m?{ok:+m[3]===checkDigit(m[1]+m[2]),norm:m[1]+"-"+m[2]+m[3]}:{ok:false}}
+function lines(filled){const won={};let any=false;LINES.forEach(l=>{if(l.every(i=>i===12||filled[i])){any=true;l.forEach(i=>won[i]=true)}});return{any,won}}
+
+function startGuest(name){
+  S.guest={name,card:makeCard(name),filled:{},code:makeCode(name),bingoSeen:false};save("wc_guest",S.guest);S.screen="card";
+}
+function saveGuest(){if(!save("wc_guest",S.guest))S.error="storage"}
+
+/* ---------- photos: shrink before storing so many fit on the phone ---------- */
+function shrink(file){return new Promise((res,rej)=>{const url=URL.createObjectURL(file);const img=new Image();
+  img.onload=()=>{const m=480,sc=Math.min(1,m/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);res(c.toDataURL("image/jpeg",.72))};
+  img.onerror=()=>{URL.revokeObjectURL(url);rej()};img.src=url})}
+async function onFile(e){
+  const f=e.target.files&&e.target.files[0];e.target.value="";if(!f||S.sheet<0)return;
+  const i=S.sheet;S.saving=true;render();
+  try{const d=await shrink(f);S.guest.filled={...S.guest.filled,[i]:d};saveGuest();S.sheet=-1;
+    if(lines(S.guest.filled).any&&!S.guest.bingoSeen){S.guest.bingoSeen=true;saveGuest();S.showBingo=true}}
+  catch(_){alert(t("photoErr"))}
+  S.saving=false;render();
+}
+document.getElementById("cam").addEventListener("change",onFile);
+document.getElementById("gal").addEventListener("change",onFile);
+
+/* ---------- guest views ---------- */
+function guestView(){
+  let h="";
+  if(S.screen==="home"){
+    h+=`<div class="pad stack center" style="padding-top:56px">
+      <img src="${MONO}" alt="Monograma" width="64" height="64">
+      <div class="serif muted" style="font-size:18px;letter-spacing:.18em;text-transform:uppercase">${t("ourWedding")}</div>
+      <div class="serif" style="font-size:30px;line-height:1.1;font-weight:600">María Alejandra<br><i style="font-weight:500;font-size:24px">&amp;</i><br>Raynulfo Jesús</div>
+      <img src="cloister-illustration.jpg" alt="" style="width:100%;border-radius:12px">
+      <div><div class="serif" style="font-size:34px;font-weight:700;line-height:1">Cocktail Hour BINGO</div><div class="serif muted" style="font-size:20px;font-style:italic">Photo edition</div><p style="margin-top:8px">${t("homeBingo")}</p></div>
+      <button class="btn btn-primary" data-a="go" data-i="phone">${t("start")}</button></div>`;
+  } else if(S.screen==="phone"){
+    h+=`<div class="pad stack" style="padding-top:56px">
+      <img src="${MONO}" alt="" width="44" height="44">
+      <h1>${t("phoneTitle")}</h1><p class="muted">${t("phoneHelp")}</p>
+      <label for="country">${t("country")}</label>
+      <select id="country" class="field" data-in="country">${COUNTRIES.map((c,i)=>`<option value="${i}" ${i===S.country?"selected":""}>${esc((S.lang==="en"?c[2]:c[1])+" ("+c[0]+")")}</option>`).join("")}</select>
+      <label for="phone">${t("number")}</label>
+      <div style="display:flex;gap:8px"><span class="field" style="width:auto;min-width:64px;display:flex;align-items:center;justify-content:center;background:var(--hl)">${COUNTRIES[S.country][0]}</span>
+      <input id="phone" class="field" type="tel" inputmode="tel" autocomplete="tel" value="${esc(S.phone)}" data-in="phone"></div>
+      ${S.error==="phone"?`<div role="alert" class="err">${t("phoneErr")}</div>`:""}
+      ${S.error==="net"?`<div role="alert" class="err">${t("netErr")}</div><button class="btn btn-ghost" data-a="go" data-i="name">${t("useName")}</button>`:""}
+      <button class="btn btn-primary" data-a="lookup" ${S.busy?"disabled":""}>${S.busy?t("searching"):S.error==="net"?t("retry"):t("cont")}</button></div>`;
+  } else if(S.screen==="pick"){
+    h+=`<div class="pad stack" style="padding-top:56px"><h1>${t("pickTitle")}</h1><p class="muted">${t("pickHelp")}</p>
+      ${S.group.map((g,i)=>`<button class="btn btn-list" data-a="pick" data-i="${i}">${esc(g.name)}</button>`).join("")}
+      <button class="btn btn-list" style="border-style:dashed" data-a="go" data-i="name">${t("noneMe")}</button>
+      <button class="link" data-a="go" data-i="phone">← ${t("fix")}</button></div>`;
+  } else if(S.screen==="name"){
+    h+=`<div class="pad stack" style="padding-top:56px"><h1>${t("nameTitle")}</h1><p class="muted">${t("nameNo")}</p>
+      <label for="gname">${t("nameLbl")}</label><input id="gname" class="field" autocomplete="name" placeholder="${t("namePh")}" value="${esc(S.nameInput)}" data-in="nameInput">
+      <button class="btn btn-primary" data-a="submitName">${t("cont")}</button>
+      <button class="link" data-a="go" data-i="phone">← ${t("fix")}</button></div>`;
+  } else {
+    const g=S.guest,first=g.name.split(" ")[0],ls=lines(g.filled);
+    h+=`<div class="hdr"><img src="${MONO}" alt=""><div style="display:flex;flex-direction:column;line-height:1.2"><b>${t("hello")} ${esc(first)}</b><button class="link" style="padding:0;font-size:12px" data-a="askReset">${esc(t("notYou").replace("{n}",first))}</button></div></div>
+      <div class="stack" style="padding:12px 16px 24px">
+      <div class="serif" style="font-size:26px;font-weight:700">Cocktail Hour BINGO</div>
+      <div style="display:flex;gap:6px;align-items:center;font-size:12px"><b>${t("prizes")}</b>${[0,1,2].map(p=>`<span class="pill">${PRIZE[S.lang][p]}</span>`).join("")}</div>
+      ${ls.any?`<button class="btn btn-ghost" style="min-height:44px;background:var(--hl);border-color:#c9b48a" data-a="bingo">${t("seeCode")}</button>`:""}
+      <div style="text-align:center"><div class="serif" style="font-size:21px;font-style:italic">${t("header")}</div><div class="muted" style="font-size:12px">${t("ask")}</div></div>
+      <div class="grid5">${g.card.map((p,i)=>{const free=p===-1,f=g.filled[i];const lbl=free?"":P[p][S.lang==="en"?1:0];
+        return `<button class="cell ${free?"free":""} ${f?"filled":""} ${ls.won[i]?"win":""}" data-a="open" data-i="${i}" aria-label="${esc(free?"Libre":lbl)}">${free?`<img class="mono" src="${MONO}" alt="">`:f?`<img class="photo" src="${f}" alt=""><span class="check">${ICON.check}</span>`:esc(lbl)}</button>`}).join("")}</div>
+      <p class="muted" style="font-size:12px;text-align:center">${t("cardHelp")}<br>${t("testNote")}</p>
+      ${S.error==="storage"?`<div class="banner">Tu teléfono no tiene espacio para guardar más fotos de la tarjeta.</div>`:""}
+      <button class="link" style="align-self:center;font-size:12px" data-a="askReset">${t("reset")}</button></div>`;
+  }
+  if(S.sheet>=0){const g=S.guest,i=S.sheet,f=g.filled[i];
+    h+=`<div class="overlay" data-a="closeSheet"><div class="sheet stack" data-stop>
+      <div class="muted" style="font-size:13px">${t("header")}</div>
+      <div class="serif" style="font-size:30px;font-weight:700;line-height:1.1">${esc(P[g.card[i]][S.lang==="en"?1:0])}</div>
+      ${f?`<img src="${f}" alt="" style="height:170px;width:100%;object-fit:cover;border-radius:12px">`:""}
+      ${S.saving?`<div class="banner">${t("saving")}</div>`:`
+      <button class="btn btn-primary" data-a="pickFile" data-i="cam">${ICON.cam}${f?t("replace"):t("take")}</button>
+      <button class="btn btn-ghost" data-a="pickFile" data-i="gal">${ICON.img}${t("upload")}</button>
+      ${f?`<button class="link" style="align-self:center;color:var(--danger)" data-a="remove">${t("remove")}</button>`:""}
+      <button class="link" style="align-self:center" data-a="closeSheet">${t("close")}</button>`}</div></div>`;}
+  if(S.showBingo) h+=`<div class="full"><div class="pad stack center" style="padding-top:56px">
+      <img src="${MONO}" alt="" width="56" height="56"><div class="serif" style="font-size:64px;font-weight:700;line-height:1">¡Bingo!</div>
+      <p>${t("bingoText")}</p>
+      <div class="card" style="align-items:center;width:100%"><span class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:.12em">${t("code")}</span><span class="code">${esc(S.guest.code)}</span><span style="font-weight:700">${esc(S.guest.name)}</span></div>
+      <p class="muted" style="font-size:14px">${t("keep")}</p>
+      <button class="btn btn-primary" data-a="closeBingo">${t("back")}</button></div></div>`;
+  if(S.confirmReset) h+=`<div class="overlay" style="align-items:center"><div class="dialog stack" role="dialog" aria-modal="true">
+      <div class="serif" style="font-size:24px;font-weight:700">${t("resetQ")}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="btn btn-ghost" data-a="cancelReset">${t("cancel")}</button><button class="btn btn-danger" data-a="doReset">${t("del")}</button></div></div></div>`;
+  return h;
+}
+
+/* ---------- host view (#anfitrion) ---------- */
+function prizesLeft(){const used=S.given.map(g=>g.place);return [0,1,2].filter(p=>!used.includes(p))}
+function hostView(){
+  const h=S.h,left=prizesLeft();
+  let o=`<div class="hdr"><img src="${MONO}" alt=""><div style="line-height:1.2"><div class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:.12em">Modo anfitrión</div><div class="serif" style="font-size:20px;font-weight:700">Cocktail Hour BINGO</div></div></div>
+    <div style="padding:14px 20px 0;display:flex;gap:6px;align-items:center;font-size:13px"><b>Premios</b>${[0,1,2].map(p=>`<span class="pill ${left.includes(p)?"":"gone"}">${PRIZE.es[p]}</span>`).join("")}<span class="muted">${left.length?"quedan "+left.map(p=>PRIZE.es[p]).join(" y "):"todos entregados"}</span></div>`;
+  if(h.screen==="pin"){
+    o+=`<div class="pad stack center"><h1>Escribe el PIN</h1><p class="muted" style="font-size:14px">Solo en tu propio teléfono.</p>
+      <div class="dots" aria-label="PIN">${[0,1,2,3].map(i=>`<span class="${i<h.pin.length?"on":""}"></span>`).join("")}</div>
+      ${h.error?`<div role="alert" class="err">${h.error}</div>`:""}
+      <div class="keys">${["1","2","3","4","5","6","7","8","9","","0","del"].map(k=>`<button class="key" data-a="key" data-i="${k}" aria-label="${k==="del"?"Borrar":k||"vacío"}">${k==="del"?"←":k}</button>`).join("")}</div></div>`;
+  } else if(h.screen==="code"){
+    o+=`<div class="pad stack"><h1>Código del invitado</h1><p class="muted" style="font-size:14px">Está en su pantalla de ¡Bingo!</p>
+      <input id="hcode" class="field" placeholder="AB-1234" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;font-weight:700;font-size:22px;letter-spacing:.08em" value="${esc(h.code)}" data-in="hcode">
+      ${h.codeError?`<div role="alert" class="err">${h.codeError}</div>`:""}
+      <button class="btn btn-primary" data-a="checkCode">Revisar</button>
+      ${S.given.length?`<div class="card"><b>Premios entregados</b>${S.given.map((g,i)=>`<div style="display:flex;align-items:center;gap:8px"><span class="pill">${PRIZE.es[g.place]}</span><span style="flex:1">${esc(g.code)}</span><button class="link" data-a="undoAward" data-i="${i}">Deshacer</button></div>`).join("")}</div>`:""}
+      <button class="link" data-a="lock">Salir del modo anfitrión</button></div>`;
+  } else if(h.screen==="review"){
+    const already=S.given.some(g=>g.code===h.code);
+    o+=`<div class="pad stack"><div style="display:flex;justify-content:space-between;align-items:baseline"><h1 style="font-weight:700">Código válido</h1><span class="serif" style="font-size:22px;font-weight:700">${esc(h.code)}</span></div>
+      <p>Revisa la tarjeta en el teléfono del invitado: cada cuadro de la línea tiene una foto real de una persona. Confía en la historia.</p>
+      ${already?`<div class="banner">Este código ya ganó un premio.</div>`:""}
+      <button class="btn btn-primary" data-a="award" ${(!left.length||already)?"disabled":""}>${already?"Ya ganó un premio":left.length?`Entregar ${PRIZE.es[left[0]]} premio`:"Ya no quedan premios"}</button>
+      <button class="btn btn-ghost" data-a="hgo" data-i="code">Todavía no — volver</button></div>`;
+  } else {
+    const last=S.given[S.given.length-1];
+    o+=`<div class="pad stack center"><div style="width:72px;height:72px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></div>
+      <h1 style="font-weight:700">${PRIZE.es[last.place]} premio entregado</h1><p class="muted">${esc(last.code)}</p>
+      <button class="btn btn-primary" data-a="hgo" data-i="code">Siguiente invitado</button></div>`;
+  }
+  return o;
+}
+
+/* ---------- render + events ---------- */
+function render(){
+  const lang=S.host?"":`<div class="lang"><button class="${S.lang==="es"?"on":""}" data-a="lang" data-i="es" aria-label="Español">ES</button><button class="${S.lang==="en"?"on":""}" data-a="lang" data-i="en" aria-label="English">EN</button></div>`;
+  document.getElementById("app").innerHTML=lang+(S.host?hostView():guestView());
+  document.documentElement.lang=S.host?"es":S.lang;
+}
+const A={
+  lang:i=>{S.lang=i;save("wc_lang",i)},
+  go:i=>{S.screen=i;S.error=null;S.sheet=-1},
+  lookup:async()=>{
+    const d=S.phone.replace(/\D/g,"");if(d.length<7){S.error="phone";return}
+    S.error=null;S.busy=true;render();
+    const res=await WeddingApi.lookup(COUNTRIES[S.country][0]+d);
+    S.busy=false;
+    if(!res||!res.ok){S.error="net";render();return}
+    const g=(res.group||[]).filter(x=>x&&x.name);
+    if(!g.length){S.screen="name"}else if(g.length===1){startGuest(g[0].name)}else{S.group=g;S.screen="pick"}
+    render();
+  },
+  pick:i=>startGuest(S.group[+i].name),
+  submitName:()=>{const n=S.nameInput.trim();if(n)startGuest(n)},
+  open:i=>{if(S.guest.card[+i]!==-1)S.sheet=+i},
+  closeSheet:()=>{if(!S.saving)S.sheet=-1},
+  pickFile:i=>{document.getElementById(i).click()},
+  remove:()=>{const f={...S.guest.filled};delete f[S.sheet];S.guest.filled=f;saveGuest();S.sheet=-1},
+  bingo:()=>{S.showBingo=true},
+  closeBingo:()=>{S.showBingo=false},
+  askReset:()=>{S.confirmReset=true},
+  cancelReset:()=>{S.confirmReset=false},
+  doReset:()=>{try{localStorage.removeItem("wc_guest")}catch(_){}S.guest=null;S.confirmReset=false;S.phone="";S.nameInput="";S.error=null;S.screen="phone"},
+  key:k=>{const h=S.h;if(h.lock||k==="")return;if(k==="del"){h.pin=h.pin.slice(0,-1);return}
+    h.pin=(h.pin+k).slice(0,4);if(h.pin.length<4){h.error=null;return}
+    if(h.pin===HOST_PIN){h.pin="";h.screen="code";h.tries=0;h.error=null;return}
+    h.tries++;h.pin="";
+    if(h.tries>=3){h.lock=true;h.error="Demasiados intentos. Espera 1 minuto.";setTimeout(()=>{h.lock=false;h.tries=0;h.error=null;render()},60000)}
+    else h.error="PIN incorrecto."},
+  checkCode:()=>{const h=S.h,v=codeValid(h.code);if(!v.ok){h.codeError="Ese código no es válido. Revísalo con el invitado.";return}h.code=v.norm;h.codeError=null;h.screen="review"},
+  award:()=>{const l=prizesLeft();if(l.length&&!S.given.some(g=>g.code===S.h.code)){S.given=S.given.concat([{code:S.h.code,place:l[0]}]);save("wc_prizes",S.given);S.h.screen="done"}},
+  undoAward:i=>{if(confirm("¿Seguro? El premio quedará libre otra vez.")){S.given=S.given.filter((_,j)=>j!==+i);save("wc_prizes",S.given)}},
+  lock:()=>{S.h.screen="pin"},
+  hgo:i=>{S.h.screen=i;if(i==="code"){S.h.code="";S.h.codeError=null}}
+};
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-a]");if(!el)return;
+  if(el.classList.contains("overlay")&&e.target.closest("[data-stop]"))return;
+  const f=A[el.dataset.a];if(!f)return;const r=f(el.dataset.i);if(!(r instanceof Promise))render();
+});
+document.addEventListener("input",e=>{const k=e.target.dataset.in;if(!k)return;
+  if(k==="hcode"){S.h.code=e.target.value;S.h.codeError=null;return}
+  if(k==="country"){S.country=+e.target.value;render();return}
+  S[k]=e.target.value;if(k==="phone"&&S.error==="phone")S.error=null});
+document.addEventListener("keydown",e=>{if(e.key!=="Enter")return;const id=e.target.id;
+  if(id==="phone")A.lookup();else if(id==="gname"){A.submitName();render()}else if(id==="hcode"){A.checkCode();render()}});
+window.addEventListener("hashchange",()=>{S.host=location.hash.replace("#","")==="anfitrion";render()});
+render();
+</script>
+</body>
+</html>
